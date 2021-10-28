@@ -1,0 +1,16 @@
+unit Gerar_Classe.Interfaces.iBaseGerarClasseBanco;
+
+interface
+
+type
+  iBaseGerarClasseBanco = interface
+    ['{B11BD6E6-C5B3-47F7-8641-DDBC7512F94E}']
+    procedure GerarFields();
+    procedure GerarProperties();
+    function GetSqlCamposPK(): string;
+    function GetSqlCamposTabela(): string;
+  end;
+
+implementation
+
+end.

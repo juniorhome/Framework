@@ -1,0 +1,17 @@
+unit orm.conexao.Model_RDW.ModelRDWConexao;
+
+interface
+
+ type
+   TModelRDWConexao = class(TInterfaceObject, IModelConexao)
+     private
+     public
+       constructor Create();
+       destructor Destroy;override;
+       class function New(): IModelConexao;
+       function Connection: TObject;
+   end;
+
+implementation
+
+end.

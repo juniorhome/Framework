@@ -1,0 +1,28 @@
+unit orm.conexao.model_firedac.ModelZeosConexao;
+
+interface
+
+uses IniFile;
+
+ type
+   TModelZeosConexao = class(TInterfacedObject, IModelConexao)
+     private
+       FConexao: TZConnection;
+       FArqIni: TIniFile;
+     public
+       constructor Create(pCaminho: string);
+   end;
+
+implementation
+
+{ TModelZeosConexao }
+
+constructor TModelZeosConexao.Create(pCaminho: string);
+begin
+  FArqIni := TIniFile.Create(pCaminho);
+  FConexao := TZConnection.Create(nil);
+  FConexao.Protocol := FArqIni.ReadString('Configuracao', 'Driver', 'Erro ao ler o valor');
+  //mais configurações.
+end;
+
+end.

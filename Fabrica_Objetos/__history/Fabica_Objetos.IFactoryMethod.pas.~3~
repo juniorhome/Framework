@@ -1,0 +1,13 @@
+unit Fabica_Objetos.IFactoryMethod;
+
+interface
+
+type
+  IFactoryMethod = interface(IInterface)
+    ['{D173603F-AF5A-4B1F-B402-EBD69EA7D781}']
+    function FabricaObjeto(const opcao: string): IBaseVO;
+  end;
+
+implementation
+
+end.

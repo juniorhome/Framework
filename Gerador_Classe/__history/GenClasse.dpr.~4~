@@ -1,0 +1,21 @@
+program GenClasse;
+
+uses
+  System.StartUpCopy,
+  FMX.Forms,
+  Gerador_Classe.View.uFrmPrincipal in 'Gerador_Classe.View.uFrmPrincipal.pas' {frmPrincipal},
+  Gerar_Classe.Interfaces.iBaseGerarClasseBanco in 'Interfaces\Gerar_Classe.Interfaces.iBaseGerarClasseBanco.pas',
+  Gerar_Classe.Firebird.GerarClasseBancoFirebird in 'Firebird\Gerar_Classe.Firebird.GerarClasseBancoFirebird.pas',
+  Gerador_Classe.Gerar_Classes.GerarClasseVO in 'Gerar_Classes\Gerador_Classe.Gerar_Classes.GerarClasseVO.pas',
+  orm.IBaseVO in '..\ORM\orm.IBaseVO.pas',
+  orm.Atributos in '..\ORM\orm.Atributos.pas',
+  orm.conexao.interfaces.Interfaces in '..\ORM\Conexao\Interfaces\orm.conexao.interfaces.Interfaces.pas',
+  orm.conexao.model_zeos.ModelZeosConexao in '..\ORM\Conexao\Model_Zeos\orm.conexao.model_zeos.ModelZeosConexao.pas';
+
+{$R *.res}
+
+begin
+  Application.Initialize;
+  Application.CreateForm(TfrmPrincipal, frmPrincipal);
+  Application.Run;
+end.

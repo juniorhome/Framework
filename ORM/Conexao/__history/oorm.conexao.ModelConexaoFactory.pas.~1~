@@ -1,0 +1,34 @@
+unit oorm.conexao.ModelConexaoFactory;
+
+interface
+
+  type
+   TModelConexaoFactory = class(TInterfacedObject, IModelConexaoFactory)
+     private
+     public
+       constructor Create;
+       destructor Destroy;override;
+       class function New: IModelConexaoFactory;
+   end;
+
+implementation
+
+{ TModelConexaoFactory }
+
+constructor TModelConexaoFactory.Create;
+begin
+
+end;
+
+destructor TModelConexaoFactory.Destroy;
+begin
+
+  inherited;
+end;
+
+class function TModelConexaoFactory.New: IModelConexaoFactory;
+begin
+  Result := self.Create;
+end;
+
+end.

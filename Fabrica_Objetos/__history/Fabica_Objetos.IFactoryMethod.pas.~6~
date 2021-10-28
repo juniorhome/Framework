@@ -1,0 +1,20 @@
+unit Fabica_Objetos.IFactoryMethod;
+
+interface
+
+//objetos do tipo BaseVO.
+  type
+    tTipoVO = (ttCliente, ttProduto, ttPessoa, ttPessoaJuridica, ttPessoaFisica,
+    ttCst_Icms, ttCst_Ipi, ttCst_Pis, tt_Cst_Cofins, ttTributacao, ttNcm, ttCest, ttNcm_Cest,
+    ttNfe, ttNfce, ttTransportadora, ttTipoPgto, ttBanco, ttContaPagar, ttContaReceber, ttParcela,
+    ttFaturamento, ttVenda, ttVendaItem);
+
+type
+  IFactoryMethod = interface(IInterface)
+    ['{D173603F-AF5A-4B1F-B402-EBD69EA7D781}']
+    function FabricaObjeto(const opcao: tTipoVO): IBaseVO;
+  end;
+
+implementation
+
+end.

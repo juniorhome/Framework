@@ -1,0 +1,27 @@
+unit orm.Controller.FabricaBaseController;
+
+interface
+
+uses
+  orm.conexao.interfaces.Interfaces;
+
+  type
+    TTipoController = (tcCliente, tcFuncionario, tcFornecedor, tcTransportadora, tcProduto, tcVenda, tcNfe, tcNfce);
+
+  type
+    TFabricaControllerBase<T: class, constructor> = class(TInterfacedObject, IController<T>)
+    private
+    public
+      constructor Create;
+    end;
+
+implementation
+
+{ TFabricaControllerBase<T> }
+
+constructor TFabricaControllerBase<T>.Create;
+begin
+//
+end;
+
+end.

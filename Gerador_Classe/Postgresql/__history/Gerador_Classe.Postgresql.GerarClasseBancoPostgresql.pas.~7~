@@ -1,0 +1,70 @@
+unit Gerador_Classe.Postgresql.GerarClasseBancoPostgresql;
+
+interface
+
+uses Gerar_Classe.Interfaces.iBaseGerarClasseBanco, DB, System.SysUtils, Classes;
+
+type
+  TGerarClasseBancoPostgresql = class(TInterfacedObject, iBaseGerarClasseBanco)
+    private
+      function GetTypeField(Tipo,SubTipo,Precisao,Escala: integer): string;
+    public
+      function GetTabela(): string;
+      function GetSqlCamposTabela(ATabela: string): string;
+      function GetCamposPK(ATabela: string): string;
+  end;
+
+implementation
+
+{ TGerarClasseBancoPostgresql }
+
+function TGerarClasseBancoPostgresql.GetCamposPK(ATabela: string): string;
+begin
+  Result := '';
+end;
+
+function TGerarClasseBancoPostgresql.GetSqlCamposTabela(
+  ATabela: string): string;
+begin
+  Result := '';
+end;
+
+function TGerarClasseBancoPostgresql.GetTabela: string;
+begin
+  Result := '';
+end;
+
+function TGerarClasseBancoPostgresql.GetTypeField(Tipo, SubTipo, Precisao,
+  Escala: integer): string;
+begin
+   case Tipo of
+     7,
+     8,
+     9,
+     10,
+     11,
+     16,
+     27:
+        begin
+          case Escala of
+            0: Result := 'Integer';
+            8: Result := 'Double' ;
+            else
+               Result = 'Currency';
+          end;
+        end;
+     14,
+     37,
+     40: Result := 'string';
+     12: Result := 'TDate';
+     13: Result := 'TTime';
+     35: Result := 'TDateTime';
+     261:begin
+           if SubTipo = 1 then
+              Result := 'string'
+           else Result := 'blob';
+         end;
+   end;
+end;
+
+end.

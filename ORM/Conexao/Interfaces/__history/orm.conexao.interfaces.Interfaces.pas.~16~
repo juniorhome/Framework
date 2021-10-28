@@ -1,0 +1,40 @@
+unit orm.conexao.interfaces.Interfaces;
+
+interface
+
+uses
+  Data.DB, orm.IBaseVO, orm.Atributos;
+
+type
+    IModelQuery = interface;
+
+
+   IModelConexao = interface
+   ['{E053AD22-4518-478A-906B-0373BF9CAF8A}']
+     function Connection: TObject;
+   end;
+
+   IModelConexaoFactory = interface(iinterface)
+     ['{DEB41385-72C6-40F1-AEF7-67DE1175BC20}']
+       function Conexao(aOp: integer): IModelConexao;
+       function Query(aOp: integer): IModelQuery;
+   end;
+
+   IModelQuery = interface(iinterface)
+       ['{10E5C694-4672-4DD4-A75F-D04A2A38ECBC}']
+         function Query: TObject;
+         function Open(aSql: string): IModelQuery;
+         function ExecSql(aSql: string): IModelQuery;
+   end;
+
+   IDAO <T: class> = interface(iinterface)
+     ['{7FBAC46D-3355-414C-9B35-CB20D000BB27}']
+     function Inserir(obj: T): IDAO<T>;
+     function Atualizar(obj: T): IDAO<T>;
+     function Excluir(obj: T): IDAO<T>;
+     function Listagem(obj: T; const TipoJuncao:TTipoJoin = ttLeftJoin): IDAO<T>;
+   end;
+
+ implementation
+
+end.

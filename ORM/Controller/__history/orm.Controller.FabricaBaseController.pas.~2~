@@ -1,0 +1,7 @@
+unit orm.Controller.FabricaBaseController;
+
+interface
+
+implementation
+
+end.

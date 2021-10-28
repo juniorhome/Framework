@@ -1,0 +1,12 @@
+unit orm.conexao.Model_RDW.ModelRDWConexao;
+
+interface
+
+ type
+   TModelRDWConexao = class(TInterfaceObject, IModelConexao)
+
+   end;
+
+implementation
+
+end.

@@ -1,0 +1,17 @@
+unit orm.IBaseVO;
+
+interface
+
+uses
+  System.JSON;
+
+type
+  IBaseVO  = interface(iinterface)
+      ['{48297E67-C372-4C5E-90D5-9DB2D2BCB23B}']
+      function toJson(): TJSONValue;
+      function fromJson<T: class>(json:string): T;
+  end;
+
+implementation
+
+end.

@@ -1,0 +1,7 @@
+unit orm.Controller.ControllerBase;
+
+interface
+
+implementation
+
+end.

@@ -1,0 +1,27 @@
+unit orm.conexao.model_firedac.ModelZeosConexao;
+
+interface
+
+uses IniFile;
+
+ type
+   TModelZeosConexao = class(TInterfacedObject, IModelConexao)
+     private
+       FConexao: TZConnection;
+       FArqIni: TIniFile;
+     public
+       constructor Create;
+   end;
+
+implementation
+
+{ TModelZeosConexao }
+
+constructor TModelZeosConexao.Create;
+begin
+  FConexao := TZConnection.Create(nil);
+  FConexao.Driver := 'Postgresql';
+  //mais configurações.
+end;
+
+end.

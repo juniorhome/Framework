@@ -1,0 +1,14 @@
+program GenClasse;
+
+uses
+  System.StartUpCopy,
+  FMX.Forms,
+  Gerador_Classe.View.uFrmPrincipal in 'Gerador_Classe.View.uFrmPrincipal.pas' {frmPrincipal};
+
+{$R *.res}
+
+begin
+  Application.Initialize;
+  Application.CreateForm(TfrmPrincipal, frmPrincipal);
+  Application.Run;
+end.

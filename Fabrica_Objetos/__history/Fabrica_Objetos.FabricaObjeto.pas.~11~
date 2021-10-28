@@ -1,0 +1,31 @@
+unit Fabrica_Objetos.FabricaObjeto;
+
+interface
+uses
+  Fabica_Objetos.IFactoryMethod, orm.IBaseVO;
+
+type
+  TFabricaObjeto<T: class> = class(TInterfacedObject, IFactoryMethod<T>)
+    function FabricaObjeto(const opcao: tTipoVO): IBaseVO<T>;
+  end;
+
+implementation
+
+{ TFabricaObjeto }
+
+function TFabricaObjeto<T>.FabricaObjeto(const opcao: tTipoVO): IBaseVO<T>;
+begin
+   case opcao of
+     0:
+               begin
+                 //chamada para objeto do tipo cliente.
+               end;
+     1:
+               begin
+                 //chamada para o objeto do tipo produto.
+               end;
+
+   end;
+end;
+
+end.

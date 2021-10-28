@@ -1,0 +1,231 @@
+unit Fabrica_Objetos.FabricaObjeto;
+
+interface
+uses
+  Fabica_Objetos.IFactoryMethod, orm.IBaseVO;
+
+type
+  TFabricaObjeto<T: class> = class(TInterfacedObject, IFactoryMethod<T>)
+    function FabricaObjeto(const opcao: tTipoVO): IBaseVO<T>;
+  end;
+
+implementation
+
+{ TFabricaObjeto }
+
+function TFabricaObjeto<T>.FabricaObjeto(const opcao: tTipoVO): IBaseVO<T>;
+begin
+   case opcao of
+     ttCliente:
+               begin
+                 //chamada para objeto do tipo cliente.
+               end;
+     ttProduto:
+               begin
+                 //chamada para o objeto do tipo produto.
+               end;
+     ttPessoa:
+              begin
+                //chamada para o objeto do tipo pessoa.
+              end;
+     ttPessoaJuridica:
+                      begin
+                        //chamada para o objeto do tipo PJ.
+                      end;
+     ttPessoaFisica:
+                    begin
+                      //chamada para o objeto do tipo PF.
+                    end;
+     ttCstIcms:
+               begin
+                //chamada para o objeto do tipo CST ICMS.
+               end;
+     ttCstIpi:
+              begin
+                //chamada para o objeto do tipo CST IPI.
+              end;
+     ttCstPis:
+              begin
+                //chamada para o objeto do tipo CST PIS.
+              end;
+     ttCstCofins:
+                 begin
+                   //chamada para o objeto do tipo CST COFINS.
+                 end;
+     ttTributacao:
+                  begin
+                    //Chamada para o objeto do tipo Tributação.
+                  end;
+     ttNcm:
+           begin
+             //chamada para o objeto do tipo NCM.
+           end;
+     ttCest:
+            begin
+              //chamada para o objeto do tipo CEST.
+            end;
+     ttNcmCest:
+               begin
+                 //chamada para o objeto do tipo NCM_CEST.
+               end;
+     ttNfe:
+           begin
+             //chamada para o objeto do tipo NFE.
+           end;
+     ttNfce:
+            begin
+              //chamada para o objeto do tipo NFCE.
+            end;
+     ttTransportadora:
+                      begin
+                        //chamada para o objeto do tipo Transportadora.
+                      end;
+     ttFormaPgto:
+                 begin
+                   //chamada para o objeto do tipo Forma Pagamento.
+                 end;
+     ttBanco:
+             begin
+               //chamada para o objeto do tipo Banco.
+             end;
+     ttContaPagar:
+                  begin
+                    //Chamada para o objeto do tipo Contas a Pagar.
+                  end;
+     ttContaReceber:
+                    begin
+                      //chamada para o objeto do tipo Contas a Receber.
+                    end;
+     ttConfiguracao:
+                    begin
+                      //chamada para o objeto do tipo Configuração.
+                    end;
+     ttCaixa:
+             begin
+               //chamada para o objeto do tipo Caixa.
+             end;
+     ttVenda:
+             begin
+               //chamada para o objeto do tipo Venda.
+             end;
+     ttVendaItem:
+                 begin
+                   //chamada para o objeto do tipo Venda Item.
+                 end;
+     ttUF:
+          begin
+            //chamada para o objeto do tipo UF.
+          end;
+     ttCartão:
+              begin
+                //chamada para o objeto do tipo Cartão.
+              end;
+     ttCidade:
+              begin
+                //chamada para o objeto do tipo Cidade.
+              end;
+     ttCfop:
+            begin
+              //chamada para o objeto do tipo CFOP.
+            end;
+     ttCompra:
+              begin
+                //chamada para o objeto do tipo Compra.
+              end;
+     ttCompraItem:
+                  begin
+                    //chamada para o objeto do tipo Compra Item.
+                  end;
+     ttCotacao:
+               begin
+                 //chamada para o objeto do tipo Cotação.
+               end;
+     ttCotacaoItem:
+                   begin
+                     //chamada para o objeto do tipo Cotação Item.
+                   end;
+     ttCrt:
+           begin
+             //chamada para o objeto do tipo CRT.
+           end;
+     ttCsosn:
+             begin
+               //chamada para o objeto do tipo CSOSN.
+             end;
+     ttFornecProduto:
+                     begin
+                       //chamada para o objeto do tipo Fornecedor Produto.
+                     end;
+     ttFornecedor:
+                  begin
+                    //chamada para o objeto do tipo Fornecedor.
+                  end;
+     ttFuncionario:
+                   begin
+                     //chamada para o objeto do tipo Funcionario.
+                   end;
+     ttMesa:
+            begin
+              //chamada para o objeto do tipo Mesa.
+            end;
+     ttNfse:
+            begin
+              //chamada para o objeto do tipo NFSE.
+            end;
+     ttNfeStatus:
+                 begin
+                   //chamada para o objeto do tipo NFE Status.
+                 end;
+     ttNfceStatus:
+                  begin
+                    //chamada para o objeto do tipo NFCE Status.
+                  end;
+     ttPedido:
+              begin
+                //chamada para o objeto do tipo Pedido.
+              end;
+     ttPedidoItem:
+                  begin
+                    //chamada para o objeto do tipo Pedido Item.
+                  end;
+     ttPerfilUsuario:
+                     begin
+                      //chamada para o objeto do tipo Perfil Usuário.
+                     end;
+     ttUsuario:
+               begin
+                 //chamada para o objeto do tipo Usuário.
+               end;
+     ttPlanoContas:
+                   begin
+                     //chamada para objeto Plano de Contas.
+                   end;
+     ttRefeicao:
+                begin
+                  //chamada para o objeto do tipo Refeição.
+                end;
+     ttRefeicaoItem:
+                    begin
+                      //chamada para o objeto do tipo Refeição Item.
+                    end;
+     ttReserva:
+               begin
+                 //Chamada para o objeto do tipo Reserva.
+               end;
+     ttVendaVolume:
+                   begin
+                     //Chamada para o objeto do tipo Venda Volume.
+                   end;
+     ttVendaTransportadora:
+                           begin
+                             //chamada para o objeto do tipo Venda Transportadora.
+                           end;
+     ttCstIcmsST:
+                 begin
+                   //chamada para o objeto do tipo CST ICMS ST.
+                 end;
+
+   end;
+end;
+
+end.

@@ -1,0 +1,34 @@
+unit orm.conexao.model_rdw.ModelRDWConexao;
+
+interface
+
+uses
+  orm.conexao.interfaces.Interfaces, uRESTDWPoolerDB, System.SysUtils;
+
+type
+  TModelRDWConexao = class(TInterfacedObject, IModelConexao)
+    private
+      FConexao : TRestDWDatabase;
+    public
+      constructor Create();
+      destructor destroy;override;
+  end;
+
+implementation
+
+{ TModelRDWConexao }
+
+constructor TModelRDWConexao.Create;
+begin
+  FConexao := TRESTDWDataBase.Create(nil);
+  FConexao.MyIP := '127.0.0.1';
+
+end;
+
+destructor TModelRDWConexao.destroy;
+begin
+  FreeAndNil(FConexao);
+  inherited;
+end;
+
+end.

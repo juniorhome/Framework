@@ -1,0 +1,456 @@
+unit orm.Atributos;
+
+interface
+
+type
+  TTabela = class(TCustomAttribute)
+     private
+        FNome:            string;
+        FAlias:           string;
+        FCaptionSingular: string;
+        FCaptionPlural:   string;
+     public
+        property Nome: string read FNome write FNome;
+        property Alias: string read FAlias write FAlias;
+        property CaptionSingular: string read FCaptionSingular write FCaptionSingular;
+        property CaptionPlural: string read FCaptionPlural write FCaptionPlural;
+        constructor Create(PNome,PAlias,PCaptionSingular,PCaptionPlural: string);
+  end;
+
+  type
+    TTabelaEstrangeira = class(TTabela)
+      private
+        FId:              string;
+        FIdEstrangeiro:   string;
+        FTipoJoin:        string;
+      public
+        property Id: string read FId write FId;
+        property IdEstrangeiro: string read FIdEstrangeiro write FIdEstrangeiro;
+        property TipoJoin: string read FTipoJoin write FTipoJoin;
+        constructor Create(PId,PidEstrangeiro,PTipoJoin: string);
+    end;
+
+    type
+      TChavePrimaria = class(TCustomAttribute)
+        private
+          FNome:              string;
+          FCaptionSingular:   string;
+          FCaptionPlural:     string;
+        public
+          property Nome: string read FNome write FNome;
+          property CaptionSingular: string read FCaptionSingular write FCaptionSingular;
+          property CaptionPlural: string read FCaptionPlural write FCaptionPlural;
+          constructor Create(PNome,PCaptionSingular,PCaptionPlural: string);
+      end;
+
+      type
+        TChaveEstrangeira = class(TCustomAttribute)
+          private
+            FNome:   string;
+            FTabela: string;
+          public
+            property Nome: string read FNome write FNome;
+            property Tabela: string read FNome write FNome;
+            constructor Create(PNome,PTabela: string);
+        end;
+
+        type
+          TCampoTexto = class(TCustomAttribute)
+            private
+              FNome:            string;
+              FTamanho:         integer;
+              FMascara:         string;
+              FCaptionSingular: string;
+              FCaptionPlural:   string;
+              FTemMascara:      boolean;
+            public
+              property Nome: string read FNome write FNome;
+              property Tamanho: integer read FTamanho write FTamanho;
+              property Mascara: string read FMascara write FMascara;
+              property CaptionSingular: string read FCaptionSingular write FCaptionSingular;
+              property CaptionPlural: string read FCaptionPlural write FCaptionPlural;
+              property TemMascara: boolean read FTemMascara write FTemMascara;
+              constructor Create(PNome,PCaptionSingular,PCaptionPlural,PMascara: string; PTamanho: integer; PTemMascara: boolean);
+          end;
+
+          type
+            TCampoInteiro = class(TCustomAttribute)
+              private
+                FNome:             string;
+                FCaptionSingular:  string;
+                FCaptionPlural:    string;
+              public
+                property Nome: string read FNome write FNome;
+                property CaptionSingular: string read FCaptionSingular write FCaptionSingular;
+                property CaptionPlural: string read FCaptionPlural write FCaptionPlural;
+                constructor Create(PNome,PCaptionSingular,PCaptionPlural: string);
+            end;
+
+            type
+              TCampoData = class(TCustomAttribute)
+                private
+                  FNome:               string;
+                  FMascara:            string;
+                  FCaptionSingular:    string;
+                  FCaptionPlural:      string;
+                public
+                  property Nome: string read FNome write FNome;
+                  property Mascara: string read FMascara write FMascara;
+                  property CaptionSingular: string read FCaptionSingular write FCaptionSingular;
+                  property CaptionPlural: string read FCaptionPlural write FCaptionPlural;
+                  constructor Create(PNome,PMascara,PCaptionSingular,PCaptionPlural: string);
+              end;
+
+              type
+                TCampoDataHora = class(TCustomAttribute)
+                  private
+                    FNome:              string;
+                    FMascara:           string;
+                    FCaptionSingular:   string;
+                    FCaptionPlural:     string;
+                  public
+                    property Nome: string read FNome write FNome;
+                    property Mascara: string read FMascara write FMascara;
+                    property CaptionSingular: string read FCaptionSingular write FCaptionSingular;
+                    property CaptionPlural: string read FCaptionPlural write FCaptionPlural;
+                    constructor Create(PNome,PMascara,PCaptionSingular,PCaptionPlural: string);
+                end;
+
+                type
+                  TCampoExtended = class(TCustomAttribute)
+                    private
+                      FNome:            string;
+                      FTamanho:         integer;
+                      FCasaDecimal:     integer;
+                      FCaptionSingular: string;
+                      FCaptionPlural:   string;
+                      FMascara:         string;
+                    public
+                      property Nome: string read FNome write FNome;
+                      property Tamanho: integer read FTamanho write FTamanho;
+                      property CasaDecimal: integer read FCasaDecimal write FCasaDecimal;
+                      property CaptionSingular: string read FCaptionSingular write FCaptionSingular;
+                      property CaptionPlural: string read FCaptionPlural write FCaptionPlural;
+                      property Mascara: string read FMascara write FMascara;
+                      constructor Create(PNome,PCaptionSingular,PCaptionPlural,PMascara: string; PTamanho,PCasaDecimal: integer);
+                  end;
+
+                  type
+                    TCampoMonetario = class(TCampoExtended)
+                      private
+                        FEhDinheiro: boolean;
+                      public
+                        property EhDinheiro: boolean read FEhDinheiro write FEhdinheiro;
+                        constructor Create(PEhDinheiro: boolean);
+                    end;
+
+                    type
+                      TCampoBooleano = class(TCustomAttribute)
+                        private
+                          FNome:            string;
+                          FCaptionSingular: string;
+                          FCaptionPlural:   string;
+                        public
+                          property Nome: string read FNome write FNome;
+                          property CaptionSingular: string read FCaptionSingular write FCaptionSingular;
+                          property CaptionPlural: string read FCaptionPlural write FCaptionPlural;
+                          constructor Create(PNome,PCaptionSingular,PCaptionPlural: string);
+                      end;
+
+                      type
+                        TCampoEstrangeiro = class(TCustomAttribute)
+                          private
+                             FNome:    string;
+                             FTabela:  string;
+                             FAlias:   string;
+                          public
+                             property Nome: string read FNome write FNome;
+                             property Tabela: string read FTabela write FTabela;
+                             property Alias: string read FAlias write FAlias;
+                             constructor Create(PNome,PTabela,PAlias: string);
+                        end;
+
+                        type
+                          TCampoFiltro = class(TCustomAttribute)
+                            private
+                               FEhFiltro: boolean;
+                            public
+                               property EhFiltro: boolean read FEhFiltro write FEhFiltro;
+                               constructor Create(PEhFiltro: boolean);
+                          end;
+
+                          type
+                            TGridCadastro = class(TCustomAttribute)
+                              private
+                                FNome:              string;
+                                FCaptionSingular:   string;
+                                FCaptionPlural:     string;
+                                FTamanho:           integer;
+                              public
+                                property Nome: string read FNome write FNome;
+                                property CaptionSingular: string read FCaptionSingular write FCaptionSingular;
+                                property CaptionPlural: string read FCaptionPlural write FCaptionPlural;
+                                property Tamanho: integer read FTamanho write FTamanho;
+                                constructor Create(PNome,PCaptionSingular,PCaptionPlural: string; PTamanho: integer);
+                            end;
+
+                            type
+                              TGridConsulta  = class(TCustomAttribute)
+                                private
+                                  FNome:              string;
+                                  FCaptionSingular:   string;
+                                  FCaptionPlural:     string;
+                                  FTamanho:           integer;
+                                public
+                                  property Nome: string read FNome write FNome;
+                                  property CaptionSingular: string read FCaptionSingular write FCaptionSingular;
+                                  property CaptionPlural: string read FCaptionPlural write FCaptionPlural;
+                                  property Tamanho: integer read FTamanho write FTamanho;
+                                  constructor Create(PNome,PCaptionSingular,PCaptionPlural: string; PTamanho: integer);
+                              end;
+  type
+    TSomatorio = class(TCustomAttribute)   //SUM()
+      private
+        FNome:    string;
+        FAlias:   string;
+        FAtivo:   boolean;
+      public
+        property Nome: string read FNome write FNome;
+        property Alias: string read FAlias write FAlias;
+        property Ativo: boolean read FAtivo write FAtivo;
+        constructor Create(PNome,PAlias: string; PAtivo: boolean);
+    end;
+
+    type
+     TMedia = class(TCustomAttribute) //AVG()
+       private
+         FNome:    string;
+         FAlias:   string;
+         FAtivo:   boolean;
+       public
+         property Nome: string read FNome write FNome;
+         property Alias: string read FAlias write FAlias;
+         property Ativo: boolean read FAtivo write FAtivo;
+         constructor Create(PNome,PAlias: string; PAtivo: boolean);
+     end;
+
+     type
+       TMinimo = class(TCustomAttribute)   //MIN()
+         private
+           FNome: string;
+           FAlias: string;
+           FAtivo: boolean;
+         public
+           property Nome: string read FNome write FNome;
+           property Alias: string read FAlias write FAlias;
+           property Ativo: boolean read FAtivo write FAtivo;
+           constructor Create(PNome,PAlias: string; PAtivo: boolean);
+       end;
+
+       type
+         TMaximo = class(TCustomAttribute)  //MAX()
+           private
+             FNome : string;
+             FAlias: string;
+             FAtivo: boolean;
+           public
+             property Nome: string read FNome write FNome;
+             property Alias: string read FAlias write FAlias;
+             property Ativo: boolean read FAtivo write FAtivo;
+             constructor Create(PNome,PAlias: string; PAtivo: boolean);
+         end;
+
+       type
+         TTipoJoin = (ttInnerJoin, ttLeftJoin, ttRigthJoin);
+
+implementation
+
+{ TTabela }
+
+constructor TTabela.Create(PNome, PAlias, PCaptionSingular,
+  PCaptionPlural: string);
+begin
+  FNome               := PNome;
+  FAlias              := PAlias;
+  FCaptionSingular    := PCaptionSingular;
+  FCaptionPlural      := PCaptionPlural;
+end;
+
+{ TTabelaEstrangeira }
+
+constructor TTabelaEstrangeira.Create(PId, PidEstrangeiro, PTipoJoin: string);
+begin
+    FId               := PId;
+    FIdEstrangeiro    := PIdEstrangeiro;
+    FTipoJoin         := PTipoJoin;
+end;
+
+{ TChavePrimaria }
+
+constructor TChavePrimaria.Create(PNome, PCaptionSingular,
+  PCaptionPlural: string);
+begin
+   FNome               := PNome;
+   FCaptionSingular    := PCaptionSingular;
+   FCaptionPlural      := PCaptionPlural;
+end;
+
+{ TChaveEstrangeira }
+
+constructor TChaveEstrangeira.Create(PNome, PTabela: string);
+begin
+   FNome     := PNome;
+   FTabela   := PTabela;
+end;
+
+{ TCampoTexto }
+
+constructor TCampoTexto.Create(PNome, PCaptionSingular, PCaptionPlural,
+  PMascara: string; PTamanho: integer; PTemMascara: boolean);
+begin
+   FNome                  := PNome;
+   FCaptionSingular       := PCaptionSingular;
+   FCaptionPlural         := PCaptionPlural;
+   FMascara               := PMascara;
+   FTamanho               := PTamanho;
+   FTemMascara            := PTemMascara;
+end;
+
+{ TCampoInteiro }
+
+constructor TCampoInteiro.Create(PNome, PCaptionSingular,
+  PCaptionPlural: string);
+begin
+   FNome               := PNome;
+   FCaptionSingular    := PCaptionPlural;
+   FCaptionPlural      := PCaptionPlural;
+end;
+
+{ TCampoData }
+
+constructor TCampoData.Create(PNome, PMascara, PCaptionSingular,
+  PCaptionPlural: string);
+begin
+   FNome                   := PNome;
+   FMascara                := PMascara;
+   FCaptionSingular        := PCaptionSingular;
+   FCaptionPlural          := PCaptionPlural;
+end;
+
+{ TCampoDataHora }
+
+constructor TCampoDataHora.Create(PNome, PMascara, PCaptionSingular,
+  PCaptionPlural: string);
+begin
+  FNome            := PNome;
+  FMascara         := PMascara;
+  FCaptionSingular := PCaptionSingular;
+  FCaptionPlural   := PCaptionPlural;
+end;
+
+{ TCampoExtended }
+
+constructor TCampoExtended.Create(PNome, PCaptionSingular, PCaptionPlural,
+  PMascara: string; PTamanho, PCasaDecimal: integer);
+begin
+   FNome                   := PNome;
+   FCaptionSingular        := PCaptionSingular;
+   FCaptionPlural          := PCaptionPlural;
+   FMascara                := PMascara;
+   FTamanho                := PTamanho;
+   FCasaDecimal            := PCasaDecimal;
+end;
+
+{ TCampoMonetario }
+
+constructor TCampoMonetario.Create(PEhDinheiro: boolean);
+begin
+   //chamada do construtor da classe pai.
+   FEhDinheiro := PEhDinheiro;
+end;
+
+{ TCampoBooleano }
+
+constructor TCampoBooleano.Create(PNome, PCaptionSingular,
+  PCaptionPlural: string);
+begin
+   FNome                := PNome;
+   FCaptionSingular     := PCaptionSingular;
+   FCaptionPlural       := PCaptionPlural;
+end;
+
+{ TCampoEstrangeiro }
+
+constructor TCampoEstrangeiro.Create(PNome, PTabela, PAlias: string);
+begin
+   FNome      := PNome;
+   FTabela    := PTabela;
+   FAlias     := PAlias;
+end;
+
+{ TCampoFiltro }
+
+constructor TCampoFiltro.Create(PEhFiltro: boolean);
+begin
+   FEhFiltro := PEhFiltro;
+end;
+
+{ TGridCadastro }
+
+constructor TGridCadastro.Create(PNome, PCaptionSingular,
+  PCaptionPlural: string; PTamanho: integer);
+begin
+    FNome                := PNome;
+    FCaptionSingular     := PCaptionSingular;
+    FCaptionPlural       := PCaptionPlural;
+    FTamanho             := PTamanho;
+end;
+
+{ TGridConsulta }
+
+constructor TGridConsulta.Create(PNome, PCaptionSingular, PCaptionPlural: string;
+  PTamanho: integer);
+begin
+   FNome                := PNome;
+   FCaptionSingular     := PCaptionSingular;
+   FCaptionPlural       := PCaptionPlural;
+   FTamanho             := PTamanho
+end;
+
+{ TSomatorio }
+
+constructor TSomatorio.Create(PNome,PAlias: string; PAtivo: boolean);
+begin
+   FNome := PNome;
+   FAlias := PAlias;
+   FAtivo := PAtivo;
+end;
+
+{ TMedia }
+
+constructor TMedia.Create(PNome,PAlias: string; PAtivo: boolean);
+begin
+   FNome := PNome;
+   FAlias := PAlias;
+   FAtivo := PAtivo;
+end;
+
+{ TMinimo }
+
+constructor TMinimo.Create(PNome,PAlias: string; PAtivo: boolean);
+begin
+  FNome := PNome;
+  FAlias := PAlias;
+  FAtivo := PAtivo;
+end;
+
+{ TMaximo }
+
+constructor TMaximo.Create(PNome, PAlias: string; PAtivo: boolean);
+begin
+  FNome := PNome;
+  FAlias := PAlias;
+  FAtivo := PAtivo;
+end;
+
+end.

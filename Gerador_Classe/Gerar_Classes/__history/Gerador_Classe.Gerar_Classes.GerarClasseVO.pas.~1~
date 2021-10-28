@@ -1,0 +1,24 @@
+unit Gerador_Classe.Gerar_Classes.GerarClasseVO;
+
+interface
+
+uses Gerar_Classe.Interfaces.iBaseGerarClasseBanco, System.SysUtils;
+
+type
+  TGerarClasseVO = class
+    private
+      function Capitalize(ATexto: string): string;
+    protected
+    public
+  end;
+
+implementation
+
+{ TGerarClasseVO }
+
+function TGerarClasseVO.Capitalize(ATexto: string): string;
+begin
+  Result := UpperCase(ATexto[1]) + LowerCase(Copy(ATexto, 2, Length(ATexto)));
+end;
+
+end.
