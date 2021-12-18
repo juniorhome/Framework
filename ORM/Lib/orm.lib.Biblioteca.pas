@@ -15,7 +15,7 @@ uses SysUtils, IniFiles, Datasnap.DBClient, ZDataset, Data.DB,
          procedure EscreverIni(aDriver,aBanco,aHost,aDll,aUsuario,aSenha: string; aPorta:integer);
          function CopiarParaDataSet(aQuery: TZQuery): TClientDataSet;
          function PegarNomeTabela(aObj: T): string;
-         procedure DimensionarGrid(AObj: TObject; AGrid: TDBGrid);
+         //procedure DimensionarGrid(AObj: TObject; AGrid: TDBGrid);
     end;
 
 implementation
@@ -46,7 +46,7 @@ begin
   end;
 end;
 
-procedure TLib<T>.DimensionarGrid(AObj: TObject; AGrid: TDBGrid);
+{procedure TLib<T>.DimensionarGrid(AObj: TObject; AGrid: TDBGrid);
 type
   TArray = Array of integer;
   procedure AjustarColuna(Swidth, TSize: integer; ASize: TArray);
@@ -95,7 +95,7 @@ begin
 
    Swidth := AGrid.ClientWidth - Twidth;
    AjustarColuna(Swidth, TSize, ASize);
-end;
+end;}
 
 procedure TLib<T>.EscreverIni(aDriver,aBanco,aHost,aDll,aUsuario,aSenha: string; aPorta:integer);
 begin

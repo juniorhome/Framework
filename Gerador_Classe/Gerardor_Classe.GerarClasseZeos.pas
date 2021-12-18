@@ -2,20 +2,22 @@ unit Gerardor_Classe.GerarClasseZeos;
 
 interface
 
-uses orm.dao.BaseDAOZeos, Gerador_Classe.Gerar_Classes.GerarClasseVO,
+uses orm.dao.BaseDAOZeos, Gerador_Classe.Gerar_Classes.GerarClasse,
   Gerar_Classe.Interfaces.iBaseGerarClasseBanco, DB, System.SysUtils,
-  Gerar_Classe.Firebird.GerarClasseBancoFirebird;
+  Gerar_Classe.Firebird.GerarClasseBancoFirebird, Gerador_Classe.Gerar_Classes.GerarClasseVO,
+  Gerador_Classe.Gerar_Classes.GerarClasseController;
 
 type
-  TGerarClasseZeos = class(TGerarClasseVO)
+  TGerarClasseZeos = class(TGerarClasse)
     private
+
     protected
       function GetCampoPK(): string; override;
-      procedure GerarFieldsProperties; override;
     public
       constructor Create(AClasseBanco: iBaseGerarClasseBanco);
       function GetTabela(): TDataSet;
       function GetCamposTabela(ATabela: string): TDataSet;
+      procedure GerarFieldsProperties; override;
   end;
 
 implementation
@@ -25,6 +27,7 @@ implementation
 constructor TGerarClasseZeos.Create(AClasseBanco: iBaseGerarClasseBanco);
 begin
    inherited Create(AClasseBanco);
+
 end;
 
 procedure TGerarClasseZeos.GerarFieldsProperties;

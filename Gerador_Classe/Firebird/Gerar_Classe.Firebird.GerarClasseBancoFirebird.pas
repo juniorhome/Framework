@@ -14,11 +14,25 @@ type
       function GetSqlTabela(): string;
       procedure GerarFields(Ads: TDataSet; AResult: TStrings);
       procedure GerarProperties(Ads: TDataSet; AResult: TStrings; ACamposPK: string);
+      constructor Create;
+      destructor Destroy;override;
+      class function New: iBaseGerarClasseBanco;
   end;
 
 implementation
 
 { TGerarClasseBancoFirebird }
+
+constructor TGerarClasseBancoFirebird.Create;
+begin
+  //Self.Create;
+end;
+
+destructor TGerarClasseBancoFirebird.Destroy;
+begin
+  //
+  inherited;
+end;
 
 procedure TGerarClasseBancoFirebird.GerarFields(Ads: TDataSet;
   AResult: TStrings);
@@ -123,6 +137,11 @@ begin
           else Result := 'Blob';
          end;
   end;
+end;
+
+class function TGerarClasseBancoFirebird.New: iBaseGerarClasseBanco;
+begin
+   Self.Create;
 end;
 
 end.

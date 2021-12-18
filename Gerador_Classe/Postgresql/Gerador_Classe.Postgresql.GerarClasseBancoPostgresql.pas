@@ -9,16 +9,30 @@ type
     private
       function GetTypeField(Tipo,SubTipo,Precisao,Escala: integer): string;
     public
-      function GetTabela(): string;
+      function GetSqlTabela(): string;
       function GetSqlCamposTabela(ATabela: string): string;
-      function GetCamposPK(ATabela: string): string;
+      function GetSqlCamposPK(ATabela: string): string;
       procedure GerarFields(ADs: TDataSet; AResultado: TStrings);
       procedure GerarProperties(ADs: TDataSet; AResultado: TStrings; ACamposPK: string);
+      constructor Create;
+      destructor Destroy;override;
+      class function New: iBaseGerarClasseBanco;
   end;
 
 implementation
 
 { TGerarClasseBancoPostgresql }
+
+constructor TGerarClasseBancoPostgresql.Create;
+begin
+  //
+end;
+
+destructor TGerarClasseBancoPostgresql.Destroy;
+begin
+  //
+  inherited;
+end;
 
 procedure TGerarClasseBancoPostgresql.GerarFields(ADs: TDataSet;
   AResultado: TStrings);
@@ -66,7 +80,7 @@ begin
    end;
 end;
 
-function TGerarClasseBancoPostgresql.GetCamposPK(ATabela: string): string;
+function TGerarClasseBancoPostgresql.GetSqlCamposPK(ATabela: string): string;
 begin
   Result := 'SELECT TC.TABLE_SCHEMA AS ESQUEMA, TC.TABLE_NAME AS TABELA, KC.COLUMN_NAME AS COLUNA ' +
             'FROM INFORMATION_SCHEMA.TABLE_CONSTRAINT TC ' +
@@ -83,7 +97,7 @@ begin
             'WHERE TABLE_NAME = ' + QuotedStr(ATabela) + '';
 end;
 
-function TGerarClasseBancoPostgresql.GetTabela: string;
+function TGerarClasseBancoPostgresql.GetSqlTabela: string;
 begin
   Result := 'SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = "PUBLIC"';
 end;
@@ -104,7 +118,7 @@ begin
             0: Result := 'Integer';
             8: Result := 'Double' ;
             else
-               Result = 'Currency';
+               Result := 'Currency';
           end;
         end;
      14,
@@ -119,6 +133,11 @@ begin
            else Result := 'blob';
          end;
    end;
+end;
+
+class function TGerarClasseBancoPostgresql.New: iBaseGerarClasseBanco;
+begin
+  Self.Create;
 end;
 
 end.

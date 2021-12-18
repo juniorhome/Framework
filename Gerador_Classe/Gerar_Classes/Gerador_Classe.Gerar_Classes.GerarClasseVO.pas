@@ -2,84 +2,74 @@ unit Gerador_Classe.Gerar_Classes.GerarClasseVO;
 
 interface
 
-uses Gerar_Classe.Interfaces.iBaseGerarClasseBanco, System.SysUtils,
-  System.Classes;
+uses System.SysUtils, System.Classes, Gerador_Classe.Gerar_Classes.GerarClasse, Gerar_Classe.Interfaces.iBaseGerarClasseBanco, orm.dao.BaseDAOZeos,
+  Datasnap.DBClient, Data.DB;
 
 type
-  TGerarClasseVO = class
+  TGerarClasseVO = class(TGerarClasse)
     private
-      function Capitalize(ATexto: string): string;
-    protected
-       Resultado: TStringList;
-       GerarClasseBanco: iBaseGerarClasseBanco;
-       FTabela,FUnit,FClasse,FPacote: string;
-
-       function GetCampoPK: string; virtual; abstract;
-       procedure GerarCabecalho;
-       procedure GerarFieldsProperties; virtual; abstract;
-       procedure GerarRodape;
+      Resultado: TStringList;
+      BaseGerarClasseBanco: iBaseGerarClasseBanco;
     public
-       constructor Create(AClasseBanco: iBaseGerarClasseBanco);
-       destructor Destroy; override;
-
-       function Gerar(ATabela, ANomeUnit: string; ANomeClass: string = ''): string;
+      constructor Create(ABaseGerarClasseBanco: iBaseGerarClasseBanco);
+      procedure GerarCabecalho; override;
+      function GetCampoPk: string; override;
+      procedure GerarFieldsProperties; override;
+      function Gerar(ATabela, APacote, AClasse: string): string;
   end;
 
 implementation
 
 { TGerarClasseVO }
 
-function TGerarClasseVO.Capitalize(ATexto: string): string;
+constructor TGerarClasseVO.Create(ABaseGerarClasseBanco: iBaseGerarClasseBanco);
 begin
-  Result := UpperCase(ATexto[1]) + LowerCase(Copy(ATexto, 2, Length(ATexto)));
+   BaseGerarClasseBanco := ABaseGerarClasseBanco;
 end;
 
-constructor TGerarClasseVO.Create(AClasseBanco: iBaseGerarClasseBanco);
-begin
-   Resultado := TStringList.Create;
-   GerarClasseBanco := AClasseBanco;
-end;
-
-destructor TGerarClasseVO.Destroy;
-begin
-  Resultado.Free;
-  inherited;
-end;
-
-function TGerarClasseVO.Gerar(ATabela, ANomeUnit, ANomeClass: string): string;
+function TGerarClasseVO.Gerar(ATabela, APacote, AClasse: string): string;
 begin
    FTabela := ATabela;
-   FUnit := Capitalize(ANomeUnit);
-   if Trim(ANomeClass) = '' then
-      FClasse := Capitalize(FTabela)
-   else
-      FClasse := Capitalize(ANomeClass);
+   FPacote := APacote;
+   FClasse := AClasse;
    GerarCabecalho;
    GerarFieldsProperties;
    GerarRodape;
    Result := Resultado.Text;
-
 end;
 
 procedure TGerarClasseVO.GerarCabecalho;
 begin
+  inherited;
   Resultado.Clear;
-  Resultado.Add('unit ' + FPacote + '.'+ FUnit + '');
+  Resultado.Add('unit '+ FPacote + '.' + FClasse + 'VO' + '');
   Resultado.Add('');
-  Resultado.Add(' interface');
-  Resultado.Add('');
-  Resultado.Add('uses');
-  Resultado.Add('orm.IBaseVO, orm.Atributos');
+  Resultado.Add('uses orm.IBaseVO, orm.Atributos');
   Resultado.Add('');
 end;
 
-procedure TGerarClasseVO.GerarRodape;
+procedure TGerarClasseVO.GerarFieldsProperties;
+var ds: TDataSet;
+    sql: string;
 begin
-   Resultado.Add(' end;');
-   Resultado.Add('');
-   Resultado.Add('implementation');
-   Resultado.Add('');
-   Resultado.Add('end.')
+  try
+    sql :=  BaseGerarClasseBanco.GetSqlCamposTabela(FTabela);
+    ds :=  TBaseDAOZeos<TGerarClasseVO>.New.ConsultaSql(sql);
+    BaseGerarClasseBanco.GerarFields(ds, Resultado);
+    BaseGerarClasseBanco.GerarProperties(ds, Resultado, GetCampoPk);
+
+  finally
+    ds.DisposeOf;
+
+  end;
+end;
+
+function TGerarClasseVO.GetCampoPk: string;
+var ds: TDataSet;
+    sql: string;
+begin
+   sql := BaseGerarClasseBanco.GetSqlCamposPK(FTabela);
+   ds := TBaseDAOZeos<TGerarClasseVO>.New.ConsultaSql(sql);
 end;
 
 end.

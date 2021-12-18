@@ -1,0 +1,65 @@
+unit Gerardor_Classe.GerarClasseZeos;
+
+interface
+
+uses orm.dao.BaseDAOZeos, Gerador_Classe.Gerar_Classes.GerarClasse,
+  Gerar_Classe.Interfaces.iBaseGerarClasseBanco, DB, System.SysUtils,
+  Gerar_Classe.Firebird.GerarClasseBancoFirebird;
+
+type
+  TGerarClasseZeos = class(TGerarClasse)
+    private
+    protected
+      function GetCampoPK(): string; override;
+    public
+      constructor Create(AClasseBanco: iBaseGerarClasseBanco);
+      function GetTabela(): TDataSet;
+      function GetCamposTabela(ATabela: string): TDataSet;
+      procedure GerarFieldsProperties; override;
+  end;
+
+implementation
+
+{ TGerarClasseZeos }
+
+constructor TGerarClasseZeos.Create(AClasseBanco: iBaseGerarClasseBanco);
+begin
+   inherited Create(AClasseBanco);
+end;
+
+procedure TGerarClasseZeos.GerarFieldsProperties;
+var Ds: TDataSet;
+begin
+  inherited;
+  Ds := TBaseDAOZeos<TGerarClasseZeos>.New.ConsultaSql(GerarClasseBanco.GetSqlCamposTabela(FTabela));
+  GerarClasseBanco.GerarFields(Ds, Resultado);
+  GerarClasseBanco.GerarProperties(Ds, Resultado, GetCampoPK);
+end;
+
+function TGerarClasseZeos.GetCampoPK: string;
+var
+   sep: string;
+   DS: TDataSet;
+begin
+   sep := '';
+   DS := TBaseDAOZeos<TGerarClasseZeos>.New.ConsultaSql(GerarClasseBanco.GetSqlCamposPK(FTabela));
+   while not DS.Eof do
+   begin
+     if Result <> '' then
+       sep := ',';
+     Result := Result + sep + Trim(DS.FieldByName('CAMPO').AsString);
+     DS.Next;
+   end;
+end;
+
+function TGerarClasseZeos.GetCamposTabela(ATabela: string): TDataSet;
+begin
+   Result := TBaseDAOZeos<TGerarClasseZeos>.New.ConsultaSql(GerarClasseBanco.GetSqlCamposTabela(ATabela));
+end;
+
+function TGerarClasseZeos.GetTabela: TDataSet;
+begin
+   Result := TBaseDAOZeos<TGerarClasseZeos>.New.ConsultaSql(GerarClasseBanco.GetSqlTabela);
+end;
+
+end.
