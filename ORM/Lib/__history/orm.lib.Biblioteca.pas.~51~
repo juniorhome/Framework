@@ -17,8 +17,6 @@ uses SysUtils, IniFiles, Datasnap.DBClient, ZDataset, Data.DB,
          function PegarNomeTabela(aObj: T): string;
          procedure GridZebrado(grid: TDBGrid; aRect: TRect; aDataCol: integer; aColumn: TColumn; aState: TGridDrawState);
          procedure OrdenarColunaGrid(aGrid: TDBGrid; aCds: TClientDataSet);
-         constructor Create();
-         destructor Destroy; override;
          //procedure DimensionarGrid(AObj: TObject; AGrid: TDBGrid);
     end;
 
@@ -101,17 +99,6 @@ begin
    AjustarColuna(Swidth, TSize, ASize);
 end;}
 
-constructor TLib<T>.Create;
-begin
-  //
-end;
-
-destructor TLib<T>.Destroy;
-begin
-  FArqIni.Free;
-  inherited;
-end;
-
 procedure TLib<T>.EscreverIni(aDriver,aBanco,aHost,aDll,aUsuario,aSenha: string; aPorta:integer);
 begin
    //if VerificaCaminho then
@@ -127,7 +114,7 @@ begin
    //end;
 
 end;
-{Colocar no evento OnDrawCoumnCell no DBGrid.}
+
 procedure TLib<T>.GridZebrado(grid: TDBGrid; aRect: TRect; aDataCol: integer;
   aColumn: TColumn; aState: TGridDrawState);
 var
@@ -157,29 +144,31 @@ begin
    end;
    Result := texto;
 end;
-{Colocar no evento OnTitleClick do DBGrid.}
+
 procedure TLib<T>.OrdenarColunaGrid(aGrid: TDBGrid; aCds: TClientDataSet);
-var sNomeIndice,sNomeColuna: string;
+var sNomeIndice: string;
     oOrdenacao: TIndexOptions;
     i: smallint;
+    Coluna: TColumn;
 begin
    for i := 0 to aGrid.Columns.Count - 1 do
    begin
      aGrid.Columns[i].Title.Font.Style := [];
-     if aCds.IndexName = aGrid.Columns[i].FieldName + '_ASC' then
+     Coluna := aGrid.Columns[i].Title.Caption;
+     if aCds.IndexName = Coluna.FieldName + '_ASC' then
      begin
-       sNomeIndice := aGrid.Columns[i].FieldName + '_DESC';
+       sNomeIndice := Coluna.FieldName + '_DESC';
        oOrdenacao := [ixDescending];
      end
      else
      begin
-       sNomeIndice := aGrid.Columns[i].FieldName + '_ASC';
+       sNomeIndice := Coluna.FieldName + '_ASC';
        oOrdenacao := [];
      end;
      if aCds.IndexDefs.IndexOf(sNomeIndice) < 0 then
-       aCds.AddIndex(sNomeIndice, aGrid.Columns[i].FieldName, oOrdenacao);
+       aCds.AddIndex(sNomeIndice, Coluna.FieldName, oOrdenacao);
      aCds.IndexDefs.Update;
-     aGrid.Columns[i].Title.Font.Style := [TFontStyle.fsBold];
+     Coluna.Title.Font.Style := [TFontStyle.fsBold];
      aCds.IndexFieldNames := sNomeIndice;
      aCds.First;
    end;

@@ -17,8 +17,6 @@ uses SysUtils, IniFiles, Datasnap.DBClient, ZDataset, Data.DB,
          function PegarNomeTabela(aObj: T): string;
          procedure GridZebrado(grid: TDBGrid; aRect: TRect; aDataCol: integer; aColumn: TColumn; aState: TGridDrawState);
          procedure OrdenarColunaGrid(aGrid: TDBGrid; aCds: TClientDataSet);
-         constructor Create();
-         destructor Destroy; override;
          //procedure DimensionarGrid(AObj: TObject; AGrid: TDBGrid);
     end;
 
@@ -100,17 +98,6 @@ begin
    Swidth := AGrid.ClientWidth - Twidth;
    AjustarColuna(Swidth, TSize, ASize);
 end;}
-
-constructor TLib<T>.Create;
-begin
-  //
-end;
-
-destructor TLib<T>.Destroy;
-begin
-  FArqIni.Free;
-  inherited;
-end;
 
 procedure TLib<T>.EscreverIni(aDriver,aBanco,aHost,aDll,aUsuario,aSenha: string; aPorta:integer);
 begin

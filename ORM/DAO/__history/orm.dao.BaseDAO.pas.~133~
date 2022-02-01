@@ -4,7 +4,7 @@ interface
 
 uses Db,Rtti,orm.conexao.ModelConexaoFactory,orm.IBaseVO,orm.Atributos,
      orm.Lib.Biblioteca, orm.conexao.interfaces.Interfaces, ZDataset,
-  uRESTDWPoolerDB, orm.conexao.model_rdw.ModelRDWQuery;
+  uRESTDWPoolerDB, orm.conexao.model_rdw.ModelRDWQuery, System.SysUtils;
   type
     TBaseDAO<T : class, constructor> = class(TInterfacedObject, IDAO<T>)
       private
@@ -14,9 +14,12 @@ uses Db,Rtti,orm.conexao.ModelConexaoFactory,orm.IBaseVO,orm.Atributos,
         constructor Create(aConexao: TRESTDWDatabase);
         class function New(aConexao: TRESTDWDatabase): IDAO<T>;
         function Inserir(obj: T): integer;
-        function Atualizar(obj: T): boolean;
+        function Atualizar(obj: T): boolean;overload;
+        function Atualizar(obj, objOld: T): boolean;overload;
         function Excluir(obj: T): boolean;
         function Listagem(obj: T; const TipoJuncao:TTipoJoin = ttLeftJoin): TDataSet;
+        function ConsultaSql(sql: string): TDataSet;
+        {Fazer mais um método de atualização e mais listagem com vários retornos DataSet, IBaseVO, Listagem e Json}
     end;
 
 implementation
@@ -112,6 +115,233 @@ begin
   end;
 end;
 
+function TBaseDAO<T>.Atualizar(obj, objOld: T): boolean;
+var contexto: TRttiContext;
+    tipo, tipoOld: TRttiType;
+    propriedade, propriedadeOld: TRttiProperty;
+    atributos, atributoOld: TCustomAttribute;
+    strUpdate, strTabela, strWhere, strCampos, nomeTipo: string;
+    Lib: TLib<T>;
+    valorNovo,valorAntigo: variant;
+    achouValorAntigo: boolean;
+begin
+   strUpdate := 'UPDATE [TABELA] SET [CAMPOS] WHERE [CONDICAO]';
+   strTabela := '';
+   strWhere := '';
+   strCampos := '';
+   contexto := TRttiContext.Create();
+   try
+     tipo := contexto.GetType(Obj.ClassType);
+     tipoOld := contexto.GetType(objOld.ClassType);
+     for atributos in tipo.GetAttributes do
+     begin
+       if atributos is TTabela then
+         strTabela := strTabela + TTabela(atributos).Nome;
+     end;
+     for propriedade in tipo.GetProperties do
+     begin
+       for atributos in propriedade.GetAttributes do
+       begin
+         if atributos is TCampoTexto then
+         begin
+           achouValorAntigo := False;
+           valorNovo := propriedade.GetValue(TObject(Obj)).AsString;
+         end;
+         if atributos is TCampoInteiro then
+         begin
+           achouValorAntigo := False;
+           valorNovo := propriedade.GetValue(TObject(obj)).AsInteger;
+         end;
+         if atributos is TCampoData then
+         begin
+           achouValorAntigo := False;
+           valorNovo := propriedade.GetValue(TObject(obj)).AsString;
+         end;
+         if atributos is TCampoDataHora then
+         begin
+           achouValorAntigo := False;
+           valorNovo := propriedade.GetValue(TObject(obj)).AsString;
+         end;
+         if atributos is TCampoMonetario then
+         begin
+           achouValorAntigo := False;
+           valorNovo := propriedade.GetValue(TObject(obj)).AsCurrency;
+         end;
+         if atributos is TCampoExtended then
+         begin
+           achouValorAntigo := False;
+           valorNovo := propriedade.GetValue(TObject(obj)).AsExtended;
+         end;
+         if atributos is TCampoBooleano then
+         begin
+           achouValorAntigo := False;
+           valorNovo := propriedade.GetValue(TObject(obj)).AsBoolean;
+         end;
+       end;
+       for propriedadeOld in tipoOld.GetProperties do
+       begin
+         for atributoOld in propriedadeOld.GetAttributes do
+         begin
+           if strCampos <> EmptyStr then
+              strCampos := strCampos + ',';
+           if atributoOld is TCampoTexto then
+           begin
+             if TCampoTexto(atributoOld).Nome = TCampoTexto(atributos).Nome then
+             begin
+               achouValorAntigo := True;
+               valorAntigo := propriedadeOld.GetValue(TObject(objOld)).AsString;
+
+               if valorNovo <> valorAntigo then
+               begin
+                 if propriedade.PropertyType.TypeKind in [tkString, tkUString, tkUnicodeString] then
+                    strCampos := strCampos + TCampoTexto(atributos).Nome + '=' + QuotedStr(propriedade.GetValue(TObject(obj)).AsString)
+                 else  strCampos := strCampos + TCampoTexto(atributos).Nome + '=' + 'null';
+               end;
+             end;
+           end;
+           if atributoOld is TCampoInteiro then
+           begin
+             if TCampoInteiro(atributoOld).Nome = TCampoInteiro(atributos).Nome then
+             begin
+               achouValorAntigo := True;
+               valorAntigo := propriedadeOld.GetValue(TObject(objOld)).AsInteger;
+
+               if valorNovo <> valorAntigo then
+               begin
+                 if propriedade.PropertyType.TypeKind in [tkInteger, tkInt64] then
+                 begin
+                   if propriedade.GetValue(TObject(obj)).AsInteger <> 0 then
+                      strCampos := strCampos + TCampoInteiro(atributos).Nome + '=' + propriedade.GetValue(TObject(obj)).AsString
+                   else strCampos := strCampos + TCampoInteiro(atributos).Nome + '=' + 'null';
+                 end
+               end;
+             end;
+           end;
+           if atributoOld is TCampoData then
+           begin
+             if TCampoData(atributoOld).Nome = TCampoData(atributos).Nome then
+             begin
+               achouValorAntigo := True;
+               valorAntigo := propriedadeOld.GetValue(TObject(objOld)).AsExtended;
+
+               if valorNovo <> valorAntigo then
+               begin
+                 if propriedade.PropertyType.TypeKind = tkFloat then
+                 begin
+                   if propriedade.GetValue(TObject(obj)).AsExtended <> 0 then
+                   begin
+                     nomeTipo := lowercase(propriedade.PropertyType.Name);
+                     if nomeTipo = 'tdate' then
+                        strCampos := strCampos + TCampoData(atributos).Nome + '=' + FormatDateTime(TCampoData(atributos).Mascara, propriedade.GetValue(TObject(obj)).AsExtended);
+                   end;
+                 end;
+               end;
+             end;
+           end;
+           if atributoOld is TCampoDataHora then
+           begin
+             if TCampoDataHora(atributoOld).Nome = TCampoDataHora(atributos).Nome then
+             begin
+               achouValorAntigo := True;
+               valorAntigo := propriedadeOld.GetValue(TObject(objOld)).AsExtended;
+
+               if valorNovo <> valorAntigo then
+               begin
+                 if propriedade.PropertyType.TypeKind = tkFloat then
+                 begin
+                   if propriedade.GetValue(TObject(obj)).AsExtended <> 0 then
+                   begin
+                     nomeTipo := LowerCase(propriedade.PropertyType.Name);
+                     if nomeTipo = 'tdatetime' then
+                        strCampos := strCampos + TCampoDataHora(atributos).Nome + '=' + FormatDateTime(TCampoDataHora(atributos).Mascara, propriedade.GetValue(TObject(obj)).AsExtended);
+                   end;
+
+                 end;
+               end;
+             end;
+           end;
+           if atributoOld is TCampoExtended then
+           begin
+             if TCampoExtended(atributoOld).Nome = TCampoExtended(atributos).Nome then
+             begin
+               achouValorAntigo := True;
+               valorAntigo := propriedade.GetValue(TObject(objOld)).AsExtended;
+
+               if valorNovo <> valorAntigo then
+               begin
+                 if propriedade.PropertyType.TypeKind = tkFloat then
+                 begin
+                   if propriedade.GetValue(TObject(obj)).AsExtended <> 0 then
+                   begin
+                     nomeTipo := LowerCase(propriedade.PropertyType.Name);
+                     if nomeTipo = 'extended' then
+                        strCampos := strCampos + TCampoExtended(atributos).Nome + '=' + FormatFloat(TCampoExtended(atributos).Mascara, propriedade.GetValue(TObject(obj)).AsExtended);
+                   end;
+                 end;
+               end;
+             end;
+           end;
+           if atributoOld is TCampoMonetario then
+           begin
+             if TCampoMonetario(atributoOld).Nome = TCampoMonetario(atributos).Nome then
+             begin
+               achouValorAntigo := True;
+               valorAntigo := propriedade.GetValue(TObject(objOld)).AsCurrency;
+
+               if valorNovo <> valorAntigo then
+               begin
+                 if propriedade.PropertyType.TypeKind = tkFloat then
+                 begin
+                   if propriedade.GetValue(TObject(obj)).AsCurrency <> 0 then
+                   begin
+                     strCampos := strCampos + TCampoMonetario(atributos).Nome + '=' + FormatCurr(TCampoMonetario(atributos).Mascara, propriedade.GetValue(TObject(obj)).AsCurrency);
+                   end;
+                 end;
+               end;
+             end;
+           end;
+           if atributoOld is TCampoBooleano then
+           begin
+             if TCampoBooleano(atributoOld).Nome = TCampoBooleano(atributos).Nome then
+             begin
+               achouValorAntigo := True;
+               valorAntigo := propriedade.GetValue(TObject(objOld)).AsBoolean;
+
+               if valorNovo <> valorAntigo then
+               begin
+                 if not propriedade.GetValue(TObject(obj)).AsBoolean then
+                    strCampos := strCampos + TCampoBooleano(atributos).Nome + '=' + propriedade.GetValue(TObject(obj)).AsString;
+               end;
+             end;
+           end;
+         end;
+       end;
+       if achouValorAntigo then
+          break;
+     end;
+     Lib := TLib<T>.Create;
+     try
+       strUpdate := Lib.LocalizarSubstituir(strUpdate, '[TABELA]', strTabela);
+       strUpdate := Lib.LocalizarSubstituir(strUpdate, '[CAMPOS]', strCampos);
+       strUpdate := Lib.LocalizarSubstituir(strUpdate, '[CONDICAO]', strWhere);
+     finally
+       Lib.Free;
+     end;
+
+     FQuery := TModelRDWQuery<T>.New(FConexao).ExecSql(strUpdate);
+     if (FQuery as TRESTDWClientSQL).RecordCount > 0 then
+         Result := True
+     else Result := False;
+   finally
+     contexto.Free;
+   end;
+end;
+
+function TBaseDAO<T>.ConsultaSql(sql: string): TDataSet;
+begin
+  raise Exception.Create('Falta implementar esse método');
+end;
+
 constructor TBaseDAO<T>.Create(aConexao: TRESTDWDatabase);
 begin
    FConexao := aConexao;
@@ -163,7 +393,7 @@ begin
        else Result := False;}
 
        //Rest Dataware n camadas.
-       TModelRDWQuery<T>.New(FConexao).ExecSql(strDelete);
+       FQuery := TModelRDWQuery<T>.New(FConexao).ExecSql(strDelete);
        if (FQuery as TRestDWClientSQL).RecordCount > 0 then
           Result := True
        else Result := False;
@@ -280,7 +510,7 @@ begin
         else Result := False;}
 
         //Rest Dataware n camadas.
-        TModelRDWQuery<T>.New(FConexao).ExecSql(strInsert);
+        FQuery := TModelRDWQuery<T>.New(FConexao).ExecSql(strInsert);
         if (FQuery as TRestDWClientSQL).RecordCount > 0 then
            Result := (FQuery as TRestDWClientSQL).FieldByName('ID').AsInteger
         else Result := -1;
@@ -315,7 +545,6 @@ begin
           tabela := TTabela(atributo).Nome;
           alias :=  TTabela(atributo).Alias;
        end;
-
        if not(strJuncao = '') then
           strJuncao := strJuncao + ' ';
 
@@ -343,6 +572,9 @@ begin
                          end;
           end;
        end;
+     end;
+
+
 
        //Pegar os campos.
        for propriedade in tipo.GetProperties do
@@ -435,7 +667,6 @@ begin
            if atributo is TCampoFiltro then
               strWhere := strWhere + alias + '.' + TCampoFiltro(atributo).Nome;
          end;
-     end;
      //Montar a query.
      Lib := TLib<T>.Create;
      try
@@ -454,7 +685,7 @@ begin
        Result := Lib.CopiarParaDataSet((FQuery as TZQuery));}
 
      //Rest Dataware n camadas.
-     TModelRDWQuery<T>.New(FConexao).ExecSql(strSelect);
+     FQuery := TModelRDWQuery<T>.New(FConexao).ExecSql(strSelect);
      if (FQuery as TRestDWClientSQL).RecordCount > 0 then
          Result := (FQuery as TRestDWClientSQL);
    finally

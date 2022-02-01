@@ -3,7 +3,7 @@ unit orm.lib.Biblioteca;
 interface
 
 uses SysUtils, IniFiles, Datasnap.DBClient, ZDataset, Data.DB,
-  orm.IBaseVO, System.Rtti, orm.Atributos, Vcl.DBGrids;
+  orm.IBaseVO, System.Rtti, orm.Atributos, Vcl.DBGrids, Winapi.Windows, Vcl.Grids, Vcl.Graphics;
 
   type
     TLib<T : class, constructor> = class(TObject)
@@ -15,7 +15,11 @@ uses SysUtils, IniFiles, Datasnap.DBClient, ZDataset, Data.DB,
          procedure EscreverIni(aDriver,aBanco,aHost,aDll,aUsuario,aSenha: string; aPorta:integer);
          function CopiarParaDataSet(aQuery: TZQuery): TClientDataSet;
          function PegarNomeTabela(aObj: T): string;
-         procedure DimensionarGrid(AObj: TObject; AGrid: TDBGrid);
+         procedure GridZebrado(grid: TDBGrid; aRect: TRect; aDataCol: integer; aColumn: TColumn; aState: TGridDrawState);
+         procedure OrdenarColunaGrid(aGrid: TDBGrid; aCds: TClientDataSet);
+         constructor Create();
+         destructor Destroy; override;
+         //procedure DimensionarGrid(AObj: TObject; AGrid: TDBGrid);
     end;
 
 implementation
@@ -46,7 +50,7 @@ begin
   end;
 end;
 
-procedure TLib<T>.DimensionarGrid(AObj: TObject; AGrid: TDBGrid);
+{procedure TLib<T>.DimensionarGrid(AObj: TObject; AGrid: TDBGrid);
 type
   TArray = Array of integer;
   procedure AjustarColuna(Swidth, TSize: integer; ASize: TArray);
@@ -95,6 +99,17 @@ begin
 
    Swidth := AGrid.ClientWidth - Twidth;
    AjustarColuna(Swidth, TSize, ASize);
+end;}
+
+constructor TLib<T>.Create;
+begin
+  //
+end;
+
+destructor TLib<T>.Destroy;
+begin
+  FArqIni.Free;
+  inherited;
 end;
 
 procedure TLib<T>.EscreverIni(aDriver,aBanco,aHost,aDll,aUsuario,aSenha: string; aPorta:integer);
@@ -112,6 +127,20 @@ begin
    //end;
 
 end;
+{Colocar no evento OnDrawCoumnCell no DBGrid.}
+procedure TLib<T>.GridZebrado(grid: TDBGrid; aRect: TRect; aDataCol: integer;
+  aColumn: TColumn; aState: TGridDrawState);
+var
+  nLinha: integer;
+begin
+  nLinha := grid.DataSource.DataSet.RecNo;
+
+  if odd(nLinha) then
+     grid.Canvas.Brush.Color := clMenu
+  else grid.Canvas.Brush.Color := clMoneyGreen;
+
+  grid.DefaultDrawColumnCell(aRect, aDataCol, aColumn, aState);
+end;
 
 function TLib<T>.LocalizarSubstituir(texto, busca, troca: string): string;
 var
@@ -127,6 +156,33 @@ begin
      end;
    end;
    Result := texto;
+end;
+{Colocar no evento OnTitleClick do DBGrid.}
+procedure TLib<T>.OrdenarColunaGrid(aGrid: TDBGrid; aCds: TClientDataSet);
+var sNomeIndice,sNomeColuna: string;
+    oOrdenacao: TIndexOptions;
+    i: smallint;
+begin
+   for i := 0 to aGrid.Columns.Count - 1 do
+   begin
+     aGrid.Columns[i].Title.Font.Style := [];
+     if aCds.IndexName = aGrid.Columns[i].FieldName + '_ASC' then
+     begin
+       sNomeIndice := aGrid.Columns[i].FieldName + '_DESC';
+       oOrdenacao := [ixDescending];
+     end
+     else
+     begin
+       sNomeIndice := aGrid.Columns[i].FieldName + '_ASC';
+       oOrdenacao := [];
+     end;
+     if aCds.IndexDefs.IndexOf(sNomeIndice) < 0 then
+       aCds.AddIndex(sNomeIndice, aGrid.Columns[i].FieldName, oOrdenacao);
+     aCds.IndexDefs.Update;
+     aGrid.Columns[i].Title.Font.Style := [TFontStyle.fsBold];
+     aCds.IndexFieldNames := sNomeIndice;
+     aCds.First;
+   end;
 end;
 
 function TLib<T>.PegarNomeTabela(aObj: T): string;
