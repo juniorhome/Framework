@@ -3,13 +3,15 @@ unit orm.dao.BaseDAOZeos;
 interface
 
 uses Db,Rtti,orm.conexao.ModelConexaoFactory,orm.IBaseVO,orm.Atributos,
-     orm.Lib.Biblioteca, orm.conexao.interfaces.Interfaces, ZDataset;
+     orm.Lib.Biblioteca, orm.conexao.interfaces.Interfaces, ZDataset,
+  System.SysUtils;
   type
     TBaseDAOZeos<T : class, constructor> = class(TInterfacedObject, IDAO<T>)
       private
         FQuery: IModelQuery;
       public
         constructor Create();
+        destructor Destroy;override;
         class function New(): IDAO<T>;
         function Inserir(obj: T): integer;
         function Atualizar(obj: T): boolean;
@@ -96,7 +98,7 @@ begin
        end;
 
        //Executar query. Opção 2 é para usar o zeos.
-       FQuery := TModelConexaoFactory.New.Query(2).ExecSql(strUpdate);
+       FQuery.ExecSql(strUpdate);
        if (FQuery as TZQuery).RecordCount > 0 then
           Result := True
        else Result := False;
@@ -109,13 +111,18 @@ function TBaseDAOZeos<T>.ConsultaSql(sql: string): TDataSet;
 var
    Lib: TLib<T>;
 begin
-   FQuery := TModelConexaoFactory.New.Query(2).Open(sql);
+   FQuery.Open(sql);
    Result := Lib.CopiarParaDataSet((FQuery as TZQuery));
 end;
 
 constructor TBaseDAOZeos<T>.Create();
 begin
-   //
+   FQuery := TModelConexaoFactory.New.Query(2);
+end;
+
+destructor TBaseDAOZeos<T>.Destroy;
+begin
+  inherited;
 end;
 
 function TBaseDAOZeos<T>.Excluir(obj: T): boolean;
@@ -158,7 +165,7 @@ begin
        end;
 
        //Executar a query. Clinte e Servidor
-       FQuery := TModelConexaoFactory.New.Query(2).ExecSql(strDelete);
+       FQuery.ExecSql(strDelete);
        if (FQuery as TZQuery).RecordCount > 0 then
           Result := True
        else Result := False;
@@ -269,7 +276,7 @@ begin
         end;
 
         //Executar a query.
-        FQuery := TModelConexaoFactory.New.Query(2).ExecSql(strInsert);
+        FQuery.ExecSql(strInsert);
         if (FQuery as TZQuery).RecordCount > 0 then
             Result := (FQuery as TZQuery).FieldByName('ID').AsInteger
         else Result := 0;
@@ -439,7 +446,7 @@ begin
      end;
 
      //Executar a query.
-     FQuery := TModelConexaoFactory.New.Query(2).ExecSql(strSelect);
+     FQuery.ExecSql(strSelect);
      if (FQuery as TZQuery).RecordCount > 0 then
        Result := Lib.CopiarParaDataSet((FQuery as TZQuery));
 

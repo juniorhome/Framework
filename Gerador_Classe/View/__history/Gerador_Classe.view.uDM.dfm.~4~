@@ -1,0 +1,16 @@
+object DM: TDM
+  OldCreateOrder = False
+  OnCreate = DataModuleCreate
+  Height = 324
+  Width = 510
+  object ImageList1: TImageList
+    Source = <
+      item
+        MultiResBitmap = <>
+        Name = 'Item 0'
+      end>
+    Destination = <>
+    Left = 360
+    Top = 48
+  end
+end

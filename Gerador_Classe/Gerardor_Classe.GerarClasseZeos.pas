@@ -13,6 +13,7 @@ type
 
     protected
       function GetCampoPK(): string; override;
+      procedure GerarCabecalho;override;
     public
       constructor Create(AClasseBanco: iBaseGerarClasseBanco);
       function GetTabela(): TDataSet;
@@ -28,6 +29,12 @@ constructor TGerarClasseZeos.Create(AClasseBanco: iBaseGerarClasseBanco);
 begin
    inherited Create(AClasseBanco);
 
+end;
+
+procedure TGerarClasseZeos.GerarCabecalho;
+begin
+  inherited;
+  raise Exception.Create('Não é implementado nessa classe.');
 end;
 
 procedure TGerarClasseZeos.GerarFieldsProperties;

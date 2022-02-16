@@ -4,7 +4,8 @@ interface
 
 uses Db,Rtti,orm.conexao.ModelConexaoFactory,orm.IBaseVO,orm.Atributos,
      orm.Lib.Biblioteca, orm.conexao.interfaces.Interfaces, ZDataset,
-  uRESTDWPoolerDB, orm.conexao.model_rdw.ModelRDWQuery, System.SysUtils;
+  uRESTDWPoolerDB, orm.conexao.model_rdw.ModelRDWQuery, System.SysUtils, System.JSON,
+  Generics.Collections;
   type
     TBaseDAO<T : class, constructor> = class(TInterfacedObject, IDAO<T>)
       private
@@ -17,7 +18,8 @@ uses Db,Rtti,orm.conexao.ModelConexaoFactory,orm.IBaseVO,orm.Atributos,
         function Atualizar(obj: T): boolean;overload;
         function Atualizar(obj, objOld: T): boolean;overload;
         function Excluir(obj: T): boolean;
-        function Listagem(obj: T; const TipoJuncao:TTipoJoin = ttLeftJoin): TDataSet;
+        function Listagem(obj: T; const TipoJuncao:TTipoJoin = ttLeftJoin): TDataSet;overload;
+        function Listagem(obj: T; const TipoJuncao: TTipoJoin = ttLeftJoin; EhFiltro: boolean = False; ConsultaCompleta: boolean = False): TJSONArray;overload;
         function ConsultaSql(sql: string): TDataSet;
         {Fazer mais um método de atualização e mais listagem com vários retornos DataSet, IBaseVO, Listagem e Json}
     end;
@@ -516,6 +518,65 @@ begin
         if (FQuery as TRestDWClientSQL).RecordCount > 0 then
            Result := (FQuery as TRestDWClientSQL).FieldByName('ID').AsInteger
         else Result := -1;
+   finally
+     contexto.Free;
+   end;
+end;
+
+function TBaseDAO<T>.Listagem(obj: T; const TipoJuncao: TTipoJoin; EhFiltro,
+  ConsultaCompleta: boolean): TJSONArray;
+var
+   contexto: TRttiContext;
+   tipo: TRttiType;
+   propriedade: TRttiProperty;
+   atributo: TCustomAttribute;
+   strSelect,strTabela,strCampos,strwhere, strJuncao: string;
+begin
+   contexto := TRttiContext.Create;
+   try
+     tipo := contexto.GetType(TObject(obj).ClassInfo);
+     for atributo in tipo.GetAttributes do
+     begin
+       if atributo is TTabela then
+          strTabela := strTabela + TTabela(atributo).Nome + '' + TTabela(atributo).Alias;
+       if not strJuncao.IsEmpty then
+          strJuncao := strJuncao + '#10#13';
+
+       if atributo is TTabelaEstrangeira then
+       begin
+         case TipoJuncao of
+           ttInnerJoin: strJuncao := strJuncao + ' INNER JOIN ' + TTabelaEstrangeira(atributo).Nome + '' + TTabelaEstrangeira(atributo).Alias +
+                                                 ' ON ' + TTabelaEstrangeira(atributo).Alias + '.' + TTabelaEstrangeira(atributo).IdEstrangeiro + '=' + TTabelaEstrangeira(atributo).Id;
+           ttLeftJoin: strJuncao := strJuncao + ' LEFT JOIN ' + TTabelaEstrangeira(atributo).Nome + '' + TTabelaEstrangeira(atributo).Alias +
+                                                  ' ON ' + TTabelaEstrangeira(atributo).Alias + '.' + TTabelaEstrangeira(atributo).IdEstrangeiro + '=' + TTabelaEstrangeira(atributo).Id;
+           ttRigthJoin: strJuncao := strJuncao + ' RIGTH JOIN ' + TTabelaEstrangeira(atributo).Nome + '' + TTabelaEstrangeira(atributo).Alias +
+                                                  ' ON ' + TTabelaEstrangeira(atributo).Alias + '.' + TTabelaEstrangeira(atributo).IdEstrangeiro + '=' + TTabelaEstrangeira(atributo).Id ;
+         end;
+       end;
+     end;
+
+     for propriedade in tipo.GetProperties do
+       for atributo in propriedade.GetAttributes do
+       begin
+         if not strCampos.IsEmpty then
+            strCampos := strCampos + ',';
+         if atributo is TCampoTexto then
+            strCampos := strCampos + TCampoTexto(atributo).Nome;
+         if atributo is TCampoInteiro then
+            strCampos := strCampos + TCampoInteiro(atributo).Nome;
+         if atributo is TCampoData then
+            strCampos := strCampos + TCampoData(atributo).Nome;
+         if atributo is TCampoDataHora then
+            strCampos := strCampos + TCampoDataHora(atributo).Nome;
+         if atributo is TCampoExtended then
+            strCampos := strCampos + TCampoExtended(atributo).Nome;
+         if atributo is TCampoMonetario then
+            strCampos := strCampos + TCampoMonetario(atributo).Nome;
+         if atributo is TCampoBooleano then
+            strCampos := strCampos + TCampoBooleano(atributo).Nome;
+         if atributo is TCampoEstrangeiro then
+            strCampos := strCampos + TCampoEstrangeiro(atributo).Nome;
+       end;
    finally
      contexto.Free;
    end;

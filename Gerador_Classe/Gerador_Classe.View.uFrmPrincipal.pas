@@ -9,7 +9,7 @@ uses
   FMX.StdCtrls, FMX.ScrollBox, FMX.Memo, FMX.Edit, DB,
   Gerardor_Classe.GerarClasseZeos, Gerar_Classe.Firebird.GerarClasseBancoFirebird,
   Gerador_Classe.Gerar_Classes.GerarClasseVO, Gerador_Classe.Gerar_Classes.GerarClasseController,
-  Gerador_Classe.Postgresql.GerarClasseBancoPostgresql;
+  Gerador_Classe.Postgresql.GerarClasseBancoPostgresql, FMX.Memo.Types;
 
 type
   TfrmPrincipal = class(TForm)
@@ -48,6 +48,8 @@ type
     procedure FormCreate(Sender: TObject);
     procedure btnGerarClick(Sender: TObject);
     procedure btnSairClick(Sender: TObject);
+    procedure btnVoltarClick(Sender: TObject);
+    procedure btnSalvarClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -63,7 +65,7 @@ var
 implementation
 
 uses
-  System.IniFiles;
+  System.IniFiles, Gerador_Classe.view.uDM;
 
 {$R *.fmx}
 
@@ -82,7 +84,8 @@ begin
        GerarVO := TGerarClasseVO.Create(GeradorFirebird);
        try
          classeVO := cmbTabelas.Items.Text + 'VO';
-         GerarVO.Gerar(cmbTabelas.Items.Text, edtPacote.Text, classeVO);
+         salvarVO.FileName := edtPacote.Text + '.' + classeVO;
+         mmClasseVO.Text := GerarVO.Gerar(cmbTabelas.Items.Text, edtPacote.Text, classeVO);
        finally
          GeradorFirebird.Free;
          GerarVO.Free;
@@ -91,9 +94,10 @@ begin
      if chkController.IsChecked then
      begin
        GeradorFirebird := TGerarClasseBancoFirebird.Create;
-       GerarController := TGerarClasseController.Create(GeradorFirebird);
+       GerarController := TGerarClasseController.Create(classeVO, edtPacote.Text);
        try
-         GerarController.Gerar(cmbTabelas.Items.Text, cmbTabelas.Items.Text + 'Controller', edtPacoteController.Text);
+         salvarController.FileName :=  edtPacoteController.Text + '.' + cmbTabelas.Items.Text + 'Controller';
+         mmController.Text := GerarController.Gerar(cmbTabelas.Items.Text, cmbTabelas.Items.Text + 'Controller', edtPacoteController.Text);
        finally
           GeradorFirebird.Free;
           GerarController.Free;
@@ -107,7 +111,9 @@ begin
         GeradorPostgresql := TGerarClasseBancoPostgresql.Create;
         GerarVO := TGerarClasseVO.Create(GeradorPostgresql);
         try
-          GerarVO.Gerar(cmbTabelas.Items.Text, edtPacote.Text, cmbTabelas.Items.Text + 'VO');
+          classeVO :=  cmbTabelas.Items.Text + 'VO';
+          salvarVO.FileName := edtPacote.Text + '.' + classeVO;
+          mmClasseVO.Text := GerarVO.Gerar(cmbTabelas.Items.Text, edtPacote.Text, classeVO);
         finally
           GeradorPostgresql.Free;
           GerarVO.Free;
@@ -117,7 +123,13 @@ begin
       begin
         GeradorPostgresql := TGerarClasseBancoPostgresql.Create;
         GerarController := TGerarClasseController.Create(classeVO, edtPacote.Text);
-        GerarController.Gerar(cmbTabelas.Items.Text, cmbTabelas.Items.Text, edtPacoteController.Text);
+        try
+          salvarController.FileName := edtPacoteController.Text + '.' + cmbTabelas.Items.Text + 'Controller';
+          mmController.Text := GerarController.Gerar(cmbTabelas.Items.Text, cmbTabelas.Items.Text + 'Controller', edtPacoteController.Text);
+        finally
+           GeradorPostgresql.Free;
+           GerarController.Free;
+        end;
       end;
    end;
 
@@ -129,21 +141,62 @@ begin
   Application.Terminate;
 end;
 
+procedure TfrmPrincipal.btnSalvarClick(Sender: TObject);
+begin
+  if chkClasseVO.IsChecked then
+  begin
+    salvarVO.DefaultExt := 'pas';
+    salvarVO.Filter := 'PAS|*.pas';
+    if salvarVO.Execute then
+     mmClasseVO.Lines.SaveToFile(salvarVO.FileName);
+  end;
+  if chkController.IsChecked then
+  begin
+    salvarController.DefaultExt := 'pas';
+    salvarController.Filter := 'PAS|*.pas';
+
+    if salvarController.Execute then
+       mmController.Lines.SaveToFile(salvarController.FileName);
+  end;
+end;
+
+procedure TfrmPrincipal.btnVoltarClick(Sender: TObject);
+begin
+  TabControl1.ActiveTab := tbConfiguracao;
+end;
+
 procedure TfrmPrincipal.CarregarCamposTabela;
 var ds: TDataSet;
     Gerador: TGerarClasseZeos;
     GeradorFirebird: TGerarClasseBancoFirebird;
+    GeradorPostgresql: TGerarClasseBancoPostgresql;
 begin
 //Carrega no Memo os campos da tabela selecionada.
    if cmbTabelas.ItemIndex = 0 then
+   begin
+      GeradorFirebird := TGerarClasseBancoFirebird.Create;
       Gerador := TGerarClasseZeos.Create(GeradorFirebird);
 
-   ds := Gerador.GetCamposTabela(cmbTabelas.Items.Text);
-   ds.First;
-   while not ds.Eof do
+      ds := Gerador.GetCamposTabela(cmbTabelas.Items.Text);
+      ds.First;
+      while not ds.Eof do
+      begin
+        mmCampos.Lines.Add(ds.FieldByName('NOME').AsString + '    ' + ds.FieldByName('TIPO').AsString);
+        ds.Next;
+      end;
+   end;
+   if cmbTabelas.ItemIndex = 1 then
    begin
-     mmCampos.Lines.Add(ds.FieldByName('NOME').AsString + '    ' + ds.FieldByName('TIPO').AsString);
-     ds.Next;
+     GeradorPostgresql := TGerarClasseBancoPostgresql.Create;
+     Gerador := TGerarClasseZeos.Create(GeradorPostgresql);
+
+     ds := Gerador.GetCamposTabela(cmbTabelas.Items.Text);
+      ds.First;
+      while not ds.Eof do
+      begin
+        mmCampos.Lines.Add(ds.FieldByName('NOME').AsString + '    ' + ds.FieldByName('TIPO').AsString);
+        ds.Next;
+      end;
    end;
 end;
 
@@ -153,25 +206,30 @@ var ds: TDataSet;
     GeradorFirebird: TGerarClasseBancoFirebird;
 begin
   //Carrega com as tabelas do banco de dados.
-  if cmbBaseDados.ItemIndex = 0 then //Banco Firebird falta implementar para o Postgresql.
-     Gerador := TGerarClasseZeos.Create(GeradorFirebird);
-
-  ds := Gerador.GetTabela;
-  ds.First;
-  while not ds.Eof do
+  if cmbBaseDados.ItemIndex = 0 then //Banco Firebird falta.
   begin
-    cmbTabelas.Items.Add(ds.FieldByName('TABELAS').AsString);
-    ds.Next;
+     GeradorFirebird := TGerarClasseBancoFirebird.Create;
+     Gerador := TGerarClasseZeos.Create(GeradorFirebird);
+     ds := Gerador.GetTabela;
+     ds.First;
+     while not ds.Eof do
+     begin
+      cmbTabelas.Items.Add(ds.FieldByName('TABELAS').AsString);
+      ds.Next;
+     end;
   end;
 end;
 
 procedure TfrmPrincipal.CarregarIni;
 var ini: TIniFile;
 begin
-   ini := TIniFile.Create(ExtractFileDir(GetCurrentDir));
+   ini := TIniFile.Create(ExtractFileDir(GetCurrentDir) + 'config.ini');
    try
-      cmbBaseDados.Items.Text := ini.ReadString('Servidor', 'Driver', 'Erro ao carregar');
-      edtCaminhoBanco.Text := ini.ReadString('Servidor', 'Banco', 'Erro ao carregar.');
+      if FileExists(ExtractFileDir(GetCurrentDir) + 'config.ini') then
+      begin
+        cmbBaseDados.Items.Text := ini.ReadString('Configuração', 'Driver', 'Erro ao carregar');
+        edtCaminhoBanco.Text := ini.ReadString('Configuração', 'Banco', 'Erro ao carregar.');
+      end;
    finally
      ini.Free;
    end;

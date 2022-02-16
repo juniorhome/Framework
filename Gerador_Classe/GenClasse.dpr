@@ -27,7 +27,7 @@ uses
 
 begin
   Application.Initialize;
-  Application.CreateForm(TDM, DM);
   Application.CreateForm(TfrmPrincipal, frmPrincipal);
+  Application.CreateForm(TDM, DM);
   Application.Run;
 end.

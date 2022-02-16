@@ -1,0 +1,57 @@
+unit orm.conexao.model_zeos.ModelZeosConexao;
+
+interface
+
+uses System.IniFiles, orm.conexao.interfaces.Interfaces, ZConnection,
+  System.SysUtils;
+
+ type
+   TModelZeosConexao = class(TInterfacedObject, IModelConexao)
+     private
+       FConexao: TZConnection;
+       FArqIni: TIniFile;
+     public
+       constructor Create();
+       destructor Destroy;override;
+       class function New(): IModelConexao;
+       function Connection: TObject;
+   end;
+
+implementation
+
+{ TModelZeosConexao }
+
+function TModelZeosConexao.Connection: TObject;
+begin
+   Result := FConexao;
+end;
+
+constructor TModelZeosConexao.Create();
+begin
+  FArqIni := TIniFile.Create(ExtractFileDir(GetCurrentDir)+'\Config.ini');
+  FConexao := TZConnection.Create(nil);
+  //Configurações básicas para funcionar conexão com banco de dados usando arquivo INI.
+  FConexao.Protocol := FArqIni.ReadString('Configuraçao', 'Driver', 'Erro ao ler o valor');
+  FConexao.DataBase := FArqIni.ReadString('Configuraçao', 'Banco', 'Erro ao ler o valor');
+  FConexao.HostName := FArqIni.ReadString('Configuraçao', 'Host', 'Erro ao ler o valor');
+  FConexao.LibraryLocation := FArqIni.ReadString('Configuraçao', 'DLL', 'Erro ao ler o valor');
+  FConexao.User := FArqIni.ReadString('Configuraçao', 'Usuario', 'Erro ao ler o valor');
+  FConexao.Password := FArqIni.ReadString('Configuraçao', 'Senha', 'Erro ao ler o valor');
+  FConexao.Port := StrToInt(FArqIni.ReadString('Configuraçao', 'Porta', 'Erro ao ler o valor'));
+  FConexao.LoginPrompt := False;
+  FConexao.Connected := True;
+end;
+
+destructor TModelZeosConexao.Destroy;
+begin
+  FreeAndNil(FConexao);
+  FreeAndNil(FArqIni);
+  inherited;
+end;
+
+class function TModelZeosConexao.New(): IModelConexao;
+begin
+  Result := Self.Create();
+end;
+
+end.

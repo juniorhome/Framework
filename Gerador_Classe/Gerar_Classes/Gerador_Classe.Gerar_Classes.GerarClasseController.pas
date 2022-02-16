@@ -50,7 +50,7 @@ begin
   FClasse := AClasse;
   FUnit := AUnit;
   GerarCabecalho;
-  Resultado := GerarCorpoClasse;
+  Resultado.Add(GerarCorpoClasse);
   Result := Resultado.Text;
 end;
 

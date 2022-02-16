@@ -3,13 +3,16 @@ unit Gerador_Classe.view.uDM;
 interface
 
 uses
-  System.SysUtils, System.Classes, orm.conexao.ModelConexaoFactory;
+  System.SysUtils, System.Classes, orm.conexao.ModelConexaoFactory,
+  orm.conexao.interfaces.Interfaces, System.ImageList, FMX.ImgList;
 
 type
   TDM = class(TDataModule)
+    imgLstIcones: TImageList;
     procedure DataModuleCreate(Sender: TObject);
   private
     { Private declarations }
+    FConexao: IModelConexao;
   public
     { Public declarations }
   end;
@@ -25,7 +28,7 @@ implementation
 
 procedure TDM.DataModuleCreate(Sender: TObject);
 begin
-  TModelConexaoFactory.New.Conexao(2);
+  FConexao := TModelConexaoFactory.New.Conexao(2);
 end;
 
 end.

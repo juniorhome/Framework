@@ -1,0 +1,293 @@
+object frmPrincipal: TfrmPrincipal
+  Left = 0
+  Top = 0
+  Caption = '..:::GENCLASS - GERADOR  DE CLASSE'
+  ClientHeight = 493
+  ClientWidth = 955
+  Position = DesktopCenter
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  OnCreate = FormCreate
+  DesignerMasterStyle = 0
+  object lytPrincipal: TLayout
+    Align = Client
+    Size.Width = 955.000000000000000000
+    Size.Height = 493.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 1
+    object Rectangle1: TRectangle
+      Align = Client
+      Fill.Color = claWhite
+      Size.Width = 955.000000000000000000
+      Size.Height = 493.000000000000000000
+      Size.PlatformDefault = False
+      Stroke.Kind = None
+    end
+    object TabControl1: TTabControl
+      Align = Client
+      Size.Width = 955.000000000000000000
+      Size.Height = 493.000000000000000000
+      Size.PlatformDefault = False
+      StyleLookup = 'tabcontrolstyle'
+      TabHeight = 49.000000000000000000
+      TabIndex = 0
+      TabOrder = 0
+      TabPosition = PlatformDefault
+      Sizes = (
+        955s
+        444s
+        955s
+        444s)
+      object tbConfiguracao: TTabItem
+        CustomIcon = <
+          item
+          end>
+        IsSelected = True
+        Size.Width = 91.000000000000000000
+        Size.Height = 49.000000000000000000
+        Size.PlatformDefault = False
+        StyleLookup = ''
+        TabOrder = 0
+        Text = 'Configura'#231#227'o'
+        ExplicitSize.cx = 258.000000000000000000
+        ExplicitSize.cy = 49.000000000000000000
+        object Label1: TLabel
+          Position.X = 8.000000000000000000
+          Position.Y = 105.000000000000000000
+          Text = 'Tabelas:'
+          TabOrder = 0
+        end
+        object cmbTabelas: TComboBox
+          Position.X = 9.000000000000000000
+          Position.Y = 123.000000000000000000
+          Size.Width = 208.000000000000000000
+          Size.Height = 32.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 2
+        end
+        object Label2: TLabel
+          Position.X = 8.000000000000000000
+          Position.Y = 162.000000000000000000
+          Text = 'Campos:'
+          TabOrder = 11
+        end
+        object mmCampos: TMemo
+          Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
+          DataDetectorTypes = []
+          Position.X = 9.000000000000000000
+          Position.Y = 181.000000000000000000
+          Size.Width = 680.000000000000000000
+          Size.Height = 173.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 12
+          Viewport.Width = 676.000000000000000000
+          Viewport.Height = 169.000000000000000000
+        end
+        object chkClasseVO: TCheckBox
+          IsChecked = True
+          Position.X = 236.000000000000000000
+          Position.Y = 21.000000000000000000
+          TabOrder = 3
+          Text = 'Classe VO'
+        end
+        object chkController: TCheckBox
+          Position.X = 236.000000000000000000
+          Position.Y = 42.000000000000000000
+          TabOrder = 4
+          Text = 'Controller'
+        end
+        object btnGerar: TButton
+          Images = DM.imgLstIcones
+          ImageIndex = 2
+          Position.X = 8.000000000000000000
+          Position.Y = 369.000000000000000000
+          Size.Width = 105.000000000000000000
+          Size.Height = 22.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 9
+          Text = 'Gerar Classes'
+          OnClick = btnGerarClick
+        end
+        object btnSair: TButton
+          Images = DM.imgLstIcones
+          ImageIndex = 7
+          Position.X = 118.000000000000000000
+          Position.Y = 369.000000000000000000
+          TabOrder = 10
+          Text = 'Sair'
+          OnClick = btnSairClick
+        end
+        object salvarVO: TSaveDialog
+          DefaultExt = 'pas'
+          Filter = 'PAS|*.pas'
+          Left = 816
+          Top = 8
+        end
+        object salvarController: TSaveDialog
+          Left = 896
+          Top = 8
+        end
+        object Label3: TLabel
+          Position.X = 694.000000000000000000
+          Position.Y = 177.000000000000000000
+          Text = 'Pacote VO:'
+          TabOrder = 13
+        end
+        object edtPacote: TEdit
+          Touch.InteractiveGestures = [LongTap, DoubleTap]
+          TabOrder = 7
+          Position.X = 696.000000000000000000
+          Position.Y = 195.000000000000000000
+          Size.Width = 242.000000000000000000
+          Size.Height = 32.000000000000000000
+          Size.PlatformDefault = False
+        end
+        object Label4: TLabel
+          Position.X = 8.000000000000000000
+          Position.Y = 2.000000000000000000
+          Text = 'Base de Dados:'
+          TabOrder = 14
+        end
+        object cmbBaseDados: TComboBox
+          Items.Strings = (
+            'FIREBIRD'
+            'POSTGRESQL')
+          Position.X = 9.000000000000000000
+          Position.Y = 21.000000000000000000
+          Size.Width = 208.000000000000000000
+          Size.Height = 32.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 1
+        end
+        object Label5: TLabel
+          Position.X = 696.000000000000000000
+          Position.Y = 234.000000000000000000
+          Text = 'Pacote Controller:'
+          TabOrder = 15
+        end
+        object edtPacoteController: TEdit
+          Touch.InteractiveGestures = [LongTap, DoubleTap]
+          TabOrder = 8
+          Position.X = 696.000000000000000000
+          Position.Y = 251.000000000000000000
+          Size.Width = 246.000000000000000000
+          Size.Height = 32.000000000000000000
+          Size.PlatformDefault = False
+        end
+        object Label6: TLabel
+          Position.X = 376.000000000000000000
+          Position.Y = 8.000000000000000000
+          Text = 'Caminho VO:'
+          TabOrder = 16
+        end
+        object edtCaminhoVO: TEdit
+          Touch.InteractiveGestures = [LongTap, DoubleTap]
+          TabOrder = 5
+          Position.X = 376.000000000000000000
+          Position.Y = 26.000000000000000000
+          Size.Width = 449.000000000000000000
+          Size.Height = 32.000000000000000000
+          Size.PlatformDefault = False
+        end
+        object Label7: TLabel
+          Position.X = 376.000000000000000000
+          Position.Y = 59.000000000000000000
+          Text = 'Caminho Controller:'
+          TabOrder = 17
+        end
+        object Edit2: TEdit
+          Touch.InteractiveGestures = [LongTap, DoubleTap]
+          TabOrder = 6
+          Position.X = 376.000000000000000000
+          Position.Y = 76.000000000000000000
+          Size.Width = 449.000000000000000000
+          Size.Height = 32.000000000000000000
+          Size.PlatformDefault = False
+        end
+        object Label8: TLabel
+          Position.X = 8.000000000000000000
+          Position.Y = 55.000000000000000000
+          Text = 'Caminho Banco:'
+          TabOrder = 18
+        end
+        object edtCaminhoBanco: TEdit
+          Touch.InteractiveGestures = [LongTap, DoubleTap]
+          TabOrder = 19
+          Position.X = 8.000000000000000000
+          Position.Y = 72.000000000000000000
+          Enabled = False
+          Size.Width = 209.000000000000000000
+          Size.Height = 32.000000000000000000
+          Size.PlatformDefault = False
+        end
+      end
+      object tbArquivos: TTabItem
+        CustomIcon = <
+          item
+          end>
+        IsSelected = False
+        Size.Width = 67.000000000000000000
+        Size.Height = 49.000000000000000000
+        Size.PlatformDefault = False
+        StyleLookup = ''
+        TabOrder = 0
+        Text = 'Arquivos'
+        ExplicitSize.cx = 259.000000000000000000
+        ExplicitSize.cy = 49.000000000000000000
+        object mmClasseVO: TMemo
+          Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
+          DataDetectorTypes = []
+          TextSettings.WordWrap = True
+          Align = Left
+          Position.Y = 57.000000000000000000
+          Size.Width = 473.000000000000000000
+          Size.Height = 387.000000000000000000
+          Size.PlatformDefault = False
+          StyleLookup = 'memostyle'
+          TabOrder = 0
+          Viewport.Width = 469.000000000000000000
+          Viewport.Height = 383.000000000000000000
+        end
+        object mmController: TMemo
+          Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
+          DataDetectorTypes = []
+          Align = Right
+          Position.X = 488.000000000000000000
+          Position.Y = 57.000000000000000000
+          Size.Width = 467.000000000000000000
+          Size.Height = 387.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 1
+          Viewport.Width = 463.000000000000000000
+          Viewport.Height = 383.000000000000000000
+        end
+        object pnlBotes: TPanel
+          Align = Top
+          Size.Width = 955.000000000000000000
+          Size.Height = 57.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 2
+          object btnSalvar: TButton
+            Images = DM.imgLstIcones
+            ImageIndex = 6
+            Position.X = 781.000000000000000000
+            Position.Y = 19.000000000000000000
+            TabOrder = 1
+            Text = 'Salvar'
+            OnClick = btnSalvarClick
+          end
+          object btnVoltar: TButton
+            Images = DM.imgLstIcones
+            ImageIndex = 0
+            Position.X = 864.000000000000000000
+            Position.Y = 19.000000000000000000
+            TabOrder = 2
+            Text = 'Voltar'
+            OnClick = btnVoltarClick
+          end
+        end
+      end
+    end
+  end
+end
