@@ -265,7 +265,6 @@ begin
          end;
        end;
      end;
-     Result := ArrayJson;
    finally
      ArrayJson.Free;
    end;

@@ -4,7 +4,7 @@ interface
 
 uses Db,Rtti,orm.conexao.ModelConexaoFactory,orm.IBaseVO,orm.Atributos,
      orm.Lib.Biblioteca, orm.conexao.interfaces.Interfaces, Firedac.Comp.Client,
-     System.SysUtils, System.JSON, System.Generics.Collections;
+     System.SysUtils, System.JSON;
   type
     TBaseDAOFiredac<T : class, constructor> = class(TInterfacedObject, IDAO<T>)
       private
@@ -21,7 +21,6 @@ uses Db,Rtti,orm.conexao.ModelConexaoFactory,orm.IBaseVO,orm.Atributos,
         function Listagem(obj: T; TemFiltro: boolean; const TipoJuncao: TTipoJoin = ttLeftJoin; dataIni: string = ''; dataFim: string = ''): T;overload;
         function Listagem(obj: T; const TipoJuncao: TTipoJoin = ttLeftJoin; ConsultaCompleta: boolean = True; dataIni: string = ''; dataFim: string = ''): TJSONObject; overload;
         function Listagem(obj: T; const TipoJuncao: TTipoJoin = ttLeftJoin; ConsultaCompleta: boolean = True): TJSONArray;overload;
-        function Listagem(obj: T; const TipoJuncao: TTipoJoin = ttLeftJoin; ConsultaCompleta: boolean = True; TemLista: boolean = True): TObjectList<T>;overload;
 
         //Transações com banco de dados.
         procedure ComecarTransacao;
@@ -750,7 +749,6 @@ var
    propriedade: TRttiProperty;
    atributo: TCustomAttribute;
    objArray: TJSONArray;
-   Lib: TLib<T>;
    strSelect,strCampos,strTabela,strJuncao, alias, aliasEstrangeiro: string;
 begin
   strSelect := 'SELECT TOP 100 [CAMPOS] FROM [TABELAS] [JUNCAO]';
@@ -817,47 +815,11 @@ begin
           strCampos := strCampos + 'SUM(' + alias + '.' + TSomatorio(atributo).Nome + ') AS SOMA';
         if atributo is TMedia then
           strCampos := strCampos + 'AVG(' + alias + '.' + TMedia(atributo).Nome + ') AS MEDIA';
-        if atributo is TMaximo then
-          strCampos := strCampos + 'MAX(' + alias + '.' + TMaximo(atributo).Nome + ') AS MAIOR';
-        if atributo is TMinimo then
-          strCampos := strCampos + 'MIN(' + alias + '.' + TMinimo(atributo).Nome + ') AS MENOR';
-      end;
-
-      Lib := TLib<T>.Create;
-      try
-         strSelect := Lib.LocalizarSubstituir(strSelect, '[TABELA]', strTabela);
-         strSelect := Lib.LocalizarSubstituir(strSelect, '[JUNCAO]', strJuncao);
-         strSelect := Lib.LocalizarSubstituir(strSelect, '[CAMPOS]', strCampos);
-
-         //Executar a query.
-         FQuery.ExecSql(strSelect);
-         if (FQuery as TFDQuery).RecordCount > 0 then
-         begin
-           //Transforma a consulta em um Array de Json.
-           objArray := Lib.QueryParaArrayJson(FQuery, 1);
-           Result := objArray;
-         end;
-      finally
-        Lib.Free;
       end;
   finally
     contexto.Free;
     objArray.Free;
   end;
-end;
-
-function TBaseDAOFiredac<T>.Listagem(obj: T; const TipoJuncao: TTipoJoin;
-  ConsultaCompleta, TemLista: boolean): TObjectList<T>;
-var
-  contexto: TRttiContext;
-  tipo: TRttiType;
-  propriedade: TRttiProperty;
-  atributo: TCustomAttribute;
-  Lista: TObjectList<T>;
-  strSelect, strCampos, strJuncao, strTabela: string;
-  Lib: TLib<T>;
-begin
-
 end;
 
 end.

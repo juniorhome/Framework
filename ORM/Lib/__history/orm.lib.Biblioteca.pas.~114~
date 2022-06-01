@@ -257,15 +257,12 @@ begin
                ftCurrency: json.AddPair(campo.FieldName, TJSONString.Create(FormatCurr('##,###0.00', campo.AsCurrency)));
                ftDate: json.AddPair(campo.FieldName, TJSONString.Create(FormatDateTime('##/##/####', campo.AsDateTime)));
                ftDateTime: json.AddPair(campo.FieldName, TJSONString.Create(FormatDateTime('##/##/#### HH:mm:ss', campo.AsDateTime)));
-               ftExtended: json.AddPair(campo.FieldName, TJSONString.Create(FormatFloat('###,###0.00', campo.AsExtended)));
+               ftExtended: json.AddPair(campo.FieldName, TJSONString.Create(FormatFloat('###,###0.000', campo.AsExtended)));
              end;
            end;
-           ArrayJson.Add(json);
-           (aQuery as TZQuery).Next;
          end;
        end;
      end;
-     Result := ArrayJson;
    finally
      ArrayJson.Free;
    end;

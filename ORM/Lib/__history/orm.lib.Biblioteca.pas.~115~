@@ -260,12 +260,9 @@ begin
                ftExtended: json.AddPair(campo.FieldName, TJSONString.Create(FormatFloat('###,###0.00', campo.AsExtended)));
              end;
            end;
-           ArrayJson.Add(json);
-           (aQuery as TZQuery).Next;
          end;
        end;
      end;
-     Result := ArrayJson;
    finally
      ArrayJson.Free;
    end;

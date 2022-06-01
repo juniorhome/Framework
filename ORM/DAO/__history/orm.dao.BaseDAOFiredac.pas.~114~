@@ -4,7 +4,7 @@ interface
 
 uses Db,Rtti,orm.conexao.ModelConexaoFactory,orm.IBaseVO,orm.Atributos,
      orm.Lib.Biblioteca, orm.conexao.interfaces.Interfaces, Firedac.Comp.Client,
-     System.SysUtils, System.JSON, System.Generics.Collections;
+     System.SysUtils, System.JSON;
   type
     TBaseDAOFiredac<T : class, constructor> = class(TInterfacedObject, IDAO<T>)
       private
@@ -21,7 +21,6 @@ uses Db,Rtti,orm.conexao.ModelConexaoFactory,orm.IBaseVO,orm.Atributos,
         function Listagem(obj: T; TemFiltro: boolean; const TipoJuncao: TTipoJoin = ttLeftJoin; dataIni: string = ''; dataFim: string = ''): T;overload;
         function Listagem(obj: T; const TipoJuncao: TTipoJoin = ttLeftJoin; ConsultaCompleta: boolean = True; dataIni: string = ''; dataFim: string = ''): TJSONObject; overload;
         function Listagem(obj: T; const TipoJuncao: TTipoJoin = ttLeftJoin; ConsultaCompleta: boolean = True): TJSONArray;overload;
-        function Listagem(obj: T; const TipoJuncao: TTipoJoin = ttLeftJoin; ConsultaCompleta: boolean = True; TemLista: boolean = True): TObjectList<T>;overload;
 
         //Transações com banco de dados.
         procedure ComecarTransacao;
@@ -844,20 +843,6 @@ begin
     contexto.Free;
     objArray.Free;
   end;
-end;
-
-function TBaseDAOFiredac<T>.Listagem(obj: T; const TipoJuncao: TTipoJoin;
-  ConsultaCompleta, TemLista: boolean): TObjectList<T>;
-var
-  contexto: TRttiContext;
-  tipo: TRttiType;
-  propriedade: TRttiProperty;
-  atributo: TCustomAttribute;
-  Lista: TObjectList<T>;
-  strSelect, strCampos, strJuncao, strTabela: string;
-  Lib: TLib<T>;
-begin
-
 end;
 
 end.

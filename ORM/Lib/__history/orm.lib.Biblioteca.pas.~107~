@@ -211,7 +211,7 @@ function TLib<T>.QueryParaArrayJson(aQuery: IModelQuery;
   op: integer): TJSONArray;
 var
   json: TJSONObject;
-  ArrayJson: TJSONArray;
+  ArrayJson: TJSONArray
   i: integer;
   campo: TField;
 begin
@@ -234,38 +234,12 @@ begin
                ftCurrency: json.AddPair(campo.FieldName, TJSONString.Create(FormatCurr('#,##0.00', campo.AsCurrency)));
                ftDate: json.AddPair(campo.FieldName, TJSONString.Create(FormatDateTime('##/##/####', campo.AsDateTime)));
                ftDateTime: json.AddPair(campo.FieldName, TJSONString.Create(FormatDateTime('##/##/#### HH:mm:ss', campo.AsDateTime)));
-               ftExtended: json.AddPair(campo.FieldName, TJSONString.Create(FormatFloat('##,###0.00', campo.AsExtended)));
+               ftExtended: ;
              end;
            end;
-           ArrayJson.Add(json);
-           (aQuery as TFDQuery).Next;
-         end;
-       end;
-     2:
-       begin
-         json := TJSONObject.Create;
-         (aQuery as TZQuery).First;
-         while not (aQuery as TZQuery).Eof do
-         begin
-           for campo in (aQuery as TZQuery).Fields do
-           begin
-             case campo.DataType of
-               ftString: json.AddPair(campo.FieldName, TJSONString.Create(campo.AsString));
-               ftInteger: json.AddPair(campo.FieldName, TJSONNumber.Create(campo.AsInteger));
-               ftBoolean: json.AddPair(campo.FieldName, TJSONBool.Create(campo.AsBoolean));
-               ftFloat: json.AddPair(campo.FieldName, TJSONNumber.Create(campo.AsFloat));
-               ftCurrency: json.AddPair(campo.FieldName, TJSONString.Create(FormatCurr('##,###0.00', campo.AsCurrency)));
-               ftDate: json.AddPair(campo.FieldName, TJSONString.Create(FormatDateTime('##/##/####', campo.AsDateTime)));
-               ftDateTime: json.AddPair(campo.FieldName, TJSONString.Create(FormatDateTime('##/##/#### HH:mm:ss', campo.AsDateTime)));
-               ftExtended: json.AddPair(campo.FieldName, TJSONString.Create(FormatFloat('###,###0.00', campo.AsExtended)));
-             end;
-           end;
-           ArrayJson.Add(json);
-           (aQuery as TZQuery).Next;
          end;
        end;
      end;
-     Result := ArrayJson;
    finally
      ArrayJson.Free;
    end;
