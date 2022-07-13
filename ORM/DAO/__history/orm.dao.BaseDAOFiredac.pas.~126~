@@ -21,7 +21,7 @@ uses Db,Rtti,orm.conexao.ModelConexaoFactory,orm.IBaseVO,orm.Atributos,
         function Listagem(obj: T; TemFiltro: boolean; const TipoJuncao: TTipoJoin = ttLeftJoin; dataIni: string = ''; dataFim: string = ''): T;overload;
         function Listagem(obj: T; const TipoJuncao: TTipoJoin = ttLeftJoin; ConsultaCompleta: boolean = True; dataIni: string = ''; dataFim: string = ''): TJSONObject; overload;
         function Listagem(obj: T; const TipoJuncao: TTipoJoin = ttLeftJoin; ConsultaCompleta: boolean = True): TJSONArray;overload;
-        function Listagem(obj: T; const TipoJuncao: TTipoJoin = ttLeftJoin; ConsultaCompleta: boolean = True; TemLista: boolean = True; dataIni: string = ''; dataFim: string = ''): TObjectList<T>;overload;
+        function Listagem(obj: T; const TipoJuncao: TTipoJoin = ttLeftJoin; ConsultaCompleta: boolean = True; TemLista: boolean = True): TObjectList<T>;overload;
 
         //Transações com banco de dados.
         procedure ComecarTransacao;
@@ -527,7 +527,7 @@ begin
                   if CompareText(propriedade.PropertyType.Name, 'TDate') = 0 then
                   begin
                      if not(dataIni.IsEmpty) and not(dataFim.IsEmpty) then
-                       strCondicao := strCondicao + ' BETWEEN ' + dataIni + ' AND ' + dataFim;
+                       strCondicao := strCondicao + ' BETWEEN ' + dataIni + ' AND ' + dataFim
                   end;
 
                end;
@@ -847,7 +847,7 @@ begin
 end;
 
 function TBaseDAOFiredac<T>.Listagem(obj: T; const TipoJuncao: TTipoJoin;
-  ConsultaCompleta, TemLista: boolean; dataIni: string; dataFim: string): TObjectList<T>;
+  ConsultaCompleta, TemLista: boolean): TObjectList<T>;
 var
   contexto: TRttiContext;
   tipo: TRttiType;
@@ -858,7 +858,7 @@ var
   Lib: TLib<T>;
 begin
    strSelectCompleta := 'SELECT TOP 100 [CAMPOS] FROM [TABELA] [JUNCAO] WHERE [CONDICAO]';
-   strSelect := 'SELECT TOP 100 [CAMPOS] FROM [TABELA] [JUNCAO]';
+   strSelect := 'SELECT TOP 100 [CAMPOS] FROM [TABELA]';
    strCampos := '';
    strJuncao := '';
    strTabela := '';
@@ -912,57 +912,16 @@ begin
          if atributo is TCampoBooleano then
            strCampos := strCampos + alias + '.' + TCampoBooleano(atributo).Nome;
          if atributo is TCampoEstrangeiro then
-           strCampos := strCampos + aliasEstrangeiro + '.' + TCampoEstrangeiro(atributo).Nome;
+           strCampos := strCampos + alias + '.' + TCampoEstrangeiro(atributo).Nome;
          if atributo is TChaveEstrangeira then
-            strCampos := strCampos + alias + TChaveEstrangeira(atributo).Nome;
+            strCampos := strCampos + aliasEstrangeiro + TChaveEstrangeira(atributo).Nome;
          if atributo is TSomatorio then
            strCampos := strCampos + 'SUM(' + alias + '.' + TSomatorio(atributo).Nome + ') AS SOMATORIO';
          if atributo is TMedia then
            strCampos := strCampos + 'AVG(' + alias + '.' + TMedia(atributo).Nome + ') AS MEDIA';
          if atributo is TMaximo then
             strCampos := strCampos + 'MAX(' + alias + '.' + TMaximo(atributo).Nome + ') AS MAIOR';
-         if atributo is TMinimo then
-            strCampos := strCampos + 'MIN(' + alias + '.' + TMinimo(atributo).Nome + ') AS MENOR';
-         if atributo is TCampoFiltro then
-         begin
-           if propriedade.PropertyType.TypeKind = tkInteger then
-             strCondicao := strCondicao + alias + '.' + TCampoFiltro(atributo).Nome + '=' + IntToStr(propriedade.GetValue(TObject(obj)).AsInteger);
-           if propriedade.PropertyType.TypeKind = tkString then
-             strCondicao := strCondicao + alias + '.' + TCampoFiltro(atributo).Nome + ' LIKE ' + QuotedStr('%'+propriedade.GetValue(TObject(obj)).AsString+'%');
-           if propriedade.PropertyType.TypeKind = tkFloat then
-           begin
-             if CompareStr(propriedade.PropertyType.Name, 'TDate') > 0 then
-             begin
-               if not(dataIni.IsEmpty) and not(dataFim.IsEmpty) then
-                  strCondicao := strCondicao + TCampoFiltro(atributo).Nome + ' BETWEEN ' + dataIni + ' AND ' + dataFim;
-             end;
-           end;
-         end;
-       end;
-       Lib := TLib<T>.Create;
-       try
-         if ConsultaCompleta then
-         begin
-           strSelectCompleta := Lib.LocalizarSubstituir(strSelectCompleta, '[TABELA]', strTabela);
-           strSelectCompleta := Lib.LocalizarSubstituir(strSelectCompleta, '[JUNCAO]', strJuncao);
-           strSelectCompleta := Lib.LocalizarSubstituir(strSelectCompleta, '[CONDICAO]', strCondicao);
-           strSelectCompleta := Lib.LocalizarSubstituir(strSelectCompleta, '[CAMPOS]', strCampos);
-           FQuery.ExecSql(strSelectCompleta);
-         end
-         else
-         begin
-            strSelect := Lib.LocalizarSubstituir(strSelect, '[TABELA]', strTabela);
-            strSelect := Lib.LocalizarSubstituir(strSelect, '[CAMPOS]', strCampos);
-            strSelect := Lib.LocalizarSubstituir(strSelect, '[JUNCAO]', strJuncao);
-            FQuery.ExecSql(strSelect);
-         end;
-         if (FQuery as TFDQuery).RecordCount > 0 then
-         begin
-           Lista := Lib.QueryParaListaObjeto(FQuery, 1);
-           Result := Lista;
-         end;
-       finally
-         Lib.Free;
+
        end;
    finally
      contexto.Free;

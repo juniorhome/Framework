@@ -385,40 +385,8 @@ begin
             strCondicao := strCondicao + ' AND ';
          if atributo is TCampoFiltro then
          begin
-           if propriedade.PropertyType.TypeKind = tkInteger then
-              strCondicao := strCondicao + alias + '.' + TCampoFiltro(atributo).Nome + ' = ' + IntToStr(propriedade.GetValue(TObject(obj)).AsInteger);
-           if (propriedade.PropertyType.TypeKind = tkString) or (propriedade.PropertyType.TypeKind = tkChar) then
-              strCondicao := strCondicao + alias + '.' + TCampoFiltro(atributo).Nome + ' LIKE ' + QuotedStr('%'+propriedade.GetValue(TObject(obj)).AsString+'%')
-           else  strCondicao := strCondicao + alias + '.' + TCampoFiltro(atributo).Nome + ' = ' + propriedade.GetValue(TObject(obj)).AsString;
-           if propriedade.PropertyType.TypeKind = tkFloat then
-           begin
-             if CompareText(propriedade.GetValue(TObject(obj)).AsString, 'TDate') > 0 then
-             begin
-               if not(dataIni.IsEmpty) and not(dataFim.IsEmpty) then
-                  strCondicao := strCondicao + ' BETWEEN ' + alias + '.' + dataIni + ' AND ' + alias + '.' + dataFim;
-             end;
-           end;
+
          end;
-       end;
-       Lib := TLib<T>.Create;
-       try
-         strSelectCompleta := Lib.LocalizarSubstituir(strSelectCompleta, '[TABELA]', strTabela);
-         strSelectCompleta := Lib.LocalizarSubstituir(strSelectCompleta, '[CAMPOS]', strCampos);
-         strSelectCompleta := Lib.LocalizarSubstituir(strSelectCompleta, '[JUNCAO]', strJuncao);
-         strSelectCompleta := Lib.LocalizarSubstituir(strSelectCompleta, '[CONDICAO]', strCondicao);
-         FQuery.ExecSql(strSelectCompleta);
-         if (FQuery as TZQuery).RecordCount >  0 then
-         begin
-           Lista := TObjectList<T>.Create;
-           try
-              Lista := Lib.QueryParaListaObjeto(FQuery, 2);
-              Result := Lista;
-           finally
-             Lista.Free;
-           end;
-         end;
-       finally
-         Lib.Free;
        end;
    finally
      contexto.Free;

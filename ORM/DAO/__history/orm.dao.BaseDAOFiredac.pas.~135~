@@ -858,7 +858,7 @@ var
   Lib: TLib<T>;
 begin
    strSelectCompleta := 'SELECT TOP 100 [CAMPOS] FROM [TABELA] [JUNCAO] WHERE [CONDICAO]';
-   strSelect := 'SELECT TOP 100 [CAMPOS] FROM [TABELA] [JUNCAO]';
+   strSelect := 'SELECT TOP 100 [CAMPOS] FROM [TABELA]';
    strCampos := '';
    strJuncao := '';
    strTabela := '';
@@ -953,7 +953,6 @@ begin
          begin
             strSelect := Lib.LocalizarSubstituir(strSelect, '[TABELA]', strTabela);
             strSelect := Lib.LocalizarSubstituir(strSelect, '[CAMPOS]', strCampos);
-            strSelect := Lib.LocalizarSubstituir(strSelect, '[JUNCAO]', strJuncao);
             FQuery.ExecSql(strSelect);
          end;
          if (FQuery as TFDQuery).RecordCount > 0 then

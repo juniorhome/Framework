@@ -482,62 +482,6 @@ begin
                        propriedade.SetValue(TObject(obj), valor);
                    end;
                  end;
-                 if atributo is TCampoInteiro then
-                 begin
-                   if TCampoInteiro(atributo).Nome.Equals(NomeColuna) then
-                   begin
-                     if not valor.IsEmpty then
-                       propriedade.SetValue(TObject(obj), valor);
-                   end;
-                 end;
-                 if atributo is TCampoData then
-                 begin
-                   if TCampoData(atributo).Nome.Equals(NomeColuna) then
-                   begin
-                     if not valor.IsEmpty then
-                       propriedade.SetValue(TObject(obj), valor);
-                   end;
-                 end;
-                 if atributo is TCampoDataHora then
-                 begin
-                   if TCampoDataHora(atributo).Nome.Equals(NomeColuna) then
-                   begin
-                     if not valor.IsEmpty then
-                       propriedade.SetValue(TObject(obj), valor);
-                   end;
-                 end;
-                 if atributo is TCampoExtended then
-                 begin
-                   if TCampoExtended(atributo).Nome.Equals(NomeColuna) then
-                   begin
-                     if not valor.IsEmpty then
-                       propriedade.SetValue(TObject(obj), valor);
-                   end;
-                 end;
-                 if atributo is TCampoMonetario then
-                 begin
-                   if TCampoMonetario(atributo).Nome.Equals(NomeColuna) then
-                   begin
-                     if not valor.IsEmpty then
-                       propriedade.SetValue(TObject(obj), valor);
-                   end;
-                 end;
-                 if atributo is TCampoBooleano then
-                 begin
-                   if TCampoBooleano(atributo).Nome.Equals(NomeColuna) then
-                   begin
-                     if not valor.IsEmpty then
-                       propriedade.SetValue(TObject(obj), valor);
-                   end;
-                 end;
-                 if atributo is TChaveEstrangeira then
-                 begin
-                   if TChaveEstrangeira(atributo).Nome.Equals(NomeColuna) then
-                   begin
-                     if not valor.IsEmpty then
-                       propriedade.SetValue(TObject(obj), valor);
-                   end;
-                 end;
                end;
            end;
            ListaObjeto.Add(obj);
