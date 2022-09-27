@@ -1,0 +1,54 @@
+unit orm.lib.Validacao;
+
+interface
+
+uses System.RegularExpressions, orm.lib.Constantes;
+
+ type
+   TValidacao = class
+     private
+     public
+       //Validaçao na Tela de cadastro.
+       class function ValidarEmail(const Email: string): boolean;
+       class function ValidarData(const Data: string): boolean;
+       class function ValidarCnpj(const Cnpj: string): boolean;
+       class function ValidarCpf(const Cpf: string): boolean;
+       class function ValidarTelefone(const Telefone: string): boolean;
+       class function ValidarCelular(const Celular: string): boolean;
+   end;
+
+implementation
+
+{ TValidacao }
+
+class function TValidacao.ValidarCelular(const Celular: string): boolean;
+begin
+  Result := TRegex.IsMatch(Celular, CONST_CELULAR);
+end;
+
+class function TValidacao.ValidarCnpj(const Cnpj: string): boolean;
+begin
+   Result := TRegex.IsMatch(Cnpj, CONST_CNPJ);
+end;
+
+class function TValidacao.ValidarCpf(const Cpf: string): boolean;
+begin
+  Result := TRegex.IsMatch(Cpf, CONST_CPF);
+end;
+
+class function TValidacao.ValidarData(const Data: string): boolean;
+begin
+   Result := TRegex.IsMatch(Data, CONST_DATA);
+end;
+
+class function TValidacao.ValidarEmail(const Email: string): boolean;
+begin
+   Result := TRegex.IsMatch(Email, CONST_EMAIL);
+end;
+
+class function TValidacao.ValidarTelefone(const Telefone: string): boolean;
+begin
+  Result := TRegex.IsMatch(Telefone, CONST_TELEFONE);
+end;
+
+end.

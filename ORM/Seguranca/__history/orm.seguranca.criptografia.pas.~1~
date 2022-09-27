@@ -1,0 +1,30 @@
+unit orm.seguranca.criptografia;
+
+interface
+
+uses IdHashMessageDigest;
+
+  type
+    TCriptografia = class
+      private
+      public
+        class function MD5(const texto: string): string;
+    end;
+
+implementation
+
+{ TCriptografia }
+
+class function TCriptografia.MD5(const texto: string): string;
+var
+  idmd5: TIdHashMessageDigest5;
+begin
+   idmd5 := TIdHashMessageDigest5.Create;
+   try
+     Result := idmd5.HashStringAsHex(texto);
+   finally
+     idmd5.Free;
+   end;
+end;
+
+end.
