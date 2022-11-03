@@ -1,0 +1,33 @@
+unit orm.lib.SessaoUsuario;
+
+interface
+
+uses IniFiles, System.SysUtils;
+
+type
+  TSessaoUsuario = class
+    private
+      class var FId: integer;
+      class var FNome: string;
+      class var FLembrar: boolean;
+      class var FCaminhoFoto: string;
+    public
+      class property Id: integer read FId write FId;
+      class property Nome: string read FNome write FNome;
+      class property Lembrar: boolean read FLembrar write FLembrar;
+      class property CaminhoFoto: string read FCaminhoFoto write FCaminhoFoto;
+      class procedure EscreverIni;
+  end;
+
+implementation
+
+{ TSessaoUsuario }
+
+class procedure TSessaoUsuario.EscreverIni;
+var arqIni: TIniFile;
+begin
+   arqIni := TIniFile.Create(ExtractFileDir(GetCurrentDir)+'\config.ini');
+
+end;
+
+end.

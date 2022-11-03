@@ -35,7 +35,7 @@ type
      function Inserir(obj: T): integer;
      function Atualizar(obj: T): boolean;
      function Excluir(obj: T): boolean;
-     function Listagem(obj: T; dataInicio,dataFim: string; TemData: boolean; const TipoJuncao:TTipoJoin = ttLeftJoin): TDataSet;
+     function Listagem(obj: T; const TipoJuncao:TTipoJoin = ttLeftJoin): TDataSet;
      function ConsultaSql(sql: string): TDataSet;
    end;
 

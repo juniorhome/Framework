@@ -8,8 +8,8 @@ uses IdHashMessageDigest, System.Classes;
     TCriptografia = class
       private
       public
-        class function MD5(const texto: string): string;
-        class function MD5Arq(const nomeArquivo: string): string;
+        class function MD5(const texto: string): string; overload;
+        class function MD5(const nomeArquivo: string; numero: integer = 0): string; overload;
     end;
 
 implementation
@@ -28,7 +28,8 @@ begin
    end;
 end;
 
-class function TCriptografia.MD5Arq(const nomeArquivo: string): string;s
+class function TCriptografia.MD5(const nomeArquivo: string;
+  numero: integer): string;
 var
   idmd5: TIdHashMessageDigest5;
   fs: TFileStream;

@@ -1,0 +1,7 @@
+unit orm.lib.SessaoUsuario;
+
+interface
+
+implementation
+
+end.
