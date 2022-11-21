@@ -3,8 +3,7 @@ unit orm.conexao.interfaces.Interfaces;
 interface
 
 uses
-  Data.DB, orm.IBaseVO, orm.Atributos, System.JSON, System.Contnrs,
-  System.Generics.Collections;
+  Data.DB, orm.IBaseVO, orm.Atributos, System.JSON;
 
 type
     TTipoController = (tcCliente, tcFuncionario, tcFornecedor, tcTransportadora, tcProduto, tcVenda, tcNfe, tcNfce);
@@ -39,7 +38,6 @@ type
      function Listagem(obj: T; dataInicio,dataFim: string; TemData: boolean; const TipoJuncao:TTipoJoin = ttLeftJoin): TDataSet;overload;
      function Listagem(obj: T; dataInicio,dataFim: string; const TipoJuncao: TTipoJoin = ttLeftJoin; EhFiltro: boolean = False; ConsultaCompleta: boolean = False): TJSONArray;overload;
      function Listagem(obj: T; dataInicio,dataFim: string; const TipoJuncao: TTipoJoin = ttLeftJoin): TJSONObject;overload;
-     function Listagem(obj: T;dataInicio,dataFim: string; const TipoJuncao:TTipoJoin = ttLeftJoin; ConsultaCompleta: boolean = True): TObjectList; overload;
      function Listagem(obj: T; const TipoJuncao: TTipoJoin = ttLeftJoin): T; overload;
      function ConsultaSql(sql: string): TDataSet;
    end;

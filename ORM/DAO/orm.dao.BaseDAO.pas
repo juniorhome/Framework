@@ -5,7 +5,7 @@ interface
 uses Db,Rtti,orm.conexao.ModelConexaoFactory,orm.IBaseVO,orm.Atributos,
      orm.Lib.Biblioteca, orm.conexao.interfaces.Interfaces, ZDataset,
   uRESTDWPoolerDB, orm.conexao.model_rdw.ModelRDWQuery, System.SysUtils, System.JSON,
-  Generics.Collections;
+  Generics.Collections, System.Contnrs;
   type
     TBaseDAO<T : class, constructor> = class(TInterfacedObject, IDAO<T>)
       private
@@ -22,6 +22,7 @@ uses Db,Rtti,orm.conexao.ModelConexaoFactory,orm.IBaseVO,orm.Atributos,
         function Listagem(obj: T; dataInicio,dataFim: string; const TipoJuncao: TTipoJoin = ttLeftJoin; EhFiltro: boolean = False; ConsultaCompleta: boolean = False): TJSONArray;overload;
         function Listagem(obj: T; dataInicio,dataFim: string; const TipoJuncao: TTipoJoin = ttLeftJoin): TJSONObject;overload;
         function Listagem(obj: T; const TipoJuncao: TTipoJoin = ttLeftJoin): T; overload;
+        function Listagem(obj: T;dataInicio,dataFim: string; const TipoJuncao:TTipoJoin = ttLeftJoin; ConsultaCompleta: boolean = True): TObjectList; overload;
         function ConsultaSql(sql: string): TDataSet;overload;
         {Fazer mais um método de atualização e mais listagem com vários retornos DataSet, IBaseVO, Listagem e Json}
     end;
@@ -1053,6 +1054,12 @@ begin
    finally
      contexto.Free;
    end;
+end;
+
+function TBaseDAO<T>.Listagem(obj: T; dataInicio, dataFim: string;
+  const TipoJuncao: TTipoJoin; ConsultaCompleta: boolean): TObjectList;
+begin
+  ///Implementar depois.
 end;
 
 end.
