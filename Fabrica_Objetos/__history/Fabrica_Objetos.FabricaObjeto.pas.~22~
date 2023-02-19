@@ -7,14 +7,14 @@ uses
 
 type
   TFabricaObjeto<T: class> = class(TInterfacedObject, IFactoryMethod<T>)
-    function FabricaObjeto(const opcao: tTipoVO): IBaseVO<T>;
+    function FabricaObjeto(const opcao: tTipoVO): T;
   end;
 
 implementation
 
 { TFabricaObjeto }
 
-function TFabricaObjeto<T>.FabricaObjeto(const opcao: tTipoVO): IBaseVO<T>;
+function TFabricaObjeto<T>.FabricaObjeto(const opcao: tTipoVO): T;
 begin
    case opcao of
      ttCliente:
@@ -191,11 +191,11 @@ begin
                   end;
      ttPerfilUsuario:
                      begin
-                        //Result := TPerfilUsuarioVO.New;
+                        Result := TPerfilUsuarioVO.Create;
                      end;
      ttUsuario:
                begin
-                 //Result := TUsuarioVO.Create;
+                 Result := TUsuarioVO.Create;
                end;
      ttPlanoContas:
                    begin

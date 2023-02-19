@@ -18,7 +18,7 @@ uses
 type
   IFactoryMethod<T: class> = interface(IInterface)
     ['{D173603F-AF5A-4B1F-B402-EBD69EA7D781}']
-    function FabricaObjeto(const opcao: tTipoVO): IBaseVO<T>;
+    function FabricaObjeto(const opcao: tTipoVO): T;
   end;
 
 implementation

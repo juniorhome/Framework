@@ -191,11 +191,11 @@ begin
                   end;
      ttPerfilUsuario:
                      begin
-                        //Result := TPerfilUsuarioVO.New;
+                        Result := TPerfilUsuarioVO.Create;
                      end;
      ttUsuario:
                begin
-                 //Result := TUsuarioVO.Create;
+                 Result := TUsuarioVO.Create;
                end;
      ttPlanoContas:
                    begin

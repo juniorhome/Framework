@@ -2,18 +2,18 @@ unit Fabrica_Objetos.FabricaObjeto;
 
 interface
 uses
-  Fabica_Objetos.IFactoryMethod, orm.IBaseVO;
+  Fabica_Objetos.IFactoryMethod, orm.IBaseVO, Cli_Windows.Model.UsuarioVO;
 
 type
   TFabricaObjeto<T: class> = class(TInterfacedObject, IFactoryMethod<T>)
-    function FabricaObjeto(const opcao: tTipoVO): IBaseVO<T>;
+    function FabricaObjeto(const opcao: tTipoVO): T;
   end;
 
 implementation
 
 { TFabricaObjeto }
 
-function TFabricaObjeto<T>.FabricaObjeto(const opcao: tTipoVO): IBaseVO<T>;
+function TFabricaObjeto<T>.FabricaObjeto(const opcao: tTipoVO): T;
 begin
    case opcao of
      ttCliente:
@@ -188,6 +188,42 @@ begin
                   begin
                     //chamada para o objeto do tipo Pedido Item.
                   end;
+     ttPerfilUsuario:
+                     begin
+                        //chamada para o objeto perfil do usuário.
+                     end;
+     ttUsuario:
+               begin
+                 result := TUsuarioVO.Create;
+               end;
+     ttPlanoContas:
+                   begin
+                     //chamada para objeto Plano de Contas.
+                   end;
+     ttRefeicao:
+                begin
+                  //chamada para o objeto do tipo Refeição.
+                end;
+     ttRefeicaoItem:
+                    begin
+                      //chamada para o objeto do tipo Refeição Item.
+                    end;
+     ttReserva:
+               begin
+                 //Chamada para o objeto do tipo Reserva.
+               end;
+     ttVendaVolume:
+                   begin
+                     //Chamada para o objeto do tipo Venda Volume.
+                   end;
+     ttVendaTransportadora:
+                           begin
+                             //chamada para o objeto do tipo Venda Transportadora.
+                           end;
+     ttCstIcmsST:
+                 begin
+                   //chamada para o objeto do tipo CST ICMS ST.
+                 end;
 
    end;
 end;
