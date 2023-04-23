@@ -33,10 +33,10 @@ end;
 constructor TModelFiredacConexao.Create();
 var  sBase: string;
 begin
-   FArqIni := TIniFile.Create(ExtractFileDir(GetCurrentDir)+'\Debug\Config.ini');
+   FArqIni := TIniFile.Create(ExtractFileDir(GetCurrentDir)+'Config.ini');
    FConexao := TFDConnection.Create(nil);
    //Link das DLL do banco.
-   sBase := FArqIni.ReadString('Banco', 'Base', 'Base'); //Essa linha está com problema.
+   sBase := FArqIni.ReadString('Banco', 'Base', 'Base');
    if sBase = 'FIREBIRD' then
    begin
      FDriverFB := TFDPhysFBDriverLink.Create(nil);

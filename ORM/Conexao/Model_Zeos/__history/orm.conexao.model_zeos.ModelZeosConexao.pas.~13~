@@ -28,7 +28,7 @@ end;
 
 constructor TModelZeosConexao.Create();
 begin
-  FArqIni := TIniFile.Create(ExtractFileDir(GetCurrentDir)+'\Debug\Config.ini');
+  FArqIni := TIniFile.Create(ExtractFileDir(GetCurrentDir)+'\Config.ini');
   FConexao := TZConnection.Create(nil);
   if FileExists(ExtractFileDir(GetCurrentDir)+'\Config.ini') then
   begin

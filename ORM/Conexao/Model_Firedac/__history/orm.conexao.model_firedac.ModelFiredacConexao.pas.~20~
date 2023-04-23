@@ -33,22 +33,16 @@ end;
 constructor TModelFiredacConexao.Create();
 var  sBase: string;
 begin
-   FArqIni := TIniFile.Create(ExtractFileDir(GetCurrentDir)+'\Debug\Config.ini');
+   FArqIni := TIniFile.Create(ExtractFileDir(GetCurrentDir)+'Config.ini');
    FConexao := TFDConnection.Create(nil);
    //Link das DLL do banco.
-   sBase := FArqIni.ReadString('Banco', 'Base', 'Base'); //Essa linha está com problema.
+   sBase := FArqIni.ReadString('Banco', 'Base', 'Base');
    if sBase = 'FIREBIRD' then
-   begin
-     FDriverFB := TFDPhysFBDriverLink.Create(nil);
-     FDriverFB.VendorLib := FArqIni.ReadString('Banco', 'Biblioteca', 'Biblioteca');
-   end
+     FDriverFB := TFDPhysFBDriverLink.Create(nil)
    else if sBase = 'POSTGRESQL' then
-   begin
        FDriverPG := TFDPhysPgDriverLink.Create(nil);
-       FDriverPG.VendorLib := FArqIni.ReadString('Banco', 'Biblioteca', 'Biblioteca');
-   end;
 
-   FConexao.Params.DriverID             := FArqIni.ReadString('FIREDAC', 'DriverID', 'DriverID');
+   FConexao.Params.DriverID             := FArqIni.ReadString('Banco', 'Base', 'Erro ao ler o valor.');
    FConexao.Params.Values['Server']     := FArqIni.ReadString('Banco', 'Servidor', 'Erro ao ler o valor.');
    FConexao.Params.Database             := FArqIni.ReadString('Banco', 'Caminho', 'Erro ao ler o valor.');
    FConexao.Params.UserName             := FArqIni.ReadString('Banco', 'Usuario', 'Erro ao ler o valor.');
@@ -59,10 +53,6 @@ end;
 
 destructor TModelFiredacConexao.Destroy;
 begin
-  if Assigned(FDriverFB) then
-     FDriverFB.Free;
-  if Assigned(FDriverPG) then
-     FDriverPG.Free;
   FreeAndNil(FConexao);
   FreeAndNil(FArqIni);
   inherited;

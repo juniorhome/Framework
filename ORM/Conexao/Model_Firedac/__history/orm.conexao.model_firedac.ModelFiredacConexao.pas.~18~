@@ -3,12 +3,14 @@ unit orm.conexao.model_firedac.ModelFiredacConexao;
 interface
 
 uses System.IniFiles, orm.conexao.interfaces.Interfaces, FireDAC.Comp.Client,
-     System.SysUtils, Vcl.Forms;
+     System.SysUtils, Firedac.Phys.FB, Firedac.Phys.PG;
 
   type
     TModelFiredacConexao = class(TInterfacedObject, IModelConexao)
       private
         FConexao: TFDConnection;
+        FDriverFB: TFDPhysFBDriverLink;
+        FDriverPG: TFDPhysPgDriverLink;
         FArqIni: TIniFile;
       public
         constructor Create();
@@ -29,14 +31,17 @@ begin
 end;
 
 constructor TModelFiredacConexao.Create();
+var
 begin
-   FArqIni := TIniFile.Create(ExtractFileDir(GetCurrentDir)+'\Config.ini');
+   FArqIni := TIniFile.Create(ExtractFileDir(GetCurrentDir)+'Config.ini');
    FConexao := TFDConnection.Create(nil);
-   FConexao.Params.DriverID := FArqIni.ReadString('Configuracao', 'Driver', 'Erro ao ler o valor.');
-   FConexao.Params.Values['Server'] := FArqIni.ReadString('Configuracao', 'Host', 'Erro ao ler o valor.');
-   FConexao.Params.Database := FArqIni.ReadString('Configuracao', 'Banco', 'Erro ao ler o valor.');
-   FConexao.Params.UserName := FArqIni.ReadString('Configuracao', 'Usuario', 'Erro ao ler o valor.');
-   FConexao.Params.Password := FArqIni.ReadString('Configuracao', 'Senha', 'Erro ao ler o valor.');
+   //Link das DLL do banco.
+
+   FConexao.Params.DriverID             := FArqIni.ReadString('Banco', 'Base', 'Erro ao ler o valor.');
+   FConexao.Params.Values['Server']     := FArqIni.ReadString('Banco', 'Servidor', 'Erro ao ler o valor.');
+   FConexao.Params.Database             := FArqIni.ReadString('Banco', 'Caminho', 'Erro ao ler o valor.');
+   FConexao.Params.UserName             := FArqIni.ReadString('Banco', 'Usuario', 'Erro ao ler o valor.');
+   FConexao.Params.Password             := FArqIni.ReadString('Banco', 'Senha', 'Erro ao ler o valor.');
    FConexao.LoginPrompt := False;
    FConexao.Connected := true;
 end;

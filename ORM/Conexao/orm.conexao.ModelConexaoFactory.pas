@@ -51,7 +51,7 @@ end;
 
 class function TModelConexaoFactory.New: IModelConexaoFactory;
 begin
-  Result := self.Create;
+  Result := Self.Create;
 end;
 
 function TModelConexaoFactory.Query(aOp: integer): IModelQuery;
