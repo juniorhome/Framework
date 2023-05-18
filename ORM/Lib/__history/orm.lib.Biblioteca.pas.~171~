@@ -5,7 +5,7 @@ interface
 uses SysUtils, IniFiles, Datasnap.DBClient, ZDataset, Data.DB,
   orm.IBaseVO, System.Rtti, orm.Atributos, Vcl.DBGrids, Winapi.Windows, Vcl.Grids, Vcl.Graphics,
   orm.conexao.interfaces.Interfaces, FireDAC.Comp.Client, System.JSON,
-  System.Generics.Collections, uRESTDWPoolerDB;
+  System.Generics.Collections, uRESTDWConsts, uRESTDWPoolerDB;
 
   type
     TTipoQuery = (tqFiredac, tqZeos, tqRDW, tqDbExpress);
@@ -213,7 +213,7 @@ begin
 end;
 
 function TLib<T>.QueryParaArrayJson(aQuery: IModelQuery;
-  op: integer): TJSONArray;
+  aTipoQuery: TTipoQuery): TJSONArray;
 var
   json: TJSONObject;
   ArrayJson: TJSONArray;
@@ -222,8 +222,8 @@ var
 begin
    ArrayJson := TJSONArray.Create;
    try
-     case op of
-     1:
+     case aTipoQuery of
+     tqFiredac:
        begin
          json := TJSONObject.Create;
          (aQuery as TFDQuery).First;
@@ -246,7 +246,7 @@ begin
            (aQuery as TFDQuery).Next;
          end;
        end;
-     2:
+     tqZeos:
        begin
          json := TJSONObject.Create;
          (aQuery as TZQuery).First;
@@ -267,6 +267,29 @@ begin
            end;
            ArrayJson.Add(json);
            (aQuery as TZQuery).Next;
+         end;
+       end;
+     tqRDW:
+       begin
+         json := TJSONObject.Create;
+         (aQuery as TRESTDWClientSQL).First;
+         while not (aQuery as TRESTDWClientSQL).Eof do
+         begin
+           for campo in (aQuery as TRESTDWClientSQL).Fields do
+           begin
+             case campo.DataType of
+               ftString: json.AddPair(campo.FieldName, TJSONString.Create(campo.AsString));
+               ftInteger: json.AddPair(campo.FieldName, TJSONNumber.Create(campo.AsInteger));
+               ftBoolean: json.AddPair(campo.FieldName, TJSONBool.Create(campo.AsBoolean));
+               ftFloat: json.AddPair(campo.FieldName, TJSONNumber.Create(campo.AsFloat));
+               ftCurrency: json.AddPair(campo.FieldName, TJSONString.Create(FormatCurr('##,###0.00', campo.AsCurrency)));
+               ftDate: json.AddPair(campo.FieldName, TJSONString.Create(FormatDateTime('##/##/####', campo.AsDateTime)));
+               ftDateTime: json.AddPair(campo.FieldName, TJSONString.Create(FormatDateTime('##/##/#### HH:mm:ss', campo.AsDateTime)));
+               ftExtended: json.AddPair(campo.FieldName, TJSONString.Create(FormatFloat('###,###0.00', campo.AsExtended)));
+             end;
+           end;
+           ArrayJson.Add(json);
+           (aQuery as TRESTDWClientSQL).Next;
          end;
        end;
      end;
@@ -567,9 +590,108 @@ begin
            (aQuery as TZQuery).Next;
          end;
        end;
-     end;
-   finally
-
+       tqRDW:
+         begin
+            (aQuery as TRESTDWClientSQL).First;
+            while not (aQuery as TRESTDWClientSQL).Eof do
+            begin
+              obj := T.Create;
+              for i := 0 to (aQuery as TRESTDWClientSQL).FieldDefs.Count - 1 do
+              begin
+                NomeColuna := (aQuery as TRESTDWClientSQL).FieldDefs[i].Name;
+                case (aQuery as TRESTDWClientSQL).FieldDefs[i].DataType of
+                  ftString, ftWideString: valor := (aQuery as TRESTDWClientSQL).FieldByName(NomeColuna).AsString;
+                  ftInteger, ftLargeint, ftSmallint: valor := (aQuery as TRESTDWClientSQL).FieldByName(NomeColuna).AsInteger;
+                  ftBoolean: valor := (aQuery as TRESTDWClientSQL).FieldByName(NomeColuna).AsBoolean;
+                  ftFloat: valor := (aQuery as TRESTDWClientSQL).FieldByName(NomeColuna).AsFloat;
+                  ftCurrency: valor := (aQuery as TRESTDWClientSQL).FieldByName(NomeColuna).AsCurrency;
+                  ftExtended: valor := (aQuery as TRESTDWClientSQL).FieldByName(NomeColuna).AsExtended;
+                  ftDate, ftDateTime: valor := (aQuery as TRESTDWClientSQL).FieldByName(NomeColuna).AsDateTime;
+                end;
+                for propriedade in tipo.GetProperties do
+                  for atributo in propriedade.GetAttributes do
+                  begin
+                    if atributo is TChavePrimaria then
+                    begin
+                     if TChavePrimaria(atributo).Nome.Equals(NomeColuna) then
+                     begin
+                       if not valor.IsEmpty then
+                         propriedade.SetValue(TObject(obj), valor);
+                     end;
+                    end;
+                    if atributo is TCampoTexto then
+                    begin
+                      if TCampoTexto(atributo).Nome.Equals(NomeColuna) then
+                      begin
+                        if not valor.IsEmpty then
+                          propriedade.SetValue(TObject(obj), valor);
+                      end;
+                    end;
+                    if atributo is TCampoInteiro then
+                    begin
+                      if TCampoInteiro(atributo).Nome.Equals(NomeColuna) then
+                      begin
+                        if not valor.IsEmpty then
+                          propriedade.SetValue(TObject(obj), valor);
+                      end;
+                    end;
+                    if atributo is TCampoData then
+                    begin
+                      if TCampoData(atributo).Nome.Equals(NomeColuna) then
+                      begin
+                        if not valor.IsEmpty then
+                          propriedade.SetValue(TObject(obj), valor);
+                      end;
+                   end;
+                   if atributo is TCampoDataHora then
+                   begin
+                     if TCampoDataHora(atributo).Nome.Equals(NomeColuna) then
+                     begin
+                       if not valor.IsEmpty then
+                         propriedade.SetValue(TObject(obj), valor);
+                     end;
+                   end;
+                   if atributo is TCampoExtended then
+                   begin
+                      if TCampoExtended(atributo).Nome.Equals(NomeColuna) then
+                      begin
+                        if not valor.IsEmpty then
+                          propriedade.SetValue(TObject(obj), valor);
+                      end;
+                   end;
+                   if atributo is TCampoMonetario then
+                   begin
+                      if TCampoMonetario(atributo).Nome.Equals(NomeColuna) then
+                      begin
+                        if not valor.IsEmpty then
+                         propriedade.SetValue(TObject(obj), valor);
+                      end;
+                   end;
+                   if atributo is TCampoBooleano then
+                   begin
+                     if TCampoBooleano(atributo).Nome.Equals(NomeColuna) then
+                     begin
+                       if not valor.IsEmpty then
+                         propriedade.SetValue(TObject(obj), valor);
+                     end;
+                   end;
+                   if atributo is TChaveEstrangeira then
+                   begin
+                     if TChaveEstrangeira(atributo).Nome.Equals(NomeColuna) then
+                     begin
+                        if not valor.IsEmpty then
+                          propriedade.SetValue(TObject(obj), valor);
+                     end;
+                   end;
+                end;
+             end;
+              ListaObjeto.Add(obj);
+             (aQuery as TRESTDWClientSQL).Next;
+           end;
+         end;
+       end;
+    finally
+     ListaObjeto.Free;
    end;
 end;
 

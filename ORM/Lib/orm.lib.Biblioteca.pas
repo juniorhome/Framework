@@ -5,7 +5,7 @@ interface
 uses SysUtils, IniFiles, Datasnap.DBClient, ZDataset, Data.DB,
   orm.IBaseVO, System.Rtti, orm.Atributos, Vcl.DBGrids, Winapi.Windows, Vcl.Grids, Vcl.Graphics,
   orm.conexao.interfaces.Interfaces, FireDAC.Comp.Client, System.JSON,
-  System.Generics.Collections, uRESTDWPoolerDB;
+  System.Generics.Collections, uRESTDWConsts, uRESTDWBasicDB, System.Classes;
 
   type
     TTipoQuery = (tqFiredac, tqZeos, tqRDW, tqDbExpress);
@@ -136,7 +136,7 @@ begin
    //end;
 
 end;
-{Colocar no evento OnDrawCoumnCell no DBGrid.}
+{Colocar no evento OnDrawColumnCell no DBGrid.}
 procedure TLib<T>.GridZebrado(grid: TDBGrid; aRect: TRect; aDataCol: integer;
   aColumn: TColumn; aState: TGridDrawState);
 var

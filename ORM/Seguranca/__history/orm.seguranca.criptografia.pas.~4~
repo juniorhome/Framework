@@ -28,7 +28,7 @@ begin
    end;
 end;
 
-class function TCriptografia.MD5Arq(const nomeArquivo: string): string;
+class function TCriptografia.MD5Arq(const nomeArquivo: string): string;s
 var
   idmd5: TIdHashMessageDigest5;
   fs: TFileStream;

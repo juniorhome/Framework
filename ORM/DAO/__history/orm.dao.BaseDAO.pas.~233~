@@ -5,7 +5,7 @@ interface
 uses Db,Rtti,orm.conexao.ModelConexaoFactory,orm.IBaseVO,orm.Atributos,
      orm.Lib.Biblioteca, orm.conexao.interfaces.Interfaces, ZDataset,
   uRESTDWPoolerDB, orm.conexao.model_rdw.ModelRDWQuery, System.SysUtils, System.JSON,
-  Generics.Collections;
+  Generics.Collections, System.Contnrs;
   type
     TBaseDAO<T : class, constructor> = class(TInterfacedObject, IDAO<T>)
       private
@@ -22,6 +22,7 @@ uses Db,Rtti,orm.conexao.ModelConexaoFactory,orm.IBaseVO,orm.Atributos,
         function Listagem(obj: T; dataInicio,dataFim: string; const TipoJuncao: TTipoJoin = ttLeftJoin; EhFiltro: boolean = False; ConsultaCompleta: boolean = False): TJSONArray;overload;
         function Listagem(obj: T; dataInicio,dataFim: string; const TipoJuncao: TTipoJoin = ttLeftJoin): TJSONObject;overload;
         function Listagem(obj: T; const TipoJuncao: TTipoJoin = ttLeftJoin): T; overload;
+        function Listagem(obj: T;dataInicio,dataFim: string; const TipoJuncao:TTipoJoin = ttLeftJoin; ConsultaCompleta: boolean = True): TObjectList; overload;
         function ConsultaSql(sql: string): TDataSet;overload;
         {Fazer mais um método de atualização e mais listagem com vários retornos DataSet, IBaseVO, Listagem e Json}
     end;
@@ -417,7 +418,7 @@ var
   strInsert, strCampos,strValores,strTabela: string;
   Lib: TLib<T>;
 begin
-   strInsert := 'INSERT INTO [TABELA]([CAMPOS]) VALUES([VALORES])';
+   strInsert := 'INSERT INTO [TABELA]([CAMPOS]) VALUES([VALORES]) RETURNING ID';
    strCampos := '';
    strValores := '';
    strTabela := '';
@@ -536,7 +537,7 @@ var
   Lib: TLib<T>;
   strSelect, strCampos, strTabela, strJuncao, strWhere, alias, aliasEstrangeiro: string;
 begin
-   strSelect := 'SELECT TOP 100 [CAMPOS] FFOM [TABELA] [JUNCAO] WHERE [CONDICAO]';
+   strSelect := 'SELECT [CAMPOS] FFOM [TABELA] [JUNCAO] WHERE [CONDICAO]';
    strCampos := '';
    strTabela := '';
    strJuncao := '';
@@ -985,11 +986,12 @@ begin
        end;
      end;
 
-     if not strCampos.IsEmpty then
-        strCampos := strCampos + ',';
      for prop in tipo.GetProperties do
        for atributo in prop.GetAttributes do
        begin
+         if not strCampos.IsEmpty then
+            strCampos := strCampos + ',';
+
          if atributo is TChavePrimaria then
            strCampos := strCampos + alias + '.' + TChavePrimaria(atributo).Nome;
          if atributo is TCampoTexto then
@@ -1010,16 +1012,54 @@ begin
            strCampos := strCampos + TCampoEstrangeiro(atributo).Alias + '.' + TCampoEstrangeiro(atributo).Nome;
          if atributo is TCampoFiltro then
          begin
+           if not strCondicao.IsEmpty then
+              strCondicao := strCondicao + ' AND ';
            if prop.PropertyType.TypeKind = tkInteger then
            begin
              if prop.GetValue(TObject(obj)).AsInteger > 0 then
                strCondicao := strCondicao + alias + '.' + TCampoFiltro(atributo).Nome + ' = ' + IntToStr(prop.GetValue(TObject(obj)).AsInteger);
            end;
+           if prop.PropertyType.TypeKind = tkChar then
+           begin
+             if not prop.GetValue(TObject(obj)).AsString.IsEmpty then
+               strCondicao := strCondicao + alias + '.' + TCampoFiltro(atributo).Nome + ' = ' + QuotedStr(prop.GetValue(TObject(obj)).AsString);
+           end;
+           if prop.PropertyType.TypeKind = tkString then
+           begin
+             if not prop.GetValue(TObject(obj)).AsString.IsEmpty then
+               strCondicao := strCondicao + alias + '.' + TCampoFiltro(atributo).Nome + ' LIKE ' + QuotedStr('%'+prop.GetValue(TObject(obj)).AsString+'%');
+           end;
          end;
+         if atributo is TSomatorio then
+           strCampos := strCampos + ' SUM( ' + alias + '.' + TSomatorio(atributo).Nome + ') AS SOMA';
+         if atributo is TMedia then
+           strCampos := strCampos + ' AVG( ' + alias + '.' + TMedia(atributo).Nome + ') AS MEDIA';
+         if atributo is TMinimo then
+           strCampos := strCampos + ' MIN( ' + alias + '.' + TMinimo(atributo).Nome + ') AS MENOR';
+         if atributo is TMaximo then
+            strCampos := strCampos + ' MAX( ' + alias + '.' + TMaximo(atributo).Nome + ') AS MAIOR';
+       end;
+       Lib := TLib<T>.Create;
+       try
+         strSelect := Lib.LocalizarSubstituir(strSelect, '[CAMPOS]', strCampos);
+         strSelect := Lib.LocalizarSubstituir(strSelect, '[TABELA]', strTabela);
+         strSelect := Lib.LocalizarSubstituir(strSelect, '[JUNCAO]', strJuncao);
+         strSelect := Lib.LocalizarSubstituir(strSelect, '[CONDICAO]', strCondicao);
+         FQuery := TModelRDWQuery<T>.new(FConexao).ExecSql(strSelect);
+         if (FQuery as TRESTDWClientSQL).RecordCount > 0 then
+            Result := Lib.QueryParaObjeto(FQuery, tqRDW);
+       finally
+         Lib.Free;
        end;
    finally
      contexto.Free;
    end;
+end;
+
+function TBaseDAO<T>.Listagem(obj: T; dataInicio, dataFim: string;
+  const TipoJuncao: TTipoJoin; ConsultaCompleta: boolean): TObjectList;
+begin
+  ///Implementar depois.
 end;
 
 end.

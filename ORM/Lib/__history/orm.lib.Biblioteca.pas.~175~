@@ -5,7 +5,7 @@ interface
 uses SysUtils, IniFiles, Datasnap.DBClient, ZDataset, Data.DB,
   orm.IBaseVO, System.Rtti, orm.Atributos, Vcl.DBGrids, Winapi.Windows, Vcl.Grids, Vcl.Graphics,
   orm.conexao.interfaces.Interfaces, FireDAC.Comp.Client, System.JSON,
-  System.Generics.Collections, uRESTDWPoolerDB;
+  System.Generics.Collections, uRESTDWConsts, uRESTDWBasicDB;
 
   type
     TTipoQuery = (tqFiredac, tqZeos, tqRDW, tqDbExpress);
@@ -213,7 +213,7 @@ begin
 end;
 
 function TLib<T>.QueryParaArrayJson(aQuery: IModelQuery;
-  op: integer): TJSONArray;
+  aTipoQuery: TTipoQuery): TJSONArray;
 var
   json: TJSONObject;
   ArrayJson: TJSONArray;
@@ -222,8 +222,8 @@ var
 begin
    ArrayJson := TJSONArray.Create;
    try
-     case op of
-     1:
+     case aTipoQuery of
+     tqFiredac:
        begin
          json := TJSONObject.Create;
          (aQuery as TFDQuery).First;
@@ -246,7 +246,7 @@ begin
            (aQuery as TFDQuery).Next;
          end;
        end;
-     2:
+     tqZeos:
        begin
          json := TJSONObject.Create;
          (aQuery as TZQuery).First;
@@ -267,6 +267,29 @@ begin
            end;
            ArrayJson.Add(json);
            (aQuery as TZQuery).Next;
+         end;
+       end;
+     tqRDW:
+       begin
+         json := TJSONObject.Create;
+         (aQuery as TRESTDWClientSQL).First;
+         while not (aQuery as TRESTDWClientSQL).Eof do
+         begin
+           for campo in (aQuery as TRESTDWClientSQL).Fields do
+           begin
+             case campo.DataType of
+               ftString: json.AddPair(campo.FieldName, TJSONString.Create(campo.AsString));
+               ftInteger: json.AddPair(campo.FieldName, TJSONNumber.Create(campo.AsInteger));
+               ftBoolean: json.AddPair(campo.FieldName, TJSONBool.Create(campo.AsBoolean));
+               ftFloat: json.AddPair(campo.FieldName, TJSONNumber.Create(campo.AsFloat));
+               ftCurrency: json.AddPair(campo.FieldName, TJSONString.Create(FormatCurr('##,###0.00', campo.AsCurrency)));
+               ftDate: json.AddPair(campo.FieldName, TJSONString.Create(FormatDateTime('##/##/####', campo.AsDateTime)));
+               ftDateTime: json.AddPair(campo.FieldName, TJSONString.Create(FormatDateTime('##/##/#### HH:mm:ss', campo.AsDateTime)));
+               ftExtended: json.AddPair(campo.FieldName, TJSONString.Create(FormatFloat('###,###0.00', campo.AsExtended)));
+             end;
+           end;
+           ArrayJson.Add(json);
+           (aQuery as TRESTDWClientSQL).Next;
          end;
        end;
      end;
@@ -667,8 +690,7 @@ begin
            end;
          end;
        end;
-     end;
-   finally
+    finally
      ListaObjeto.Free;
    end;
 end;

@@ -33,13 +33,13 @@ begin
   if FileExists(ExtractFileDir(GetCurrentDir)+'\Debug\Config.ini') then
   begin
     //Configurações básicas para funcionar conexão com banco de dados usando arquivo INI.
-    FConexao.Protocol := FArqIni.ReadString('Banco', 'Base', 'Erro ao ler o valor do campo Base');
-    FConexao.DataBase := FArqIni.ReadString('Banco', 'Caminho', 'Erro ao ler o valor Banco');
-    FConexao.HostName := FArqIni.ReadString('Banco', 'Servidor', 'Erro ao ler o valor Servidor');
-    FConexao.LibraryLocation := FArqIni.ReadString('Banco', 'Biblioteca', 'Erro ao ler o valor Biblioteca');
-    FConexao.User := FArqIni.ReadString('Banco', 'Usuario', 'Erro ao ler o valor Usuário');
-    FConexao.Password := FArqIni.ReadString('Banco', 'Senha', 'Erro ao ler o valor');
-    FConexao.Port := StrToInt(FArqIni.ReadString('Banco', 'Porta', 'Erro ao ler o valor Porta'));
+    FConexao.Protocol := FArqIni.ReadString('Configuraçao', 'Driver', 'Erro ao ler o valor');
+    FConexao.DataBase := FArqIni.ReadString('Configuraçao', 'Banco', 'Erro ao ler o valor');
+    FConexao.HostName := FArqIni.ReadString('Configuraçao', 'Host', 'Erro ao ler o valor');
+    FConexao.LibraryLocation := FArqIni.ReadString('Configuraçao', 'DLL', 'Erro ao ler o valor');
+    FConexao.User := FArqIni.ReadString('Configuraçao', 'Usuario', 'Erro ao ler o valor');
+    FConexao.Password := FArqIni.ReadString('Configuraçao', 'Senha', 'Erro ao ler o valor');
+    FConexao.Port := StrToInt(FArqIni.ReadString('Configuraçao', 'Porta', 'Erro ao ler o valor'));
     FConexao.LoginPrompt := False;
     FConexao.Connected := True;
     FConexao.AutoCommit := False;

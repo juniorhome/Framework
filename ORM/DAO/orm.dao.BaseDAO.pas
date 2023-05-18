@@ -4,16 +4,16 @@ interface
 
 uses Db,Rtti,orm.conexao.ModelConexaoFactory,orm.IBaseVO,orm.Atributos,
      orm.Lib.Biblioteca, orm.conexao.interfaces.Interfaces, ZDataset,
-  uRESTDWPoolerDB, orm.conexao.model_rdw.ModelRDWQuery, System.SysUtils, System.JSON,
-  Generics.Collections, System.Contnrs;
+  uRESTDWBasicDB, orm.conexao.model_rdw.ModelRDWQuery, System.SysUtils, System.JSON,
+  Generics.Collections, System.Contnrs, uRESTDWIdBase;
   type
     TBaseDAO<T : class, constructor> = class(TInterfacedObject, IDAO<T>)
       private
-        FConexao: TRESTDWDatabase;
+        FConexao: TRESTDWIdDatabase;
         FQuery: IModelQuery;
       public
-        constructor Create(aConexao: TRESTDWDatabase);
-        class function New(aConexao: TRESTDWDatabase): IDAO<T>;
+        constructor Create(aConexao: TRESTDWIdDatabase);
+        class function New(aConexao: TRESTDWIdDatabase): IDAO<T>;
         function Inserir(obj: T): integer;
         function Atualizar(obj: T): boolean;overload;
         function Atualizar(obj, objOld: T): boolean;overload;
@@ -349,7 +349,7 @@ begin
   raise Exception.Create('Falta implementar esse método');
 end;
 
-constructor TBaseDAO<T>.Create(aConexao: TRESTDWDatabase);
+constructor TBaseDAO<T>.Create(aConexao: TRESTDWIdDatabase);
 begin
    FConexao := aConexao;
 end;
@@ -936,7 +936,7 @@ begin
    end;
 end;
 
-class function TBaseDAO<T>.New(aConexao: TRESTDWDatabase): IDAO<T>;
+class function TBaseDAO<T>.New(aConexao: TRESTDWIdDatabase): IDAO<T>;
 begin
    Result := Self.Create(aConexao);
 end;

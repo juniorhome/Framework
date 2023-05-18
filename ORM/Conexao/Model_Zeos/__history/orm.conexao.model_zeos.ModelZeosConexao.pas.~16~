@@ -34,7 +34,7 @@ begin
   begin
     //Configurações básicas para funcionar conexão com banco de dados usando arquivo INI.
     FConexao.Protocol := FArqIni.ReadString('Banco', 'Base', 'Erro ao ler o valor do campo Base');
-    FConexao.DataBase := FArqIni.ReadString('Banco', 'Caminho', 'Erro ao ler o valor Banco');
+    FConexao.DataBase := FArqIni.ReadString('Banco', 'Banco', 'Erro ao ler o valor Banco');
     FConexao.HostName := FArqIni.ReadString('Banco', 'Servidor', 'Erro ao ler o valor Servidor');
     FConexao.LibraryLocation := FArqIni.ReadString('Banco', 'Biblioteca', 'Erro ao ler o valor Biblioteca');
     FConexao.User := FArqIni.ReadString('Banco', 'Usuario', 'Erro ao ler o valor Usuário');

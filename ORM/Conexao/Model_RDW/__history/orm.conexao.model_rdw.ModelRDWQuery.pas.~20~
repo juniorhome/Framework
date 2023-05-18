@@ -9,12 +9,12 @@ uses
 type
   TModelRDWQuery<T: class, constructor> = class(TInterfacedObject, IModelQuery)
     private
-      FConnection : TRESTDWDatabasebaseBase;
+      FConnection : TRESTDWDatabase;
       FQuery : TRESTDWClientSQL;
     public
-      constructor Create(aConnection: TRESTDWDatabasebaseBase);
+      constructor Create(aConnection: TRESTDWDataBase);
       destructor Destroy;override;
-      class function New(aConnection: TRESTDWDatabasebaseBase): IModelQuery;
+      class function New(aConnection: TRESTDWDataBase): IModelQuery;
       function SQL: TStrings;
       function Params: TParams;
       function ExecSQL: IModelQuery;overload;
@@ -29,7 +29,7 @@ implementation
 
 { TModelRDWQuery }
 
-constructor TModelRDWQuery<T>.Create(aConnection: TRESTDWDatabasebaseBase);
+constructor TModelRDWQuery<T>.Create(aConnection: TRESTDWDataBase);
 var Lib : TLib<T>;
     obj : T;
 begin
@@ -71,7 +71,7 @@ begin
    FQuery.ApplyUpdates(aErro);
 end;
 
-class function TModelRDWQuery<T>.New(aConnection: TRESTDWDatabasebaseBase): IModelQuery;
+class function TModelRDWQuery<T>.New(aConnection: TRESTDWDataBase): IModelQuery;
 begin
    Result := Self.Create(aConnection);
 end;
