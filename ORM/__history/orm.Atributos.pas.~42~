@@ -20,6 +20,8 @@ type
   type
     TTabelaEstrangeira = class(TTabela)
       private
+        FNome:            string;
+        FAlias:           string;
         FId:              string;
         FIdEstrangeiro:   string;
         FTipoJoin:        string;
@@ -27,7 +29,7 @@ type
         property Id: string read FId write FId;
         property IdEstrangeiro: string read FIdEstrangeiro write FIdEstrangeiro;
         property TipoJoin: string read FTipoJoin write FTipoJoin;
-        constructor Create(PId,PidEstrangeiro,PTipoJoin: string);
+        constructor Create(PNome,PAlias,PId,PidEstrangeiro,PTipoJoin: string);
     end;
 
     type
@@ -173,10 +175,12 @@ type
                         type
                           TCampoFiltro = class(TCustomAttribute)
                             private
+                               FNome: string;
                                FEhFiltro: boolean;
                             public
+                               property Nome: string read FNome write FNome;
                                property EhFiltro: boolean read FEhFiltro write FEhFiltro;
-                               constructor Create(PEhFiltro: boolean);
+                               constructor Create(PNome: string;PEhFiltro: boolean);
                           end;
 
                           type
@@ -203,10 +207,10 @@ type
                                   FTamanho:           integer;
                                 public
                                   property Nome: string read FNome write FNome;
-                                  property CaptionSingular: string read FNome write FNome;
+                                  property CaptionSingular: string read FCaptionSingular write FCaptionSingular;
                                   property CaptionPlural: string read FCaptionPlural write FCaptionPlural;
                                   property Tamanho: integer read FTamanho write FTamanho;
-                                  constructor Create(PNome,PCaptionSingula,PCaptionPlural: string; PTamanho: integer);
+                                  constructor Create(PNome,PCaptionSingular,PCaptionPlural: string; PTamanho: integer);
                               end;
   type
     TSomatorio = class(TCustomAttribute)   //SUM()
@@ -278,9 +282,10 @@ end;
 
 { TTabelaEstrangeira }
 
-constructor TTabelaEstrangeira.Create(PId, PidEstrangeiro, PTipoJoin: string);
+constructor TTabelaEstrangeira.Create(PNome,PAlias,PId, PidEstrangeiro, PTipoJoin: string);
 begin
-    inherited Create;
+    FNome             := PNome;
+    FAlias            := PAlias;
     FId               := PId;
     FIdEstrangeiro    := PIdEstrangeiro;
     FTipoJoin         := PTipoJoin;
@@ -367,7 +372,6 @@ end;
 constructor TCampoMonetario.Create(PEhDinheiro: boolean);
 begin
    //chamada do construtor da classe pai.
-   inherited Create;
    FEhDinheiro := PEhDinheiro;
 end;
 
@@ -392,8 +396,9 @@ end;
 
 { TCampoFiltro }
 
-constructor TCampoFiltro.Create(PEhFiltro: boolean);
+constructor TCampoFiltro.Create(PNome: string;PEhFiltro: boolean);
 begin
+   FNome:= PNome;
    FEhFiltro := PEhFiltro;
 end;
 

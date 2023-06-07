@@ -264,6 +264,15 @@ type
              constructor Create(PNome,PAlias: string; PAtivo: boolean);
          end;
 
+         type
+           TBind = class(TCustomAttribute)
+             private
+                FNome: string;
+             public
+                property Nome: string read FNome write FNome;
+                constructor Create(aNome: string);
+           end;
+
        type
          TTipoJoin = (ttInnerJoin, ttLeftJoin, ttRigthJoin);
 
@@ -458,6 +467,13 @@ begin
   FNome := PNome;
   FAlias := PAlias;
   FAtivo := PAtivo;
+end;
+
+{ TBind }
+
+constructor TBind.Create(aNome: string);
+begin
+   FNome := aNome;
 end;
 
 end.

@@ -4,24 +4,25 @@ interface
 
 uses Db,Rtti,orm.conexao.ModelConexaoFactory,orm.IBaseVO,orm.Atributos,
      orm.Lib.Biblioteca, orm.conexao.interfaces.Interfaces, ZDataset,
-  uRESTDWPoolerDB, orm.conexao.model_rdw.ModelRDWQuery, System.SysUtils, System.JSON,
-  Generics.Collections;
+  uRESTDWBasicDB, orm.conexao.model_rdw.ModelRDWQuery, System.SysUtils, System.JSON,
+  Generics.Collections, System.Contnrs, uRESTDWIdBase, Datasnap.DBClient;
   type
     TBaseDAO<T : class, constructor> = class(TInterfacedObject, IDAO<T>)
       private
-        FConexao: TRESTDWDatabase;
+        FConexao: TRESTDWIdDatabase;
         FQuery: IModelQuery;
       public
-        constructor Create(aConexao: TRESTDWDatabase);
-        class function New(aConexao: TRESTDWDatabase): IDAO<T>;
+        constructor Create(aConexao: TRESTDWIdDatabase);
+        class function New(aConexao: TRESTDWIdDatabase): IDAO<T>;
         function Inserir(obj: T): integer;
         function Atualizar(obj: T): boolean;overload;
         function Atualizar(obj, objOld: T): boolean;overload;
         function Excluir(obj: T): boolean;
-        function Listagem(obj: T; dataInicio,dataFim: string; TemData: boolean; const TipoJuncao:TTipoJoin = ttLeftJoin): TDataSet;overload;
+        function Listagem(obj: T; dataInicio,dataFim: string; TemData: boolean; const TipoJuncao:TTipoJoin = ttLeftJoin): TClientDataSet;overload;
         function Listagem(obj: T; dataInicio,dataFim: string; const TipoJuncao: TTipoJoin = ttLeftJoin; EhFiltro: boolean = False; ConsultaCompleta: boolean = False): TJSONArray;overload;
         function Listagem(obj: T; dataInicio,dataFim: string; const TipoJuncao: TTipoJoin = ttLeftJoin): TJSONObject;overload;
         function Listagem(obj: T; const TipoJuncao: TTipoJoin = ttLeftJoin): T; overload;
+        function Listagem(obj: T;dataInicio,dataFim: string; const TipoJuncao:TTipoJoin = ttLeftJoin; ConsultaCompleta: boolean = True): TObjectList; overload;
         function ConsultaSql(sql: string): TDataSet;overload;
         {Fazer mais um método de atualização e mais listagem com vários retornos DataSet, IBaseVO, Listagem e Json}
     end;
@@ -348,9 +349,10 @@ begin
   raise Exception.Create('Falta implementar esse método');
 end;
 
-constructor TBaseDAO<T>.Create(aConexao: TRESTDWDatabase);
+constructor TBaseDAO<T>.Create(aConexao: TRESTDWIdDatabase);
 begin
    FConexao := aConexao;
+   FQuery := TModelRDWQuery<T>.New(FConexao);
 end;
 
 function TBaseDAO<T>.Excluir(obj: T): boolean;
@@ -417,7 +419,7 @@ var
   strInsert, strCampos,strValores,strTabela: string;
   Lib: TLib<T>;
 begin
-   strInsert := 'INSERT INTO [TABELA]([CAMPOS]) VALUES([VALORES])';
+   strInsert := 'INSERT INTO [TABELA]([CAMPOS]) VALUES([VALORES]) RETURNING ID';
    strCampos := '';
    strValores := '';
    strTabela := '';
@@ -536,7 +538,7 @@ var
   Lib: TLib<T>;
   strSelect, strCampos, strTabela, strJuncao, strWhere, alias, aliasEstrangeiro: string;
 begin
-   strSelect := 'SELECT TOP 100 [CAMPOS] FFOM [TABELA] [JUNCAO] WHERE [CONDICAO]';
+   strSelect := 'SELECT [CAMPOS] FFOM [TABELA] [JUNCAO] WHERE [CONDICAO]';
    strCampos := '';
    strTabela := '';
    strJuncao := '';
@@ -758,7 +760,7 @@ begin
    end;
 end;
 
-function TBaseDAO<T>.Listagem(obj: T; dataInicio,dataFim: string; TemData: boolean; const TipoJuncao:TTipoJoin = ttLeftJoin): TDataSet;
+function TBaseDAO<T>.Listagem(obj: T; dataInicio,dataFim: string; TemData: boolean; const TipoJuncao:TTipoJoin = ttLeftJoin): TClientDataSet;
 var
    contexto: TRttiContext;
    tipo: TRttiType;
@@ -766,12 +768,14 @@ var
    atributo: TCustomAttribute;
    strSelect,strTabela,strCampos,strWhere,strJuncao,tabela,alias,aliasEstrangeiro: string;
    Lib: TLib<T>;
+   cds: TClientDataSet;
 begin
    strSelect := 'SELECT TOP 100 [CAMPOS] FROM [TABELA] [JUNCAO] WHERE [CONDICAO]';
    strTabela := '';
    strCampos := '';
    strWhere := '';
    strJuncao := '';
+   cds := TClientDataSet.Create(nil);
    contexto := TRttiContext.Create;
    try
      tipo := contexto.GetType(obj.ClassInfo);
@@ -916,9 +920,7 @@ begin
         strSelect := Lib.LocalizarSubstituir(strSelect, '[JUNCAO]', strJuncao);
         strSelect := Lib.LocalizarSubstituir(strSelect, '[CONDICAO]', strWhere);
         strSelect := Lib.LocalizarSubstituir(strSelect, '[CAMPOS]', strCampos);
-     finally
-       Lib.Free;
-     end;
+
 
      //Executar a query.
      {Modelo Cliente e Servidor.
@@ -929,13 +931,20 @@ begin
      //Rest Dataware n camadas.
      FQuery := TModelRDWQuery<T>.New(FConexao).ExecSql(strSelect);
      if (FQuery as TRestDWClientSQL).RecordCount > 0 then
-         Result := (FQuery as TRestDWClientSQL);
+     begin
+         Lib.CopiarParaDataSet(FQuery, TTipoQuery.tqRDW, cds);
+         Result := cds;
+     end;
+     finally
+       Lib.Free;
+     end;
    finally
      contexto.Free;
+     cds.Free;
    end;
 end;
 
-class function TBaseDAO<T>.New(aConexao: TRESTDWDatabase): IDAO<T>;
+class function TBaseDAO<T>.New(aConexao: TRESTDWIdDatabase): IDAO<T>;
 begin
    Result := Self.Create(aConexao);
 end;
@@ -1044,12 +1053,21 @@ begin
          strSelect := Lib.LocalizarSubstituir(strSelect, '[TABELA]', strTabela);
          strSelect := Lib.LocalizarSubstituir(strSelect, '[JUNCAO]', strJuncao);
          strSelect := Lib.LocalizarSubstituir(strSelect, '[CONDICAO]', strCondicao);
+         FQuery := TModelRDWQuery<T>.new(FConexao).ExecSql(strSelect);
+         if (FQuery as TRESTDWClientSQL).RecordCount > 0 then
+            Result := Lib.QueryParaObjeto(FQuery, tqRDW);
        finally
          Lib.Free;
        end;
    finally
      contexto.Free;
    end;
+end;
+
+function TBaseDAO<T>.Listagem(obj: T; dataInicio, dataFim: string;
+  const TipoJuncao: TTipoJoin; ConsultaCompleta: boolean): TObjectList;
+begin
+  ///Implementar depois.
 end;
 
 end.

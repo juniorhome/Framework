@@ -4,7 +4,7 @@ interface
 
 uses
   Data.DB, orm.IBaseVO, orm.Atributos, System.JSON, System.Contnrs,
-  System.Generics.Collections, Datasnap.DBClient;
+  System.Generics.Collections;
 
 type
     TTipoController = (tcCliente, tcFuncionario, tcFornecedor, tcTransportadora, tcProduto, tcVenda, tcNfe, tcNfce);
@@ -36,7 +36,7 @@ type
      function Inserir(obj: T): integer;
      function Atualizar(obj: T): boolean;
      function Excluir(obj: T): boolean;
-     function Listagem(obj: T; dataInicio,dataFim: string; TemData: boolean; const TipoJuncao:TTipoJoin = ttLeftJoin): TClientDataSet;overload;
+     function Listagem(obj: T; dataInicio,dataFim: string; TemData: boolean; const TipoJuncao:TTipoJoin = ttLeftJoin): TDataSet;overload;
      function Listagem(obj: T; dataInicio,dataFim: string; const TipoJuncao: TTipoJoin = ttLeftJoin; EhFiltro: boolean = False; ConsultaCompleta: boolean = False): TJSONArray;overload;
      function Listagem(obj: T; dataInicio,dataFim: string; const TipoJuncao: TTipoJoin = ttLeftJoin): TJSONObject;overload;
      function Listagem(obj: T;dataInicio,dataFim: string; const TipoJuncao:TTipoJoin = ttLeftJoin; ConsultaCompleta: boolean = True): TObjectList; overload;
@@ -49,7 +49,7 @@ type
      function Salvar(obj: T): integer;
      function Atualizar(obj: T): boolean;
      function Excluir(obj: T): boolean;
-     function Listagem(obj: T): TClientDataSet;
+     function Listagem(obj: T): TDataSet;
    end;
 
    IFabricaController<T: class> = interface(iinterface)

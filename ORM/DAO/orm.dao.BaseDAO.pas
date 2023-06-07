@@ -5,7 +5,7 @@ interface
 uses Db,Rtti,orm.conexao.ModelConexaoFactory,orm.IBaseVO,orm.Atributos,
      orm.Lib.Biblioteca, orm.conexao.interfaces.Interfaces, ZDataset,
   uRESTDWBasicDB, orm.conexao.model_rdw.ModelRDWQuery, System.SysUtils, System.JSON,
-  Generics.Collections, System.Contnrs, uRESTDWIdBase;
+  Generics.Collections, System.Contnrs, uRESTDWIdBase, Datasnap.DBClient;
   type
     TBaseDAO<T : class, constructor> = class(TInterfacedObject, IDAO<T>)
       private
@@ -18,7 +18,7 @@ uses Db,Rtti,orm.conexao.ModelConexaoFactory,orm.IBaseVO,orm.Atributos,
         function Atualizar(obj: T): boolean;overload;
         function Atualizar(obj, objOld: T): boolean;overload;
         function Excluir(obj: T): boolean;
-        function Listagem(obj: T; dataInicio,dataFim: string; TemData: boolean; const TipoJuncao:TTipoJoin = ttLeftJoin): TDataSet;overload;
+        function Listagem(obj: T; dataInicio,dataFim: string; TemData: boolean; const TipoJuncao:TTipoJoin = ttLeftJoin): TClientDataSet;overload;
         function Listagem(obj: T; dataInicio,dataFim: string; const TipoJuncao: TTipoJoin = ttLeftJoin; EhFiltro: boolean = False; ConsultaCompleta: boolean = False): TJSONArray;overload;
         function Listagem(obj: T; dataInicio,dataFim: string; const TipoJuncao: TTipoJoin = ttLeftJoin): TJSONObject;overload;
         function Listagem(obj: T; const TipoJuncao: TTipoJoin = ttLeftJoin): T; overload;
@@ -110,7 +110,7 @@ begin
        else Result := False;}
 
        //Rest Dataware 3 camadas.
-       FQuery := TModelRDWQuery<T>.New(FConexao).ExecSql(strUpdate);
+       FQuery.ExecSql(strUpdate);
        if (FQuery as TRESTDWClientSQL).RecordCount > 0 then
           Result := True
        else Result := False;
@@ -335,7 +335,7 @@ begin
        Lib.Free;
      end;
 
-     FQuery := TModelRDWQuery<T>.New(FConexao).ExecSql(strUpdate);
+     FQuery.ExecSql(strUpdate);
      if (FQuery as TRESTDWClientSQL).RecordCount > 0 then
          Result := True
      else Result := False;
@@ -352,6 +352,7 @@ end;
 constructor TBaseDAO<T>.Create(aConexao: TRESTDWIdDatabase);
 begin
    FConexao := aConexao;
+   FQuery := TModelRDWQuery<T>.New(FConexao);
 end;
 
 function TBaseDAO<T>.Excluir(obj: T): boolean;
@@ -400,7 +401,7 @@ begin
        else Result := False;}
 
        //Rest Dataware n camadas.
-       FQuery := TModelRDWQuery<T>.New(FConexao).ExecSql(strDelete);
+       FQuery.ExecSql(strDelete);
        if (FQuery as TRestDWClientSQL).RecordCount > 0 then
           Result := True
        else Result := False;
@@ -517,7 +518,7 @@ begin
         else Result := False;}
 
         //Rest Dataware n camadas.
-        FQuery := TModelRDWQuery<T>.New(FConexao).ExecSql(strInsert);
+        FQuery.ExecSql(strInsert);
         if (FQuery as TRestDWClientSQL).RecordCount > 0 then
            Result := (FQuery as TRestDWClientSQL).FieldByName('ID').AsInteger
         else Result := -1;
@@ -635,7 +636,8 @@ begin
           strSelect := Lib.LocalizarSubstituir(strSelect, '[CAMPOS]', strCampos);
           strSelect := Lib.LocalizarSubstituir(strSelect, '[JUNCAO]', strJuncao);
           strSelect := Lib.LocalizarSubstituir(strSelect, '[CONDICAO]', strWhere);
-          FQuery := TModelRDWQuery<T>.New(FConexao).ExecSql(strSelect);
+
+          FQuery.ExecSql(strSelect);
           if (FQuery as TRESTDWClientSQL).RecordCount > 0 then
           begin
             json := Lib.QueryParaJson(FQuery, tqRDW);
@@ -748,7 +750,8 @@ begin
              strSelect := Lib.LocalizarSubstituir(strSelect, '[JUNCAO]', strJuncao)
          else  strSelect := Lib.LocalizarSubstituir(strSelect, '[JUNCAO]', '');
          strSelect := Lib.LocalizarSubstituir(strSelect, '[CONDICAO]', strwhere);
-         FQuery := TModelRDWQuery<T>.New(FConexao).ExecSql(strSelect);
+
+         FQuery.ExecSql(strSelect);
          if (FQuery as TRESTDWClientSQL).RecordCount > 0 then
             Result := Lib.QueryParaArrayJson(FQuery, tqRDW);
        finally
@@ -759,7 +762,7 @@ begin
    end;
 end;
 
-function TBaseDAO<T>.Listagem(obj: T; dataInicio,dataFim: string; TemData: boolean; const TipoJuncao:TTipoJoin = ttLeftJoin): TDataSet;
+function TBaseDAO<T>.Listagem(obj: T; dataInicio,dataFim: string; TemData: boolean; const TipoJuncao:TTipoJoin = ttLeftJoin): TClientDataSet;
 var
    contexto: TRttiContext;
    tipo: TRttiType;
@@ -767,12 +770,14 @@ var
    atributo: TCustomAttribute;
    strSelect,strTabela,strCampos,strWhere,strJuncao,tabela,alias,aliasEstrangeiro: string;
    Lib: TLib<T>;
+   cds: TClientDataSet;
 begin
    strSelect := 'SELECT TOP 100 [CAMPOS] FROM [TABELA] [JUNCAO] WHERE [CONDICAO]';
    strTabela := '';
    strCampos := '';
    strWhere := '';
    strJuncao := '';
+   cds := TClientDataSet.Create(nil);
    contexto := TRttiContext.Create;
    try
      tipo := contexto.GetType(obj.ClassInfo);
@@ -917,9 +922,7 @@ begin
         strSelect := Lib.LocalizarSubstituir(strSelect, '[JUNCAO]', strJuncao);
         strSelect := Lib.LocalizarSubstituir(strSelect, '[CONDICAO]', strWhere);
         strSelect := Lib.LocalizarSubstituir(strSelect, '[CAMPOS]', strCampos);
-     finally
-       Lib.Free;
-     end;
+
 
      //Executar a query.
      {Modelo Cliente e Servidor.
@@ -928,11 +931,18 @@ begin
        Result := Lib.CopiarParaDataSet((FQuery as TZQuery));}
 
      //Rest Dataware n camadas.
-     FQuery := TModelRDWQuery<T>.New(FConexao).ExecSql(strSelect);
+     FQuery.ExecSql(strSelect);
      if (FQuery as TRestDWClientSQL).RecordCount > 0 then
-         Result := (FQuery as TRestDWClientSQL);
+     begin
+         Lib.CopiarParaDataSet(FQuery, TTipoQuery.tqRDW, cds);
+         Result := cds;
+     end;
+     finally
+       Lib.Free;
+     end;
    finally
      contexto.Free;
+     cds.Free;
    end;
 end;
 
@@ -1045,7 +1055,8 @@ begin
          strSelect := Lib.LocalizarSubstituir(strSelect, '[TABELA]', strTabela);
          strSelect := Lib.LocalizarSubstituir(strSelect, '[JUNCAO]', strJuncao);
          strSelect := Lib.LocalizarSubstituir(strSelect, '[CONDICAO]', strCondicao);
-         FQuery := TModelRDWQuery<T>.new(FConexao).ExecSql(strSelect);
+
+         FQuery.ExecSql(strSelect);
          if (FQuery as TRESTDWClientSQL).RecordCount > 0 then
             Result := Lib.QueryParaObjeto(FQuery, tqRDW);
        finally

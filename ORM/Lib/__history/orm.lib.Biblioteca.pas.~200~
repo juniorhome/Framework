@@ -5,7 +5,7 @@ interface
 uses SysUtils, IniFiles, Datasnap.DBClient, ZDataset, Data.DB,
   orm.IBaseVO, System.Rtti, orm.Atributos, Vcl.DBGrids, Winapi.Windows, Vcl.Grids, Vcl.Graphics,
   orm.conexao.interfaces.Interfaces, FireDAC.Comp.Client, System.JSON,
-  System.Generics.Collections, uRESTDWPoolerDB, uRESTDWConsts;
+  System.Generics.Collections, uRESTDWConsts, uRESTDWBasicDB, System.Classes;
 
   type
     TTipoQuery = (tqFiredac, tqZeos, tqRDW, tqDbExpress);
@@ -18,7 +18,7 @@ uses SysUtils, IniFiles, Datasnap.DBClient, ZDataset, Data.DB,
          function LocalizarSubstituir(texto,busca,troca: string): string;
          //function VerificaCaminho: boolean;
          procedure EscreverIni(aDriver,aBanco,aHost,aDll,aUsuario,aSenha: string; aPorta:integer);
-         function CopiarParaDataSet(aQuery: TZQuery): TClientDataSet;
+         procedure CopiarParaDataSet(aQuery: IModelQuery; aTipoQuery: TTipoQuery; aCds: TClientDataSet);
          function PegarNomeTabela(aObj: T): string;
          procedure GridZebrado(grid: TDBGrid; aRect: TRect; aDataCol: integer; aColumn: TColumn; aState: TGridDrawState);
          procedure OrdenarColunaGrid(aGrid: TDBGrid; aCds: TClientDataSet);
@@ -28,19 +28,17 @@ uses SysUtils, IniFiles, Datasnap.DBClient, ZDataset, Data.DB,
          function QueryParaJson(aQuery: IModelQuery; aTipoQuery: TTipoQuery): TJSONObject;
          function QueryParaArrayJson(aQuery: IModelQuery; aTipoQuery: TTipoQuery): TJSONArray;
          function QueryParaListaObjeto(aQuery: IModelQuery; aTipoQuery: TTipoQuery): TObjectList<T>;
+         procedure CriarCds(aObj: T; aCds: TClientDataSet);
          //procedure DimensionarGrid(AObj: TObject; AGrid: TDBGrid);
     end;
 
 implementation
 
-uses
-  uRESTDWPoolerDB;
-
 var  caminhoIni: string;
 
 { TLib }
 
-function TLib<T>.CopiarParaDataSet(aQuery: TZQuery): TClientDataSet;
+procedure TLib<T>.CopiarParaDataSet(aQuery: IModelQuery; aTipoQuery: TTipoQuery; aCds: TClientDataSet);
 var cds: TClientDataSet;
     field: TField;
 begin
@@ -118,6 +116,43 @@ begin
   //
 end;
 
+procedure TLib<T>.CriarCds(aObj: T; aCds: TClientDataSet);
+var contexto: TRttiContext;
+    tipo: TRttiType;
+    prop: TRttiProperty;
+    atributo: TCustomAttribute;
+begin
+     contexto := TRttiContext.Create;
+     try
+       tipo := contexto.GetType(aObj.ClassInfo);
+       for prop in tipo.GetProperties do
+         for atributo in prop.GetAttributes do
+         begin
+           if atributo is TChavePrimaria then
+             aCds.FieldDefs.Add(TChavePrimaria(atributo).Nome, ftInteger);
+           if atributo is TCampoTexto then
+             aCds.FieldDefs.Add(TCampoTexto(atributo).Nome, ftString, TCampoTexto(atributo).Tamanho);
+           if atributo is TCampoInteiro then
+             aCds.FieldDefs.Add(TCampoInteiro(atributo).Nome, ftInteger);
+           if atributo is TCampoData then
+             aCds.FieldDefs.Add(TCampoData(atributo).Nome, ftDate);
+           if atributo is TCampoDataHora then
+             aCds.FieldDefs.Add(TCampoDataHora(atributo).Nome, ftDate);
+           if atributo is TCampoExtended then
+             aCds.FieldDefs.Add(TCampoExtended(atributo).Nome, ftExtended);
+           if atributo is TCampoMonetario then
+             aCds.FieldDefs.Add(TCampoMonetario(atributo).Nome, ftCurrency);
+           if atributo is TCampoBooleano then
+              aCds.FieldDefs.Add(TCampoBooleano(atributo).Nome, ftBoolean);
+           if atributo is TChaveEstrangeira then
+             aCds.FieldDefs.Add(TChaveEstrangeira(atributo).Nome, ftInteger);
+         end;
+         aCds.CreateDataSet;
+     finally
+       contexto.Free;
+     end;
+end;
+
 destructor TLib<T>.Destroy;
 begin
   FArqIni.Free;
@@ -139,7 +174,7 @@ begin
    //end;
 
 end;
-{Colocar no evento OnDrawCoumnCell no DBGrid.}
+{Colocar no evento OnDrawColumnCell no DBGrid.}
 procedure TLib<T>.GridZebrado(grid: TDBGrid; aRect: TRect; aDataCol: integer;
   aColumn: TColumn; aState: TGridDrawState);
 var
