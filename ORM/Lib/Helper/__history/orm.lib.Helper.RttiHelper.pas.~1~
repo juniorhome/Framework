@@ -1,0 +1,16 @@
+unit orm.lib.Helper.RttiHelper;
+
+interface
+
+uses System.Rtti;
+
+type
+  TRttiFieldHelper = class Helper for TRttiField
+    private
+    public
+  end;
+
+
+implementation
+
+end.

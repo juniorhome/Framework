@@ -29,7 +29,6 @@ type
          function Query: TObject;
          function Open(aSql: string): IModelQuery;
          function ExecSql(aSql: string): IModelQuery;
-         function DataSet: TDataSet;
    end;
 
    IDAO <T: class> = interface(iinterface)
@@ -42,7 +41,6 @@ type
      function Listagem(obj: T; dataInicio,dataFim: string; const TipoJuncao: TTipoJoin = ttLeftJoin): IDAO<T>;overload;
      function Listagem(obj: T;dataInicio,dataFim: string; const TipoJuncao:TTipoJoin = ttLeftJoin; ConsultaCompleta: boolean = True): IDAO<T>; overload;
      function Listagem(obj: T; const TipoJuncao: TTipoJoin = ttLeftJoin): IDAO<T>; overload;
-     function DataSource(aDataSource: TDataSource): IDAO<T>;
      function ConsultaSql(sql: string): TDataSet;
    end;
 

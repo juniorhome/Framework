@@ -25,9 +25,7 @@ uses Db,Rtti,orm.conexao.ModelConexaoFactory,orm.IBaseVO,orm.Atributos,
         function Listagem(obj: T; dataInicio,dataFim: string; const TipoJuncao: TTipoJoin = ttLeftJoin): IDAO<T>;overload;
         function Listagem(obj: T; const TipoJuncao: TTipoJoin = ttLeftJoin): IDAO<T>; overload;
         function Listagem(obj: T;dataInicio,dataFim: string; const TipoJuncao:TTipoJoin = ttLeftJoin; ConsultaCompleta: boolean = True): IDAO<T>; overload;
-        function DataSource(aDataSource: TDataSource): IDAO<T>;
         function ConsultaSql(sql: string): TDataSet;overload;
-        procedure OnDataChange(Sender: TObject; Field: TField);
         {Fazer mais um método de atualização e mais listagem com vários retornos DataSet, IBaseVO, Listagem e Json}
     end;
 
@@ -359,14 +357,6 @@ begin
    FQuery := aQuery;
 end;
 
-function TBaseDAO<T>.DataSource(aDataSource: TDataSource): IDAO<T>;
-begin
-  Result := Self;
-  FDataSource := aDataSource;
-  FDataSource.DataSet := FQuery.DataSet;
-  FDataSource.OnDataChange := OnDataChange;
-end;
-
 function TBaseDAO<T>.Excluir(obj: T): IDAO<T>;
 var
   contexto: TRttiContext;
@@ -690,7 +680,7 @@ begin
 end;
 
 function TBaseDAO<T>.Listagem(obj: T; dataInicio,dataFim: string; const TipoJuncao: TTipoJoin; EhFiltro,
-  ConsultaCompleta: boolean): IDAO<T>;
+  ConsultaCompleta: boolean): TJSONArray;
 var
    contexto: TRttiContext;
    tipo: TRttiType;
@@ -699,7 +689,6 @@ var
    strSelect,strTabela,strCampos,strwhere, strJuncao, alias, aliasEStrangeiro: string;
    Lib: TLib<T>;
 begin
-   Result := Self;
    strSelect := 'SELECT TOP 100 [CAMPOS] FROM [TABELA] [JUNCAO] WHERE [CONDICAO]';
    strTabela := '';
    strCampos := '';
@@ -795,7 +784,8 @@ begin
          else strSelect := Lib.LocalizarSubstituir(strSelect, '[CONDICAO]', strwhere);
 
          FQuery.ExecSql(strSelect);
-         Lib.QueryParaArrayJson(FQuery, tqRDW);
+         if (FQuery as TRESTDWClientSQL).RecordCount > 0 then
+            Result := Lib.QueryParaArrayJson(FQuery, tqRDW);
        finally
          Lib.Free;
        end;
@@ -804,7 +794,7 @@ begin
    end;
 end;
 
-function TBaseDAO<T>.Listagem(obj: T; dataInicio,dataFim: string; TemData: boolean; const TipoJuncao:TTipoJoin = ttLeftJoin): IDAO<T>;
+function TBaseDAO<T>.Listagem(obj: T; dataInicio,dataFim: string; TemData: boolean; const TipoJuncao:TTipoJoin = ttLeftJoin): TClientDataSet;
 var
    contexto: TRttiContext;
    tipo: TRttiType;
@@ -982,7 +972,9 @@ begin
        cds.Active := True;
        cds.Open;
        FQuery.ExecSql(strSelect);
-       Lib.CopiarParaDataSet(FQuery, TTipoQuery.tqRDW, cds);
+       if (FQuery.Query as TRestDWClientSQL).RecordCount > 0 then
+          Lib.CopiarParaDataSet(FQuery, TTipoQuery.tqRDW, cds);
+       Result := cds;
      finally
        Lib.Free;
      end;
@@ -997,23 +989,7 @@ begin
    Result := Self.Create(aQuery);
 end;
 
-procedure TBaseDAO<T>.OnDataChange(Sender: TObject; Field: TField);
-var
-  contexto: TRttiContext;
-  tipo: TRttiType;
-  campo: TRttiField;
-  atributo: TCustomAttribute;
-begin
-   //Fazer o bind com o objeto.
-   contexto := TRttiContext.Create;
-   try
-     tipo := contexto.GetType();
-   finally
-     contexto.Free;
-   end;
-end;
-
-function TBaseDAO<T>.Listagem(obj: T; const TipoJuncao: TTipoJoin): IDAO<T>;
+function TBaseDAO<T>.Listagem(obj: T; const TipoJuncao: TTipoJoin): T;
 var
    contexto:               TRttiContext;
    prop:                   TRttiProperty;
@@ -1026,7 +1002,6 @@ var
    strCondicao, alias:     string;
    Lib:                    TLib<T>;
 begin
-   Result := Self;
    strSelect :=    'SELECT [CAMPOS] FROM [TABELA] [JUNCAO] WHERE [CONDICAO]';
    strCampos :=    '';
    strTabela :=    '';
@@ -1125,7 +1100,8 @@ begin
          else strSelect := Lib.LocalizarSubstituir(strSelect, '[CONDICAO]', strCondicao);
 
          FQuery.ExecSql(strSelect);
-         Lib.QueryParaObjeto(FQuery, tqRDW);
+         if (FQuery as TRESTDWClientSQL).RecordCount > 0 then
+            Result := Lib.QueryParaObjeto(FQuery, tqRDW);
        finally
          Lib.Free;
        end;
@@ -1135,7 +1111,7 @@ begin
 end;
 
 function TBaseDAO<T>.Listagem(obj: T; dataInicio, dataFim: string;
-  const TipoJuncao: TTipoJoin; ConsultaCompleta: boolean): IDAO<T>;
+  const TipoJuncao: TTipoJoin; ConsultaCompleta: boolean): TObjectList;
 begin
   ///Implementar depois.
 end;

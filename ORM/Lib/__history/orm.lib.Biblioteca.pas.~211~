@@ -5,8 +5,7 @@ interface
 uses SysUtils, IniFiles, Datasnap.DBClient, ZDataset, Data.DB,
   orm.IBaseVO, System.Rtti, orm.Atributos, Vcl.DBGrids, Winapi.Windows, Vcl.Grids, Vcl.Graphics,
   orm.conexao.interfaces.Interfaces, FireDAC.Comp.Client, System.JSON,
-  System.Generics.Collections, uRESTDWConsts, uRESTDWBasicDB, System.Classes,
-  Vcl.Forms;
+  System.Generics.Collections, uRESTDWConsts, uRESTDWBasicDB, System.Classes;
 
   type
     TTipoQuery = (tqFiredac, tqZeos, tqRDW, tqDbExpress);
@@ -30,7 +29,6 @@ uses SysUtils, IniFiles, Datasnap.DBClient, ZDataset, Data.DB,
          function QueryParaArrayJson(aQuery: IModelQuery; aTipoQuery: TTipoQuery): TJSONArray;
          function QueryParaListaObjeto(aQuery: IModelQuery; aTipoQuery: TTipoQuery): TObjectList<T>;
          procedure CriarCds(aObj: T; aCds: TClientDataSet);
-         class procedure BindForm(aObj: T; aForm: TForm);
          //procedure DimensionarGrid(AObj: TObject; AGrid: TDBGrid);
     end;
 
@@ -39,32 +37,6 @@ implementation
 var  caminhoIni: string;
 
 { TLib }
-
-class procedure TLib<T>.BindForm(aObj: T; aForm: TForm);
-var
-   contexto: TRttiContext;
-   tipo: TRttiType;
-   campo: TRttiField;
-   atributo: TCustomAttribute;
-begin
-   if Assigned(aForm) then
-   begin
-     contexto := TRttiContext.Create;
-     try
-       tipo := contexto.GetType(aForm.ClassInfo);
-       for campo in tipo.GetFields do
-        for atributo in campo.GetAttributes do
-        begin
-          if atributo is TBind then
-          begin
-
-          end;
-        end;
-     finally
-       contexto.Free;
-     end;
-   end;
-end;
 
 procedure TLib<T>.CopiarParaDataSet(aQuery: IModelQuery; aTipoQuery: TTipoQuery; aCds: TClientDataSet);
 var field: TField;
@@ -85,26 +57,26 @@ begin
      end;
      tqZeos:
      begin
-       (aQuery.Query as TZQuery).First;
+       (aQuery as TZQuery).First;
         aCds.Append;
-        while not (aQuery.Query as TZQuery).Eof do
+        while not (aQuery as TZQuery).Eof do
         begin
-          for field in (aQuery.Query as TZQuery).Fields do
+          for field in (aQuery as TZQuery).Fields do
             aCds.Fields[field.Index].Value := field.Value;
           aCds.Post;
-         (aQuery.Query as TZQuery).Next;
+         (aQuery as TZQuery).Next;
         end;
       end;
       tqRDW:
       begin
-        (aQuery.Query as TRESTDWClientSQL).First;
+        (aQuery as TRESTDWClientSQL).First;
         aCds.Append;
-        while not (aQuery.Query as TRESTDWClientSQL).Eof do
+        while not (aQuery as TRESTDWClientSQL).Eof do
         begin
-          for field in (aQuery.Query as TRESTDWClientSQL).Fields do
+          for field in (aQuery as TRESTDWClientSQL).Fields do
             aCds.Fields[field.Index].Value := field.Value;
           aCds.Post;
-         (aQuery.Query as TRESTDWClientSQL).Next;
+         (aQuery as TRESTDWClientSQL).Next;
         end;
       end;
       tqDbExpress:

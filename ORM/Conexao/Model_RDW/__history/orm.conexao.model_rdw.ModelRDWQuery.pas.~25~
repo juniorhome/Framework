@@ -59,11 +59,11 @@ end;
 function TModelRDWQuery<T>.ExecSQL(aSql: string): IModelQuery;
 var aErro: string;
 begin
-   Result := Self;
    FQuery.SQL.Clear;
    FQuery.SQL.Add(aSql);
-   if FQuery.ExecSQL(aErro) then
-     FQuery.ApplyUpdates(aErro);
+   Result := Self;
+   FQuery.ExecSQL(aErro);
+   FQuery.ApplyUpdates(aErro);
 end;
 
 function TModelRDWQuery<T>.ExecSQL: IModelQuery;

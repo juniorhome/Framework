@@ -53,13 +53,9 @@ begin
      try
        tipo := contexto.GetType(aForm.ClassInfo);
        for campo in tipo.GetFields do
-        for atributo in campo.GetAttributes do
-        begin
-          if atributo is TBind then
-          begin
+       begin
 
-          end;
-        end;
+       end;
      finally
        contexto.Free;
      end;

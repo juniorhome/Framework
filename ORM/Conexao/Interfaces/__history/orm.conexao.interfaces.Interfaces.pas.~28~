@@ -29,7 +29,6 @@ type
          function Query: TObject;
          function Open(aSql: string): IModelQuery;
          function ExecSql(aSql: string): IModelQuery;
-         function DataSet: TDataSet;
    end;
 
    IDAO <T: class> = interface(iinterface)

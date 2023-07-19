@@ -998,19 +998,8 @@ begin
 end;
 
 procedure TBaseDAO<T>.OnDataChange(Sender: TObject; Field: TField);
-var
-  contexto: TRttiContext;
-  tipo: TRttiType;
-  campo: TRttiField;
-  atributo: TCustomAttribute;
 begin
    //Fazer o bind com o objeto.
-   contexto := TRttiContext.Create;
-   try
-     tipo := contexto.GetType();
-   finally
-     contexto.Free;
-   end;
 end;
 
 function TBaseDAO<T>.Listagem(obj: T; const TipoJuncao: TTipoJoin): IDAO<T>;

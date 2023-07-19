@@ -47,23 +47,7 @@ var
    campo: TRttiField;
    atributo: TCustomAttribute;
 begin
-   if Assigned(aForm) then
-   begin
-     contexto := TRttiContext.Create;
-     try
-       tipo := contexto.GetType(aForm.ClassInfo);
-       for campo in tipo.GetFields do
-        for atributo in campo.GetAttributes do
-        begin
-          if atributo is TBind then
-          begin
 
-          end;
-        end;
-     finally
-       contexto.Free;
-     end;
-   end;
 end;
 
 procedure TLib<T>.CopiarParaDataSet(aQuery: IModelQuery; aTipoQuery: TTipoQuery; aCds: TClientDataSet);

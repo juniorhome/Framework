@@ -27,7 +27,6 @@ uses Db,Rtti,orm.conexao.ModelConexaoFactory,orm.IBaseVO,orm.Atributos,
         function Listagem(obj: T;dataInicio,dataFim: string; const TipoJuncao:TTipoJoin = ttLeftJoin; ConsultaCompleta: boolean = True): IDAO<T>; overload;
         function DataSource(aDataSource: TDataSource): IDAO<T>;
         function ConsultaSql(sql: string): TDataSet;overload;
-        procedure OnDataChange(Sender: TObject; Field: TField);
         {Fazer mais um método de atualização e mais listagem com vários retornos DataSet, IBaseVO, Listagem e Json}
     end;
 
@@ -363,8 +362,7 @@ function TBaseDAO<T>.DataSource(aDataSource: TDataSource): IDAO<T>;
 begin
   Result := Self;
   FDataSource := aDataSource;
-  FDataSource.DataSet := FQuery.DataSet;
-  FDataSource.OnDataChange := OnDataChange;
+  FDataSource.DataSet := TDataSet(FQuery);
 end;
 
 function TBaseDAO<T>.Excluir(obj: T): IDAO<T>;
@@ -995,22 +993,6 @@ end;
 class function TBaseDAO<T>.New(aQuery: IModelQuery): IDAO<T>;
 begin
    Result := Self.Create(aQuery);
-end;
-
-procedure TBaseDAO<T>.OnDataChange(Sender: TObject; Field: TField);
-var
-  contexto: TRttiContext;
-  tipo: TRttiType;
-  campo: TRttiField;
-  atributo: TCustomAttribute;
-begin
-   //Fazer o bind com o objeto.
-   contexto := TRttiContext.Create;
-   try
-     tipo := contexto.GetType();
-   finally
-     contexto.Free;
-   end;
 end;
 
 function TBaseDAO<T>.Listagem(obj: T; const TipoJuncao: TTipoJoin): IDAO<T>;

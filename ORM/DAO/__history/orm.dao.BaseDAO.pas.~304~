@@ -1007,7 +1007,7 @@ begin
    //Fazer o bind com o objeto.
    contexto := TRttiContext.Create;
    try
-     tipo := contexto.GetType();
+
    finally
      contexto.Free;
    end;

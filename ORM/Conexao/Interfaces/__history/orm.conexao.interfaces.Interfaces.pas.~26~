@@ -29,20 +29,18 @@ type
          function Query: TObject;
          function Open(aSql: string): IModelQuery;
          function ExecSql(aSql: string): IModelQuery;
-         function DataSet: TDataSet;
    end;
 
    IDAO <T: class> = interface(iinterface)
      ['{7FBAC46D-3355-414C-9B35-CB20D000BB27}']
-     function Inserir(obj: T): IDAO<T>;
-     function Atualizar(obj: T): IDAO<T>;
-     function Excluir(obj: T): IDAO<T>;
-     function Listagem(obj: T; dataInicio,dataFim: string; TemData: boolean; const TipoJuncao:TTipoJoin = ttLeftJoin): IDAO<T>;overload;
-     function Listagem(obj: T; dataInicio,dataFim: string; const TipoJuncao: TTipoJoin = ttLeftJoin; EhFiltro: boolean = False; ConsultaCompleta: boolean = False): IDAO<T>;overload;
-     function Listagem(obj: T; dataInicio,dataFim: string; const TipoJuncao: TTipoJoin = ttLeftJoin): IDAO<T>;overload;
-     function Listagem(obj: T;dataInicio,dataFim: string; const TipoJuncao:TTipoJoin = ttLeftJoin; ConsultaCompleta: boolean = True): IDAO<T>; overload;
-     function Listagem(obj: T; const TipoJuncao: TTipoJoin = ttLeftJoin): IDAO<T>; overload;
-     function DataSource(aDataSource: TDataSource): IDAO<T>;
+     function Inserir(obj: T): integer;
+     function Atualizar(obj: T): boolean;
+     function Excluir(obj: T): boolean;
+     function Listagem(obj: T; dataInicio,dataFim: string; TemData: boolean; const TipoJuncao:TTipoJoin = ttLeftJoin): TClientDataSet;overload;
+     function Listagem(obj: T; dataInicio,dataFim: string; const TipoJuncao: TTipoJoin = ttLeftJoin; EhFiltro: boolean = False; ConsultaCompleta: boolean = False): TJSONArray;overload;
+     function Listagem(obj: T; dataInicio,dataFim: string; const TipoJuncao: TTipoJoin = ttLeftJoin): TJSONObject;overload;
+     function Listagem(obj: T;dataInicio,dataFim: string; const TipoJuncao:TTipoJoin = ttLeftJoin; ConsultaCompleta: boolean = True): TObjectList; overload;
+     function Listagem(obj: T; const TipoJuncao: TTipoJoin = ttLeftJoin): T; overload;
      function ConsultaSql(sql: string): TDataSet;
    end;
 
