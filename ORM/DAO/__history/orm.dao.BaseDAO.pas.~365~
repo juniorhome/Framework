@@ -3,29 +3,24 @@ unit orm.dao.BaseDAO;
 interface
 
 uses
-     System.SysUtils,
-     System.JSON,
-     System.Contnrs,
-     System.Classes,
-
      Db,
      Rtti,
-
      ZDataset,
-
      uRESTDWBasicDB,
-     uRESTDWIdBase,
-
      Generics.Collections,
+     uRESTDWIdBase,
      Datasnap.DBClient,
      Vcl.Forms,
-
      orm.conexao.ModelConexaoFactory,
      orm.IBaseVO,orm.Atributos,
      orm.Lib.Biblioteca,
      orm.conexao.interfaces.Interfaces,
      orm.conexao.model_rdw.ModelRDWQuery,
-     orm.lib.RttiUtils;
+     orm.lib.RttiUtils,
+     System.SysUtils,
+     System.JSON,
+     System.Contnrs,
+     System.Classes;
   type
     TBaseDAO<T : class, constructor> = class(TInterfacedObject, IDAO<T>)
       private
@@ -720,117 +715,117 @@ begin
    end;
 end;
 
-//function TBaseDAO<T>.Listagem(obj: T; dataInicio,dataFim: string; const TipoJuncao: TTipoJoin = ttLeftJoin): IDAO<T>;
-//var
-//   contexto: TRttiContext;
-//   tipo: TRttiType;
-//   propriedade: TRttiProperty;
-//   atributo: TCustomAttribute;
-//   strSelect,strTabela,strCampos,strwhere, strJuncao, alias, aliasEStrangeiro: string;
-//   Lib: TLib<T>;
-//begin
-//   Result := Self;
-//   strSelect := 'SELECT TOP 100 [CAMPOS] FROM [TABELA] [JUNCAO] WHERE [CONDICAO]';
-//   strTabela := '';
-//   strCampos := '';
-//   strJuncao := '';
-//   strwhere := '';
-//   contexto := TRttiContext.Create;
-//   try
-//     tipo := contexto.GetType(TObject(obj).ClassInfo);
-//     for atributo in tipo.GetAttributes do
-//     begin
-//       if atributo is TTabela then
-//       begin
-//          alias := TTabela(atributo).Alias;
-//          strTabela := strTabela + TTabela(atributo).Nome + '' + TTabela(atributo).Alias;
-//       end;
-//       if not strJuncao.IsEmpty then
-//          strJuncao := strJuncao + '#10#13';
-//
-//       if atributo is TTabelaEstrangeira then
-//       begin
-//        aliasEstrangeiro := TTabelaEstrangeira(atributo).Alias;
-//         case TipoJuncao of
-//           ttInnerJoin: strJuncao := strJuncao + ' INNER JOIN ' + TTabelaEstrangeira(atributo).Nome + '' + TTabelaEstrangeira(atributo).Alias +
-//                                                 ' ON ' + TTabelaEstrangeira(atributo).Alias + '.' + TTabelaEstrangeira(atributo).IdEstrangeiro + '=' + TTabelaEstrangeira(atributo).Id;
-//           ttLeftJoin: strJuncao := strJuncao + ' LEFT JOIN ' + TTabelaEstrangeira(atributo).Nome + '' + TTabelaEstrangeira(atributo).Alias +
-//                                                  ' ON ' + TTabelaEstrangeira(atributo).Alias + '.' + TTabelaEstrangeira(atributo).IdEstrangeiro + '=' + TTabelaEstrangeira(atributo).Id;
-//           ttRigthJoin: strJuncao := strJuncao + ' RIGTH JOIN ' + TTabelaEstrangeira(atributo).Nome + '' + TTabelaEstrangeira(atributo).Alias +
-//                                                  ' ON ' + TTabelaEstrangeira(atributo).Alias + '.' + TTabelaEstrangeira(atributo).IdEstrangeiro + '=' + TTabelaEstrangeira(atributo).Id ;
-//         end;
-//       end;
-//     end;
-//
-//     for propriedade in tipo.GetProperties do
-//       for atributo in propriedade.GetAttributes do
-//       begin
-//         if not strCampos.IsEmpty then
-//            strCampos := strCampos + ',';
-//         if atributo is TCampoTexto then
-//            strCampos := strCampos + alias + '.' + TCampoTexto(atributo).Nome;
-//         if atributo is TCampoInteiro then
-//            strCampos := strCampos + alias + '.' + TCampoInteiro(atributo).Nome;
-//         if atributo is TCampoData then
-//            strCampos := strCampos + alias + '.' + TCampoData(atributo).Nome;
-//         if atributo is TCampoDataHora then
-//            strCampos := strCampos + alias + '.' + TCampoDataHora(atributo).Nome;
-//         if atributo is TCampoExtended then
-//            strCampos := strCampos + alias + '.' + TCampoExtended(atributo).Nome;
-//         if atributo is TCampoMonetario then
-//            strCampos := strCampos + alias + '.' + TCampoMonetario(atributo).Nome;
-//         if atributo is TCampoBooleano then
-//            strCampos := strCampos + alias + '.' + TCampoBooleano(atributo).Nome;
-//         if atributo is TCampoEstrangeiro then
-//            strCampos := strCampos + aliasEStrangeiro + '.' + TCampoEstrangeiro(atributo).Nome;
-//         if atributo is TSomatorio then
-//            strCampos := strCampos + ' SUM(' + alias + '.' + TSomatorio(atributo).Nome + ')';
-//         if atributo is TMedia then
-//           strCampos := strCampos + ' AVG(' + alias + '.' + TMedia(atributo).Nome + ')';
-//         if atributo is TMaximo then
-//           strCampos := strCampos + ' MAX(' + alias + '.' + TMaximo(atributo).Nome + ')';
-//         if atributo is TMinimo then
-//           strCampos := strCampos + ' MIN(' + alias + '.' + TMinimo(atributo).Nome + ')';
-//
-//         if not strWhere.IsEmpty then
-//            strWhere := strWhere + ' AND ';
-//         if atributo is TCampoFiltro then
-//         begin
-//           if propriedade.PropertyType.TypeKind = tkFloat then
-//           begin
-//             if CompareText(propriedade.PropertyType.Name, 'TDateTime') > 0 then
-//             begin
-//               if not(dataInicio.IsEmpty) and not(dataFim.IsEmpty) then
-//                 strWhere := strWhere + ' BETWEEN ' + dataInicio + ' AND ' + dataFim;
-//             end;
-//           end;
-//         end;
-//       end;
-//       //Formatar a string que contém os campos.
-//       strCampos := FormatarString(strCampos);
-//
-//       Lib := TLib<T>.Create;
-//       try
-//         strSelect := Lib.LocalizarSubstituir(strSelect, '[TABELA]', strTabela);
-//         strSelect := Lib.LocalizarSubstituir(strSelect, '[CAMPOS]', strCampos);
-//         if not strJuncao.IsEmpty then
-//             strSelect := Lib.LocalizarSubstituir(strSelect, '[JUNCAO]', strJuncao)
-//         else  strSelect := Lib.LocalizarSubstituir(strSelect, '[JUNCAO]', '');
-//         if strWhere.IsEmpty then
-//           Delete(strSelect, Pos('WHERE', strSelect), 1)
-//         else strSelect := Lib.LocalizarSubstituir(strSelect, '[CONDICAO]', strwhere);
-//
-//         FQuery.SQL.Clear;
-//         FQuery.SQL.Add(strSelect);
-//         FQuery.Open;
-//         Lib.QueryParaArrayJson(FQuery, tqRDW);
-//       finally
-//         Lib.Free;
-//       end;
-//   finally
-//     contexto.Free;
-//   end;
-//end;
+function TBaseDAO<T>.Listagem(obj: T; dataInicio,dataFim: string; const TipoJuncao: TTipoJoin = ttLeftJoin): IDAO<T>;
+var
+   contexto: TRttiContext;
+   tipo: TRttiType;
+   propriedade: TRttiProperty;
+   atributo: TCustomAttribute;
+   strSelect,strTabela,strCampos,strwhere, strJuncao, alias, aliasEStrangeiro: string;
+   Lib: TLib<T>;
+begin
+   Result := Self;
+   strSelect := 'SELECT TOP 100 [CAMPOS] FROM [TABELA] [JUNCAO] WHERE [CONDICAO]';
+   strTabela := '';
+   strCampos := '';
+   strJuncao := '';
+   strwhere := '';
+   contexto := TRttiContext.Create;
+   try
+     tipo := contexto.GetType(TObject(obj).ClassInfo);
+     for atributo in tipo.GetAttributes do
+     begin
+       if atributo is TTabela then
+       begin
+          alias := TTabela(atributo).Alias;
+          strTabela := strTabela + TTabela(atributo).Nome + '' + TTabela(atributo).Alias;
+       end;
+       if not strJuncao.IsEmpty then
+          strJuncao := strJuncao + '#10#13';
+
+       if atributo is TTabelaEstrangeira then
+       begin
+        aliasEstrangeiro := TTabelaEstrangeira(atributo).Alias;
+         case TipoJuncao of
+           ttInnerJoin: strJuncao := strJuncao + ' INNER JOIN ' + TTabelaEstrangeira(atributo).Nome + '' + TTabelaEstrangeira(atributo).Alias +
+                                                 ' ON ' + TTabelaEstrangeira(atributo).Alias + '.' + TTabelaEstrangeira(atributo).IdEstrangeiro + '=' + TTabelaEstrangeira(atributo).Id;
+           ttLeftJoin: strJuncao := strJuncao + ' LEFT JOIN ' + TTabelaEstrangeira(atributo).Nome + '' + TTabelaEstrangeira(atributo).Alias +
+                                                  ' ON ' + TTabelaEstrangeira(atributo).Alias + '.' + TTabelaEstrangeira(atributo).IdEstrangeiro + '=' + TTabelaEstrangeira(atributo).Id;
+           ttRigthJoin: strJuncao := strJuncao + ' RIGTH JOIN ' + TTabelaEstrangeira(atributo).Nome + '' + TTabelaEstrangeira(atributo).Alias +
+                                                  ' ON ' + TTabelaEstrangeira(atributo).Alias + '.' + TTabelaEstrangeira(atributo).IdEstrangeiro + '=' + TTabelaEstrangeira(atributo).Id ;
+         end;
+       end;
+     end;
+
+     for propriedade in tipo.GetProperties do
+       for atributo in propriedade.GetAttributes do
+       begin
+         if not strCampos.IsEmpty then
+            strCampos := strCampos + ',';
+         if atributo is TCampoTexto then
+            strCampos := strCampos + alias + '.' + TCampoTexto(atributo).Nome;
+         if atributo is TCampoInteiro then
+            strCampos := strCampos + alias + '.' + TCampoInteiro(atributo).Nome;
+         if atributo is TCampoData then
+            strCampos := strCampos + alias + '.' + TCampoData(atributo).Nome;
+         if atributo is TCampoDataHora then
+            strCampos := strCampos + alias + '.' + TCampoDataHora(atributo).Nome;
+         if atributo is TCampoExtended then
+            strCampos := strCampos + alias + '.' + TCampoExtended(atributo).Nome;
+         if atributo is TCampoMonetario then
+            strCampos := strCampos + alias + '.' + TCampoMonetario(atributo).Nome;
+         if atributo is TCampoBooleano then
+            strCampos := strCampos + alias + '.' + TCampoBooleano(atributo).Nome;
+         if atributo is TCampoEstrangeiro then
+            strCampos := strCampos + aliasEStrangeiro + '.' + TCampoEstrangeiro(atributo).Nome;
+         if atributo is TSomatorio then
+            strCampos := strCampos + ' SUM(' + alias + '.' + TSomatorio(atributo).Nome + ')';
+         if atributo is TMedia then
+           strCampos := strCampos + ' AVG(' + alias + '.' + TMedia(atributo).Nome + ')';
+         if atributo is TMaximo then
+           strCampos := strCampos + ' MAX(' + alias + '.' + TMaximo(atributo).Nome + ')';
+         if atributo is TMinimo then
+           strCampos := strCampos + ' MIN(' + alias + '.' + TMinimo(atributo).Nome + ')';
+
+         if not strWhere.IsEmpty then
+            strWhere := strWhere + ' AND ';
+         if atributo is TCampoFiltro then
+         begin
+           if propriedade.PropertyType.TypeKind = tkFloat then
+           begin
+             if CompareText(propriedade.PropertyType.Name, 'TDateTime') > 0 then
+             begin
+               if not(dataInicio.IsEmpty) and not(dataFim.IsEmpty) then
+                 strWhere := strWhere + ' BETWEEN ' + dataInicio + ' AND ' + dataFim;
+             end;
+           end;
+         end;
+       end;
+       //Formatar a string que contém os campos.
+       strCampos := FormatarString(strCampos);
+
+       Lib := TLib<T>.Create;
+       try
+         strSelect := Lib.LocalizarSubstituir(strSelect, '[TABELA]', strTabela);
+         strSelect := Lib.LocalizarSubstituir(strSelect, '[CAMPOS]', strCampos);
+         if not strJuncao.IsEmpty then
+             strSelect := Lib.LocalizarSubstituir(strSelect, '[JUNCAO]', strJuncao)
+         else  strSelect := Lib.LocalizarSubstituir(strSelect, '[JUNCAO]', '');
+         if strWhere.IsEmpty then
+           Delete(strSelect, Pos('WHERE', strSelect), 1)
+         else strSelect := Lib.LocalizarSubstituir(strSelect, '[CONDICAO]', strwhere);
+
+         FQuery.SQL.Clear;
+         FQuery.SQL.Add(strSelect);
+         FQuery.Open;
+         Lib.QueryParaArrayJson(FQuery, tqRDW);
+       finally
+         Lib.Free;
+       end;
+   finally
+     contexto.Free;
+   end;
+end;
 
 function TBaseDAO<T>.Listagem(obj: T; const TipoJuncao:TTipoJoin = ttLeftJoin; aTemLista: boolean = True): IDAO<T>;
 var
@@ -1130,10 +1125,8 @@ begin
 
          FQuery.SQL.Clear;
          FQuery.SQL.Add(strSelect);
-         FQuery.DataSet.DisableControls;
          FQuery.Open;
          Lib.QueryParaObjeto(FQuery, tqRDW);
-         FQuery.DataSet.EnableControls;
        finally
          Lib.Free;
        end;
@@ -1214,7 +1207,7 @@ begin
         if not strCondicao.IsEmpty then
            strCondicao := strCondicao + ' AND ';
         if atributo is TCampoFiltro then
-           strCondicao := strCondicao + alias + '.' + TCampoFiltro(atributo).Nome + ' LIKE ' + QuotedStr('%'+aNome+'%');
+           strCondicao := strCondicao + alias + '.' + TCampoFiltro(atributo).Nome + ' = ' + aNome;
       end;
       //preparo a string de consulta
       strCampos := FormatarString(strCampos);
@@ -1230,8 +1223,8 @@ begin
 
         FQuery.DataSet.DisableControls;
         FQuery.Open(strSelect);
-        FLista := Lib.QueryParaListaObjeto(FQuery, TTipoQuery.tqRDW);
         FQuery.DataSet.EnableControls;
+        FLista := Lib.QueryParaListaObjeto(FQuery, TTipoQuery.tqRDW);
       finally
         Lib.Free;
       end;

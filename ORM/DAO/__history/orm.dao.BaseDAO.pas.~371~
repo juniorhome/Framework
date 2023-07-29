@@ -7,19 +7,14 @@ uses
      System.JSON,
      System.Contnrs,
      System.Classes,
-
      Db,
      Rtti,
-
      ZDataset,
-
      uRESTDWBasicDB,
-     uRESTDWIdBase,
-
      Generics.Collections,
+     uRESTDWIdBase,
      Datasnap.DBClient,
      Vcl.Forms,
-
      orm.conexao.ModelConexaoFactory,
      orm.IBaseVO,orm.Atributos,
      orm.Lib.Biblioteca,

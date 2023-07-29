@@ -264,30 +264,9 @@ begin
    begin
      if prop.GetAtribute<T> = nil then
        continue;
-     if prop.GetAtribute<TCampoTexto>.Nome = aPropName then
+     if prop.GetAtribute<T>.Name = aPropName then
        Exit(prop);
-     if prop.GetAtribute<TCampoInteiro>.Nome = aPropName then
-        Exit(prop);
-     if prop.GetAtribute<TCampoData>.Nome = aPropName then
-       Exit(prop);
-     if prop.GetAtribute<TCampoDataHora>.Nome = aPropName then
-       Exit(prop);
-     if prop.GetAtribute<TCampoExtended>.Nome = aPropName then
-        Exit(prop);
-     if prop.GetAtribute<TCampoMonetario>.Nome = aPropName then
-       Exit(prop);
-     if prop.GetAtribute<TCampoBooleano>.Nome = aPropName then
-        Exit(prop);
-     if prop.GetAtribute<TCampoEstrangeiro>.Nome = aPropName then
-        Exit(prop);
-     if prop.GetAtribute<TSomatorio>.Nome = aPropName then
-       Exit(prop);
-     if prop.GetAtribute<TMedia>.Nome = aPropName then
-        Exit(prop);
-     if prop.GetAtribute<TMinimo>.Nome = aPropName then
-        Exit(prop);
-     if prop.GetAtribute<TMaximo>.Nome = aPropName then
-        Exit(prop);
+
    end;
 end;
 

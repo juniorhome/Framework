@@ -3,29 +3,24 @@ unit orm.dao.BaseDAO;
 interface
 
 uses
-     System.SysUtils,
-     System.JSON,
-     System.Contnrs,
-     System.Classes,
-
      Db,
      Rtti,
-
      ZDataset,
-
      uRESTDWBasicDB,
-     uRESTDWIdBase,
-
      Generics.Collections,
+     uRESTDWIdBase,
      Datasnap.DBClient,
      Vcl.Forms,
-
      orm.conexao.ModelConexaoFactory,
      orm.IBaseVO,orm.Atributos,
      orm.Lib.Biblioteca,
      orm.conexao.interfaces.Interfaces,
      orm.conexao.model_rdw.ModelRDWQuery,
-     orm.lib.RttiUtils;
+     orm.lib.RttiUtils,
+     System.SysUtils,
+     System.JSON,
+     System.Contnrs,
+     System.Classes;
   type
     TBaseDAO<T : class, constructor> = class(TInterfacedObject, IDAO<T>)
       private

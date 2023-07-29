@@ -121,8 +121,7 @@ begin
   contexto := TRttiContext.Create;
   try
      tipo := contexto.GetType(T);
-     for prop in tipo.GetProperties do
-       aLista.Add(prop.Name);
+
   finally
     contexto.Free;
   end;

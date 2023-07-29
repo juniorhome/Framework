@@ -3,8 +3,7 @@ unit orm.lib.RttiUtils;
 interface
 
 uses System.Rtti, System.Classes, System.Variants, Vcl.StdCtrls, Vcl.ExtCtrls,
-  Vcl.ComCtrls, Vcl.Mask, System.StrUtils, System.SysUtils, Vcl.Forms, orm.Atributos,
-  orm.lib.Helper.RttiHelper, Generics.Collections, System.TypInfo;
+  Vcl.ComCtrls, Vcl.Mask, System.StrUtils, System.SysUtils, Vcl.Forms, orm.Atributos;
 
 type
   TRttiUtils<T: class, constructor> = class
@@ -17,8 +16,6 @@ type
     public
        //Métodos que realizam a ligação entre os campos com os componentes...
        class procedure BindClassToForm(aForm: TForm; const aEntidade: T);
-       class procedure BindFormToClass(aForm: TForm; var aEntidade: T);
-       class procedure ListarCampos(var aLista: TList<string>);
 
 end;
 
@@ -108,26 +105,6 @@ begin
   Result := GetRttiProperty(aEntidade, aPropNome).GetValue(Pointer(aEntidade)).AsVariant;
 end;
 
-class procedure TRttiUtils<T>.ListarCampos(var aLista: TList<string>);
-var
-  contexto: TRttiContext;
-  tipo: TRttiType;
-  prop: TRttiProperty;
-  info: PTypeInfo;
-begin
-  if not Assigned(aLista) then
-    aLista := TList<string>.Create;
-  info := System.TypeInfo(T);
-  contexto := TRttiContext.Create;
-  try
-     tipo := contexto.GetType(T);
-     for prop in tipo.GetProperties do
-       aLista.Add(prop.Name);
-  finally
-    contexto.Free;
-  end;
-end;
-
 { TRttiUtils }
 
 class procedure TRttiUtils<T>.BindClassToForm(aForm: TForm; const aEntidade: T);
@@ -142,31 +119,9 @@ begin
      for campo in tipo.GetFields do
        for atributo in campo.GetAttributes do
        begin
-         if atributo is TBind then
-           BindValueToComponent(aForm.FindComponent(campo.Name), GetRttiPropertyValue(aEntidade, campo.GetAtribute<TBind>.Nome));
+         //if atributo is TBind then
+           //BindValueToComponent(aForm.FindComponent(campo.Name), GetRttiPropertyValue(aEntidade, campo.GetAtribute<TBind>.Campo));
        end;
-   finally
-     contexto.Free;
-   end;
-end;
-
-class procedure TRttiUtils<T>.BindFormToClass(aForm: TForm; var aEntidade: T);
-var
-  contexto: TRttiContext;
-  tipo: TRttiType;
-  campo: TRttiField;
-begin
-   contexto := TRttiContext.Create;
-   try
-     tipo := contexto.GetType(aForm.ClassInfo);
-     for campo in tipo.GetFields do
-     begin
-       if campo.Tem<TBind> then
-          BindValueToProperty(aEntidade,
-                               GetRttiProperty(aEntidade, campo.GetAtribute<TBind>.Nome),
-                               GetComponentToValue(aForm.FindComponent(campo.Name)));
-
-     end;
    finally
      contexto.Free;
    end;

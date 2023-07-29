@@ -28,7 +28,7 @@ type
        ['{10E5C694-4672-4DD4-A75F-D04A2A38ECBC}']
          function Query: TObject;
          function Open(aSql: string): IModelQuery; overload;
-         function Open: IModelQuery; overload;
+         function Ooen: IModelQuery; overload;
          function ExecSql(aSql: string): IModelQuery;overload;
          function ExecSql: IModelQuery;overload;
          function DataSet: TDataSet;
@@ -41,10 +41,11 @@ type
      function Inserir(obj: T): IDAO<T>;
      function Atualizar(obj: T): IDAO<T>;
      function Excluir(obj: T): IDAO<T>;
-     function Listagem(obj: T; const TipoJuncao:TTipoJoin = ttLeftJoin; aTemLista: boolean = True): IDAO<T>;overload; //Consulta completa
-     function Listagem(obj: T; dataInicio,dataFim: string; const TipoJuncao: TTipoJoin = ttLeftJoin): IDAO<T>;overload;//consulta usando data
-     function Listagem(obj: T; aId: integer; const TipoJuncao: TTipoJoin = ttLeftJoin): IDAO<T>;overload;//consulta usando ID.
-     function Listagem(obj: T; aNome: string; const TipoJuncao:TTipoJoin = ttLeftJoin): IDAO<T>; overload;//consulta por nome,descrição ou qualquer campo string.
+     function Listagem(obj: T; dataInicio,dataFim: string; TemData: boolean; const TipoJuncao:TTipoJoin = ttLeftJoin): IDAO<T>;overload;
+     function Listagem(obj: T; dataInicio,dataFim: string; const TipoJuncao: TTipoJoin = ttLeftJoin; EhFiltro: boolean = False; ConsultaCompleta: boolean = False): IDAO<T>;overload;
+     function Listagem(obj: T; dataInicio,dataFim: string; const TipoJuncao: TTipoJoin = ttLeftJoin): IDAO<T>;overload;
+     function Listagem(obj: T;dataInicio,dataFim: string; const TipoJuncao:TTipoJoin = ttLeftJoin; ConsultaCompleta: boolean = True): IDAO<T>; overload;
+     function Listagem(obj: T; const TipoJuncao: TTipoJoin = ttLeftJoin): IDAO<T>; overload;
      function DataSource(aDataSource: TDataSource): IDAO<T>;
      function ConsultaSql(sql: string): TDataSet;
    end;

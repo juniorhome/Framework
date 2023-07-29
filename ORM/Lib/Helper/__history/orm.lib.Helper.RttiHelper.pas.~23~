@@ -117,12 +117,7 @@ type
        public
          function GetAtribute<T: TCustomAttribute>: T;
          function Tem<T: TCustomAttribute>: Boolean;
-         function GetPropertyFromAtribute<T: TCustomAttribute>: TRttiProperty; overload;
-         function GetPropertyFromAtribute<T: TCustomAttribute>(aPropName: string): TRttiProperty; overload;
-         function IsTabela: boolean;
-         function IsTabelaEstrangeira: Boolean;
-         function GetPk: TRttiProperty;
-         function GetFk: TRttiProperty;
+         function GetPropertyFromAtribute<T: TCustomAttribute>: TRttiProperty;
      end;
 
 
@@ -245,52 +240,6 @@ begin
   end;
 end;
 
-function TRttiTypeHelper.GetFk: TRttiProperty;
-begin
-  Result := GetPropertyFromAtribute<TChaveEstrangeira>;
-end;
-
-function TRttiTypeHelper.GetPk: TRttiProperty;
-begin
-  Result := GetPropertyFromAtribute<TChavePrimaria>;
-end;
-
-function TRttiTypeHelper.GetPropertyFromAtribute<T>(
-  aPropName: string): TRttiProperty;
-var prop: TRttiProperty;
-begin
-   Result := nil;
-   for prop in GetProperties do
-   begin
-     if prop.GetAtribute<T> = nil then
-       continue;
-     if prop.GetAtribute<TCampoTexto>.Nome = aPropName then
-       Exit(prop);
-     if prop.GetAtribute<TCampoInteiro>.Nome = aPropName then
-        Exit(prop);
-     if prop.GetAtribute<TCampoData>.Nome = aPropName then
-       Exit(prop);
-     if prop.GetAtribute<TCampoDataHora>.Nome = aPropName then
-       Exit(prop);
-     if prop.GetAtribute<TCampoExtended>.Nome = aPropName then
-        Exit(prop);
-     if prop.GetAtribute<TCampoMonetario>.Nome = aPropName then
-       Exit(prop);
-     if prop.GetAtribute<TCampoBooleano>.Nome = aPropName then
-        Exit(prop);
-     if prop.GetAtribute<TCampoEstrangeiro>.Nome = aPropName then
-        Exit(prop);
-     if prop.GetAtribute<TSomatorio>.Nome = aPropName then
-       Exit(prop);
-     if prop.GetAtribute<TMedia>.Nome = aPropName then
-        Exit(prop);
-     if prop.GetAtribute<TMinimo>.Nome = aPropName then
-        Exit(prop);
-     if prop.GetAtribute<TMaximo>.Nome = aPropName then
-        Exit(prop);
-   end;
-end;
-
 function TRttiTypeHelper.GetPropertyFromAtribute<T>: TRttiProperty;
 var
    prop: TRttiProperty;
@@ -301,16 +250,6 @@ begin
      if prop.GetAtribute<T> <> nil then
        Exit(prop);
    end;
-end;
-
-function TRttiTypeHelper.IsTabela: boolean;
-begin
-  Result := Tem<TChavePrimaria>;
-end;
-
-function TRttiTypeHelper.IsTabelaEstrangeira: Boolean;
-begin
-  Result := Tem<TChaveEstrangeira>;
 end;
 
 function TRttiTypeHelper.Tem<T>: Boolean;

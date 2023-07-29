@@ -288,6 +288,9 @@ begin
         Exit(prop);
      if prop.GetAtribute<TMaximo>.Nome = aPropName then
         Exit(prop);
+
+
+
    end;
 end;
 

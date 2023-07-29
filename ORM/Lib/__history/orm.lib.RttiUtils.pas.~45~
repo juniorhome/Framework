@@ -4,7 +4,7 @@ interface
 
 uses System.Rtti, System.Classes, System.Variants, Vcl.StdCtrls, Vcl.ExtCtrls,
   Vcl.ComCtrls, Vcl.Mask, System.StrUtils, System.SysUtils, Vcl.Forms, orm.Atributos,
-  orm.lib.Helper.RttiHelper, Generics.Collections, System.TypInfo;
+  orm.lib.Helper.RttiHelper;
 
 type
   TRttiUtils<T: class, constructor> = class
@@ -109,23 +109,8 @@ begin
 end;
 
 class procedure TRttiUtils<T>.ListarCampos(var aLista: TList<string>);
-var
-  contexto: TRttiContext;
-  tipo: TRttiType;
-  prop: TRttiProperty;
-  info: PTypeInfo;
 begin
-  if not Assigned(aLista) then
-    aLista := TList<string>.Create;
-  info := System.TypeInfo(T);
-  contexto := TRttiContext.Create;
-  try
-     tipo := contexto.GetType(T);
-     for prop in tipo.GetProperties do
-       aLista.Add(prop.Name);
-  finally
-    contexto.Free;
-  end;
+  //
 end;
 
 { TRttiUtils }
