@@ -40,6 +40,9 @@ end;
 implementation
 
 { TRttiUtils }
+
+
+
 class procedure TRttiUtils<T>.BindValueToProperty(aEntidade: T;
   aProp: TRttiProperty; aValue: TValue);
 begin
@@ -82,50 +85,8 @@ end;
 
 function TRttiUtils<T>.DataSetToEntity(aDataSet: TDataSet;
   var aEntity: T): iRttiUtil<T>;
-var
-  contexto: TRttiContext;
-  tipo: TRttiType;
-  prop: TRttiProperty;
-  campo: TField;
-  info: PTypeInfo;
-  valor: TValue;
 begin
-  Result := Self;
-  aDataSet.First;
-  while  not aDataSet.Eof do
-  begin
-   info := System.TypeInfo(T);
-   contexto := TRttiContext.Create;
-   try
-     for campo in aDataSet.Fields do
-     begin
-       tipo := contexto.GetType(info);
-       for prop in tipo.GetProperties do
-       begin
-         if LowerCase(prop.FieldName) = LowerCase(campo.FieldName) then
-         begin
-           case prop.PropertyType.TypeKind of
-             tkInteger,
-             tkInt64:
-                  Valor := campo.AsInteger;
-             tkString,
-             tkChar,
-             tkWChar,
-             tkLString,
-             tkWString,
-             tkUString: Valor := campo.AsString;
-             tkFloat: Valor := campo.AsFloat;
-           end;
-           prop.SetValue(Pointer(aEntity), Valor);
-         end;
-       end;
-     end;
-   finally
-     contexto.Free;
-   end;
-   aDataSet.Next;
-  end;
-  aDataSet.First;
+
 end;
 
 function TRttiUtils<T>.DataSetToEntityList(aDataSet: TDataSet;
@@ -206,8 +167,8 @@ begin
      for prop in tipo.GetProperties do
      begin
        case prop.PropertyType.TypeKind of
-         tkInteger,
-         tkInt64:
+         tkUnknown: ;
+         tkInteger, tkInt64:
          begin
            if prop.EhChaveEstrangeira then
            begin
@@ -217,6 +178,8 @@ begin
            end
            else aDictionary.Add(prop.FieldName, prop.GetValue(Pointer(FInstance)).AsInteger);
          end;
+         tkChar: ;
+         tkEnumeration: ;
          tkFloat:
          begin
            if prop.GetValue(Pointer(FInstance)).TypeInfo = TypeInfo(TDate) then
@@ -231,11 +194,20 @@ begin
          tkString,
          tkLString,
          tkWString,
-         tkWChar,
-         tkChar: aDictionary.Add(prop.FieldName, prop.GetValue(Pointer(FInstance)).AsString);
+         tkWChar: aDictionary.Add(prop.FieldName, prop.GetValue(Pointer(FInstance)).AsString);
+         tkSet: ;
+         tkClass: ;
+         tkMethod: ;
          tkVariant: aDictionary.Add(prop.FieldName, prop.GetValue(Pointer(FInstance)).AsVariant);
-         else
-           aDictionary.Add(prop.FieldName, prop.GetValue(Pointer(FInstance)).AsString);
+         tkArray: ;
+         tkRecord: ;
+         tkInterface: ;
+         tkDynArray: ;
+         tkUString: ;
+         tkClassRef: ;
+         tkPointer: ;
+         tkProcedure: ;
+         tkMRecord: ;
        end;
      end;
    finally

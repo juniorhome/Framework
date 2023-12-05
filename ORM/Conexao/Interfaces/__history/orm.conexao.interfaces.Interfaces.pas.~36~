@@ -4,7 +4,7 @@ interface
 
 uses
   Data.DB, orm.IBaseVO, orm.Atributos, System.JSON, System.Contnrs,
-  System.Generics.Collections, Datasnap.DBClient, System.Classes, Vcl.Forms;
+  System.Generics.Collections, Datasnap.DBClient, System.Classes;
 
 type
     TTipoController = (tcCliente, tcFuncionario, tcFornecedor, tcTransportadora, tcProduto, tcVenda, tcNfe, tcNfce);
@@ -18,13 +18,13 @@ type
      function Connection: TObject;
    end;
 
-   IModelConexaoFactory = interface
+   IModelConexaoFactory = interface(iinterface)
      ['{DEB41385-72C6-40F1-AEF7-67DE1175BC20}']
        function Conexao(aOp: integer): IModelConexao;
        function Query(aOp: integer): IModelQuery;
    end;
 
-   IModelQuery = interface
+   IModelQuery = interface(iinterface)
        ['{10E5C694-4672-4DD4-A75F-D04A2A38ECBC}']
          function Query: TObject;
          function Open(aSql: string): IModelQuery; overload;
@@ -36,7 +36,7 @@ type
          function SQL: TStrings;
    end;
 
-   IDAO <T: class> = interface
+   IDAO <T: class> = interface(iinterface)
      ['{7FBAC46D-3355-414C-9B35-CB20D000BB27}']
      function Inserir(obj: T): IDAO<T>;
      function Atualizar(obj: T): IDAO<T>;
@@ -49,7 +49,7 @@ type
      function ConsultaSql(sql: string): TDataSet;
    end;
 
-   IController<T: class> = interface
+   IController<T: class> = interface(iinterface)
      ['{01620415-A483-4162-B952-0A56CD36B3B1}']
      function Salvar(obj: T): integer;
      function Atualizar(obj: T): boolean;
@@ -57,25 +57,9 @@ type
      function Listagem(obj: T): TClientDataSet;
    end;
 
-   IFabricaController<T: class> = interface
+   IFabricaController<T: class> = interface(iinterface)
      ['{ADB6D3D4-3F24-427D-A631-53457A76DCEC}']
      function Controller(aTipoController: TTipoController): IController<T>;
-   end;
-
-   iRttiUtil<T: class> = interface
-     ['{5FA15D95-8776-4C43-B1DE-C1F64D7505FF}']
-       function Fields(var aFields: string): iRttiUtil<T>;
-       function FieldsInsert(var aFields: string): iRttiUtil<T>;
-       function Param(var aParam: string): iRttiUtil<T>;
-       function Where(var aWhere: string): iRttiUtil<T>;
-       function FieldsUpdate(var aFields: string): iRttiUtil<T>;
-       function NomeTabela(var aNomeTabela: string): iRttiUtil<T>;
-       function DictionaryFields(var aDictionary: TDictionary<string, variant>): iRttiUtil<T>;
-       function BindClassToForm(aForm: TForm; const aEntidade: T): iRttiUtil<T>;
-       function BindFormToClass(aForm: TForm; var aEntidade: T): iRttiUtil<T>;
-       function ListarCampos(var aLista: TList<string>): iRttiUtil<T>;
-       function DataSetToEntityList(aDataSet: TDataSet; var aLista: TObjectList<T>): iRttiUtil<T>;
-       function DataSetToEntity(aDataSet: TDataSet; var aEntity: T): iRttiUtil<T>;
    end;
 
  implementation

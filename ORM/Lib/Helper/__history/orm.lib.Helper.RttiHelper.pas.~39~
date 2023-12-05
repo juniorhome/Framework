@@ -97,8 +97,6 @@ type
      public
        function GetAtribute<T: TCustomAttribute>: T;
        function Tem<T: TCustomAttribute>: Boolean;
-       function EhChavePrimaria: Boolean;
-       function EhChaveEstrangeira: Boolean;
        function EhCampoTexto: Boolean;
        function EhCampoInteiro: Boolean;
        function EhCampoData: Boolean;
@@ -194,16 +192,6 @@ end;
 function TRttiPropertyHelper.EhCampoTexto: Boolean;
 begin
   Result := Tem<TCampoTexto>;
-end;
-
-function TRttiPropertyHelper.EhChaveEstrangeira: Boolean;
-begin
-  Result := Tem<TChavePrimaria>;
-end;
-
-function TRttiPropertyHelper.EhChavePrimaria: Boolean;
-begin
-  Result := Tem<TChaveEstrangeira>;
 end;
 
 function TRttiPropertyHelper.EhMaximo: Boolean;

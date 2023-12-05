@@ -709,10 +709,8 @@ begin
             Delete(strSelect, Pos('WHERE', strSelect), Length(strSelect))
           else strSelect := Lib.LocalizarSubstituir(strSelect, '[CONDICAO]', strWhere);
 
-          FQuery.DataSet.DisableControls;
           FQuery.ExecSql(strSelect);
           json := Lib.QueryParaJson(FQuery, tqRDW);
-          FQuery.DataSet.EnableControls;
         finally
           Lib.Free;
         end;
@@ -985,7 +983,7 @@ begin
        FQuery.Open(strSelect);
        //Lib.CopiarParaDataSet(FQuery, TTipoQuery.tqRDW, cds);
        if aTemLista then
-          TRttiUtils<T>.New().DataSetToEntityList(FQuery.DataSet, FLista);
+          FLista := Lib.QueryParaListaObjeto(FQuery, TTipoQuery.tqRDW);
        FQuery.DataSet.EnableControls;
      finally
        Lib.Free;

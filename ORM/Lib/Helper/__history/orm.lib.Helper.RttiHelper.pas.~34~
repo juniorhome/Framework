@@ -97,8 +97,6 @@ type
      public
        function GetAtribute<T: TCustomAttribute>: T;
        function Tem<T: TCustomAttribute>: Boolean;
-       function EhChavePrimaria: Boolean;
-       function EhChaveEstrangeira: Boolean;
        function EhCampoTexto: Boolean;
        function EhCampoInteiro: Boolean;
        function EhCampoData: Boolean;
@@ -196,16 +194,6 @@ begin
   Result := Tem<TCampoTexto>;
 end;
 
-function TRttiPropertyHelper.EhChaveEstrangeira: Boolean;
-begin
-  Result := Tem<TChavePrimaria>;
-end;
-
-function TRttiPropertyHelper.EhChavePrimaria: Boolean;
-begin
-  Result := Tem<TChaveEstrangeira>;
-end;
-
 function TRttiPropertyHelper.EhMaximo: Boolean;
 begin
    Result := Tem<TMaximo>;
@@ -235,26 +223,6 @@ begin
     Result := GetAtribute<TCampoInteiro>.Nome;
   if EhCampoData then
     Result := GetAtribute<TCampoData>.Nome;
-  if EhCampoDataHora then
-    Result := GetAtribute<TCampoDataHora>.Nome;
-  if EhCampoExtended then
-    Result := GetAtribute<TCampoExtended>.Nome;
-  if EhCampoMonetario then
-    Result := GetAtribute<TCampoMonetario>.Nome;
-  if EhCampoBooleano then
-    Result := GetAtribute<TCampoBooleano>.Nome;
-  if EhCampoEstrangeiro then
-    Result := GetAtribute<TCampoEstrangeiro>.Nome;
-  if EhCampoFiltro then
-    Result := GetAtribute<TCampoFiltro>.Nome;
-  if EhSomatorio then
-    Result := GetAtribute<TSomatorio>.Nome;
-  if EhMedia then
-    Result := GetAtribute<TMedia>.Nome;
-  if EhMinimo then
-    Result := GetAtribute<TMinimo>.Nome;
-  if EhMaximo then
-    Result := GetAtribute<TMaximo>.Nome;
 
 end;
 

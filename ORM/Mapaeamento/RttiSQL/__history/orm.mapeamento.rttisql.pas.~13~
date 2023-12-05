@@ -1,0 +1,156 @@
+unit orm.mapeamento.rttisql;
+
+interface
+
+uses
+  orm.mapeamento.rttisql.interfaces, orm.lib.RttiUtils;
+
+type
+  TRttiSQL<T: class, constructor> = class(TInterfacedObject, iRttiSQL<T>)
+    private
+      FInstance: T;
+      FFields: string;
+      FWhere: string;
+      FOrderBy: string;
+      FGroupBy: string;
+      FJoin: string;
+    public
+      constructor Create(aInstance: T);
+      destructor Destroy; override;
+      class function New(aInstance: T): iRttiSQL<T>;
+      function Select(var aSql: string): iRttiSQL<T>;
+      function Insert(var aSql: string): iRttiSQL<T>;
+      function Delete(var aSql: string): iRttiSQL<T>;
+      function Update(var aSql: string): iRttiSQL<T>;
+      function SelectId(var aSql: string): iRttiSQL<T>;
+      function SelectNome(var aSql: string): iRttiSQL<T>;
+      function SelectData(var aSql: string): iRttiSQL<T>;
+      function Fields(aSql: string): iRttiSQL<T>;
+      function Where(aSql: string): iRttiSQL<T>;
+      function OrderBy(aSql: string): iRttiSQL<T>;
+      function GroupBy(aSql: string): iRttiSQL<T>;
+      function Join(aSql: string): iRttiSQL<T>;
+  end;
+implementation
+
+{ TRttiSQL<T> }
+
+constructor TRttiSQL<T>.Create(aInstance: T);
+begin
+  FInstance := aInstance;
+end;
+
+function TRttiSQL<T>.Delete(var aSql: string): iRttiSQL<T>;
+var nomeTabela, where: string;
+begin
+   Result := Self;
+   TRttiUtils<T>.New(FInstance).NomeTabela(nomeTabela).Where(where);
+   aSql := aSql + 'DELETE FROM ' + nomeTabela;
+   aSql := aSql + 'WHERE ' + where;
+end;
+
+destructor TRttiSQL<T>.Destroy;
+begin
+
+  inherited;
+end;
+
+function TRttiSQL<T>.Fields(aSql: string): iRttiSQL<T>;
+begin
+  Result := Self;
+  FFields := aSql;
+end;
+
+function TRttiSQL<T>.GroupBy(aSql: string): iRttiSQL<T>;
+begin
+  Result := Self;
+  FGroupBy := aSql;
+end;
+
+function TRttiSQL<T>.Insert(var aSql: string): iRttiSQL<T>;
+var nomeTabela, aCampos, aParametros: string;
+begin
+    Result := Self;
+    TRttiUtils<T>.New(FInstance).NomeTabela(nomeTabela).FieldsInsert(aCampos).Param(aParametros);
+    aSql := aSql + 'INSERT INTO ' + nomeTabela;
+    aSql := aSql + '(' + aCampos + ')';
+    aSql := aSql + 'VALUES (' + aParametros + ')';
+end;
+
+function TRttiSQL<T>.Join(aSql: string): iRttiSQL<T>;
+begin
+   Result := Self;
+   FJoin := aSql;
+end;
+
+class function TRttiSQL<T>.New(aInstance: T): iRttiSQL<T>;
+begin
+   Result := Self.Create(aInstance);
+end;
+
+function TRttiSQL<T>.OrderBy(aSql: string): iRttiSQL<T>;
+begin
+   Result := Self;
+   FOrderBy := aSql;
+end;
+
+function TRttiSQL<T>.Select(var aSql: string): iRttiSQL<T>;
+var nomeTabela, aCampos: string;
+begin
+   TRttiUtils<T>.New(FInstance).NomeTabela(nomeTabela).Fields(aCampos);
+
+   if FFields <> '' then
+     aSql := aSql + 'SELECT ' + FFields
+   else aSql := aSql + 'SELECT ' + aCampos;
+
+   aSql := aSql + 'FROM ' + nomeTabela;
+
+   if FJoin <> '' then
+     aSql := aSql + ' ' + FJoin;
+
+   if FWhere <> '' then
+     aSql := aSql + ' WHERE ' + FWhere;
+
+   if FGroupBy <> '' then
+     aSql := aSql + ' GROUP BY ' + FGroupBy;
+
+   if FOrderBy <> '' then
+     aSql := aSql + ' ORDER BY ' + FOrderBy;
+
+end;
+
+function TRttiSQL<T>.SelectData(var aSql: string): iRttiSQL<T>;
+begin
+
+end;
+
+function TRttiSQL<T>.SelectId(var aSql: string): iRttiSQL<T>;
+var aNomeTabela, aCampos, aWhere: string;
+begin
+  Result := Self;
+  TRttiUtils<T>.New(FInstance).NomeTabela(aNomeTabela).Fields(aCampos).Where(aWhere);
+  if FWhere <> '' then
+    aSql := aSql + ' WHERE ' + FWhere;
+
+  aSql := aSql + 'SELECT ' + aCampos;
+  aSql := aSql + ' FROM ' + aNomeTabela;
+  aSql := aSql + ' WHERE ' + aWhere;
+end;
+
+function TRttiSQL<T>.SelectNome(var aSql: string): iRttiSQL<T>;
+begin
+
+end;
+
+function TRttiSQL<T>.Update(var aSql: string): iRttiSQL<T>;
+begin
+
+end;
+
+function TRttiSQL<T>.Where(aSql: string): iRttiSQL<T>;
+begin
+   Result := Self;
+   FWhere := aSql;
+end;
+
+end.

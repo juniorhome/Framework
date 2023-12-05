@@ -116,7 +116,7 @@ begin
              tkUString: Valor := campo.AsString;
              tkFloat: Valor := campo.AsFloat;
            end;
-           prop.SetValue(Pointer(aEntity), Valor);
+           prop.SetValue(Pointer(FInstance), Valor);
          end;
        end;
      end;

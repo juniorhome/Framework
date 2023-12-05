@@ -985,7 +985,7 @@ begin
        FQuery.Open(strSelect);
        //Lib.CopiarParaDataSet(FQuery, TTipoQuery.tqRDW, cds);
        if aTemLista then
-          TRttiUtils<T>.New().DataSetToEntityList(FQuery.DataSet, FLista);
+          TRttiUtils<T>.New(nil).DataSetToEntityList(FQuery.DataSet, FLista);
        FQuery.DataSet.EnableControls;
      finally
        Lib.Free;

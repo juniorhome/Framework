@@ -4,7 +4,7 @@ interface
 
 uses
   Data.DB, orm.IBaseVO, orm.Atributos, System.JSON, System.Contnrs,
-  System.Generics.Collections, Datasnap.DBClient, System.Classes, Vcl.Forms;
+  System.Generics.Collections, Datasnap.DBClient, System.Classes;
 
 type
     TTipoController = (tcCliente, tcFuncionario, tcFornecedor, tcTransportadora, tcProduto, tcVenda, tcNfe, tcNfce);
@@ -60,22 +60,6 @@ type
    IFabricaController<T: class> = interface
      ['{ADB6D3D4-3F24-427D-A631-53457A76DCEC}']
      function Controller(aTipoController: TTipoController): IController<T>;
-   end;
-
-   iRttiUtil<T: class> = interface
-     ['{5FA15D95-8776-4C43-B1DE-C1F64D7505FF}']
-       function Fields(var aFields: string): iRttiUtil<T>;
-       function FieldsInsert(var aFields: string): iRttiUtil<T>;
-       function Param(var aParam: string): iRttiUtil<T>;
-       function Where(var aWhere: string): iRttiUtil<T>;
-       function FieldsUpdate(var aFields: string): iRttiUtil<T>;
-       function NomeTabela(var aNomeTabela: string): iRttiUtil<T>;
-       function DictionaryFields(var aDictionary: TDictionary<string, variant>): iRttiUtil<T>;
-       function BindClassToForm(aForm: TForm; const aEntidade: T): iRttiUtil<T>;
-       function BindFormToClass(aForm: TForm; var aEntidade: T): iRttiUtil<T>;
-       function ListarCampos(var aLista: TList<string>): iRttiUtil<T>;
-       function DataSetToEntityList(aDataSet: TDataSet; var aLista: TObjectList<T>): iRttiUtil<T>;
-       function DataSetToEntity(aDataSet: TDataSet; var aEntity: T): iRttiUtil<T>;
    end;
 
  implementation

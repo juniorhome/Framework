@@ -105,27 +105,37 @@ begin
          if LowerCase(prop.FieldName) = LowerCase(campo.FieldName) then
          begin
            case prop.PropertyType.TypeKind of
-             tkInteger,
-             tkInt64:
-                  Valor := campo.AsInteger;
-             tkString,
-             tkChar,
-             tkWChar,
-             tkLString,
-             tkWString,
-             tkUString: Valor := campo.AsString;
-             tkFloat: Valor := campo.AsFloat;
+             tkUnknown: ;
+             tkInteger: ;
+             tkChar: ;
+             tkEnumeration: ;
+             tkFloat: ;
+             tkString: ;
+             tkSet: ;
+             tkClass: ;
+             tkMethod: ;
+             tkWChar: ;
+             tkLString: ;
+             tkWString: ;
+             tkVariant: ;
+             tkArray: ;
+             tkRecord: ;
+             tkInterface: ;
+             tkInt64: ;
+             tkDynArray: ;
+             tkUString: ;
+             tkClassRef: ;
+             tkPointer: ;
+             tkProcedure: ;
+             tkMRecord: ;
            end;
-           prop.SetValue(Pointer(aEntity), Valor);
          end;
        end;
      end;
    finally
      contexto.Free;
    end;
-   aDataSet.Next;
   end;
-  aDataSet.First;
 end;
 
 function TRttiUtils<T>.DataSetToEntityList(aDataSet: TDataSet;

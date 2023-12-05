@@ -1,0 +1,22 @@
+unit orm.mapeamento.rttisql.interfaces;
+
+interface
+
+type
+  iRttiSQL<T: class> = interface
+    ['{9125371E-E8BB-47F5-AA7F-62253610AD8B}']
+    function Select(var aSql: string): iRttiSQL<T>;
+    function Insert(var aSql: string): iRttiSQL<T>;
+    function Delete(var aSql: string): iRttiSQL<T>;
+    function Update(var aSql: string): iRttiSQL<T>;
+    function SelectId(var aSql: string): iRttiSQL<T>;
+    function Fields(aSql: string): iRttiSQL<T>;
+    function Where(aSql: string): iRttiSQL<T>;
+    function OrderBy(aSql: string): iRttiSQL<T>;
+    function GroupBy(aSql: string): iRttiSQL<T>;
+    function Join(aSql: string): iRttiSQL<T>;
+  end;
+
+implementation
+
+end.

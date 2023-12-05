@@ -1,0 +1,36 @@
+unit orm.mapeamento.rttisql;
+
+interface
+
+uses
+  orm.mapeamento.rttisql.interfaces;
+
+type
+  TRttiSQL<T: class, constructor> = class(TInterfacedObject, iRttiSQL<T>)
+    private
+      FInstance: T;
+      FFields: string;
+      FWhere: string;
+      FOrderBy: string;
+      FGroupBy: string;
+      FJoin: string;
+    public
+      constructor Create(aInstance: T);
+      destructor Destroy; override;
+      class function New(aInstance: T): iRttiSQL<T>;
+      function Select(var aSql: string): iRttiSQL<T>;
+      function Insert(var aSql: string): iRttiSQL<T>;
+      function Delete(var aSql: string): iRttiSQL<T>;
+      function Update(var aSql: string): iRttiSQL<T>;
+      function SelectId(var aSql: string): iRttiSQL<T>;
+      function SelectNome(var aSql: string): iRttiSQL<T>;
+      function SelectData(var aSql: string): iRttiSQL<T>;
+      function Fields(aSql: string): iRttiSQL<T>;
+      function Where(aSql: string): iRttiSQL<T>;
+      function OrderBy(aSql: string): iRttiSQL<T>;
+      function GroupBy(aSql: string): iRttiSQL<T>;
+      function Join(aSql: string): iRttiSQL<T>;
+  end;
+implementation
+
+end.

@@ -116,16 +116,14 @@ begin
              tkUString: Valor := campo.AsString;
              tkFloat: Valor := campo.AsFloat;
            end;
-           prop.SetValue(Pointer(aEntity), Valor);
+           prop.SetValue(Pointer(FInstance), Valor);
          end;
        end;
      end;
    finally
      contexto.Free;
    end;
-   aDataSet.Next;
   end;
-  aDataSet.First;
 end;
 
 function TRttiUtils<T>.DataSetToEntityList(aDataSet: TDataSet;

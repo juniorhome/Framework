@@ -102,30 +102,13 @@ begin
        tipo := contexto.GetType(info);
        for prop in tipo.GetProperties do
        begin
-         if LowerCase(prop.FieldName) = LowerCase(campo.FieldName) then
-         begin
-           case prop.PropertyType.TypeKind of
-             tkInteger,
-             tkInt64:
-                  Valor := campo.AsInteger;
-             tkString,
-             tkChar,
-             tkWChar,
-             tkLString,
-             tkWString,
-             tkUString: Valor := campo.AsString;
-             tkFloat: Valor := campo.AsFloat;
-           end;
-           prop.SetValue(Pointer(aEntity), Valor);
-         end;
+
        end;
      end;
    finally
      contexto.Free;
    end;
-   aDataSet.Next;
   end;
-  aDataSet.First;
 end;
 
 function TRttiUtils<T>.DataSetToEntityList(aDataSet: TDataSet;
