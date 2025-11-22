@@ -2,8 +2,7 @@ unit orm.conexao.model_firedac.ModelFiredacQuery;
 
 interface
 
-uses orm.conexao.interfaces.Interfaces, FireDAC.Comp.Client, System.SysUtils,
-  Data.DB, System.Classes;
+uses orm.conexao.interfaces.Interfaces, FireDAC.Comp.Client, System.SysUtils;
 
   type
     TModelFiredacQuery = class(TInterfacedObject, IModelQuery)
@@ -15,13 +14,8 @@ uses orm.conexao.interfaces.Interfaces, FireDAC.Comp.Client, System.SysUtils,
         destructor Destroy; override;
         class function New(aValue: IModelConexao): IModelQuery;
         function Query: TObject;
-        function Open(aSql: string): IModelQuery; overload;
-        function Open: IModelQuery; overload;
-        function ExecSql(aSql: string): IModelQuery; overload;
-        function ExecSql: IModelQuery;overload;
-        function DataSet: TDataSet;
-        function Params: TParams;
-        function SQL: TStrings;
+        function Open(aSql: string): IModelQuery;
+        function ExecSql(aSql: string): IModelQuery;
     end;
 
 
@@ -36,20 +30,10 @@ begin
    FQuery.Connection := TFDConnection(FConexao.Connection);
 end;
 
-function TModelFiredacQuery.DataSet: TDataSet;
-begin
-  //
-end;
-
 destructor TModelFiredacQuery.Destroy;
 begin
   FreeAndNil(FQuery);
   inherited;
-end;
-
-function TModelFiredacQuery.ExecSql: IModelQuery;
-begin
-   //
 end;
 
 function TModelFiredacQuery.ExecSql(aSql: string): IModelQuery;
@@ -63,11 +47,6 @@ begin
    Result := Self.Create(aValue);
 end;
 
-function TModelFiredacQuery.Open: IModelQuery;
-begin
-   //
-end;
-
 function TModelFiredacQuery.Open(aSql: string): IModelQuery;
 begin
    Result := Self;
@@ -77,16 +56,6 @@ end;
 function TModelFiredacQuery.Query: TObject;
 begin
   Result := FQuery;
-end;
-
-function TModelFiredacQuery.Params: TParams;
-begin
-   //
-end;
-
-function TModelFiredacQuery.SQL: TStrings;
-begin
-   //
 end;
 
 end.
