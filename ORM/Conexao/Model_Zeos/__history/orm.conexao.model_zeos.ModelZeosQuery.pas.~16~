@@ -17,10 +17,10 @@ uses
         destructor Destroy; override;
         class function New(aValue: IModelConexao): IModelQuery;
         function Query: TObject;
-        function Open(aSql: string): IModelQuery; overload;
-        function Open: IModelQuery; overload;
-        function ExecSql(aSql: string): IModelQuery; overload;
-        function ExecSql: IModelQuery; overload;
+        function Open(aSql: string): IModelQuery;
+        function Open: IModelQuery;
+        function ExecSql(aSql: string): IModelQuery;
+        function ExecSql: IModelQuery;
         function DataSet: TDataSet;
         function Params: TParams;
         function SQL: TStrings;
@@ -110,7 +110,7 @@ end;
 
 function TModelZeosQuery.SQL: TStrings;
 begin
-  Result := FQuery.SQL;
+  //
 end;
 
 end.

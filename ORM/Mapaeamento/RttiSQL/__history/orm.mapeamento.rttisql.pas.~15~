@@ -110,7 +110,6 @@ begin
 
    if FWhere <> '' then
      aSql := aSql + ' WHERE ' + FWhere;
-     /;./
 
    if FGroupBy <> '' then
      aSql := aSql + ' GROUP BY ' + FGroupBy;
@@ -121,7 +120,9 @@ begin
 end;
 
 function TRttiSQL<T>.SelectData(var aSql: string): iRttiSQL<T>;
+var aNomeTabela, aCampos, aWhere: string;
 begin
+   Result := Self;
 
 end;
 
@@ -140,17 +141,19 @@ end;
 
 function TRttiSQL<T>.SelectNome(var aSql: string): iRttiSQL<T>;
 begin
-
+   Result := Self;
 end;
 
 function TRttiSQL<T>.Update(var aSql: string): iRttiSQL<T>;
+var aNomeTabela, aCampos, aWhere: string;
 begin
-
+   Result := Self;
 end;
 
 function TRttiSQL<T>.Where(aSql: string): iRttiSQL<T>;
 begin
-
+   Result := Self;
+   FWhere := aSql;
 end;
 
 end.

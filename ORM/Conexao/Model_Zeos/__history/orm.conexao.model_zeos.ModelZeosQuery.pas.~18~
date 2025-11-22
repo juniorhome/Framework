@@ -17,10 +17,10 @@ uses
         destructor Destroy; override;
         class function New(aValue: IModelConexao): IModelQuery;
         function Query: TObject;
-        function Open(aSql: string): IModelQuery; overload;
-        function Open: IModelQuery; overload;
-        function ExecSql(aSql: string): IModelQuery; overload;
-        function ExecSql: IModelQuery; overload;
+        function Open(aSql: string): IModelQuery; override;
+        function Open: IModelQuery; override;
+        function ExecSql(aSql: string): IModelQuery; override;
+        function ExecSql: IModelQuery; override;
         function DataSet: TDataSet;
         function Params: TParams;
         function SQL: TStrings;

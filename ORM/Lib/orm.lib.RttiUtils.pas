@@ -28,12 +28,14 @@ type
        function Where(var aWhere: string): iRttiUtil<T>;
        function FieldsUpdate(var aFields: string): iRttiUtil<T>;
        function NomeTabela(var aNomeTabela: string): iRttiUtil<T>;
+       function ChavePrimaria(var aPk: string): iRttiUtil<T>;
        function DictionaryFields(var aDictionary: TDictionary<string, variant>): iRttiUtil<T>;
        function BindClassToForm(aForm: TForm; const aEntidade: T): iRttiUtil<T>;
        function BindFormToClass(aForm: TForm; var aEntidade: T): iRttiUtil<T>;
        function ListarCampos(var aLista: TList<string>): iRttiUtil<T>;
        function DataSetToEntityList(aDataSet: TDataSet; var aLista: TObjectList<T>): iRttiUtil<T>;
        function DataSetToEntity(aDataSet: TDataSet; var aEntity: T): iRttiUtil<T>;
+       function Update(var aSql: string): iRttiUtil<T>;
 
 end;
 
@@ -72,6 +74,28 @@ begin
      tkMRecord: ;
      else
        aProp.SetValue(Pointer(aEntidade), aValue);
+   end;
+end;
+
+function TRttiUtils<T>.ChavePrimaria(var aPk: string): iRttiUtil<T>;
+var
+  contexto: TRttiContext;
+  tipo: TRttiType;
+  prop: TRttiProperty;
+  info: PTypeInfo;
+begin
+   Result := Self;
+   info := System.TypeInfo(T);
+   contexto := TRttiContext.Create;
+   try
+     tipo := contexto.GetType(info);
+     for prop in tipo.GetProperties do
+     begin
+       if prop.EhChavePrimaria then
+          aPk := prop.FieldName;
+     end;
+   finally
+     contexto.Free;
    end;
 end;
 
@@ -487,6 +511,30 @@ begin
     end;
   finally
     aParam := Copy(aParam, 0, Length(aParam) - 2) + '';
+    contexto.Free;
+  end;
+end;
+
+function TRttiUtils<T>.Update(var aSql: string): iRttiUtil<T>;
+var
+  contexto: TRttiContext;
+  tipo: TRttiType;
+  prop: TRttiProperty;
+  info: PTypeInfo;
+begin
+  Result := Self;
+  info := System.TypeInfo(T);
+  contexto := TRttiContext.Create;
+  try
+    tipo := contexto.GetType(info);
+    for prop in tipo.GetProperties do
+    begin
+       if prop.EhChavePrimaria then
+          continue;
+       aSql := aSql + prop.FieldName + '=' + ':' + prop.FieldName;
+    end;
+
+  finally
     contexto.Free;
   end;
 end;

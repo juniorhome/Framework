@@ -17,9 +17,9 @@ uses
         destructor Destroy; override;
         class function New(aValue: IModelConexao): IModelQuery;
         function Query: TObject;
-        function Open(aSql: string): IModelQuery; overload;
+        function Open(aSql: string): IModelQuery;
         function Open: IModelQuery; overload;
-        function ExecSql(aSql: string): IModelQuery; overload;
+        function ExecSql(aSql: string): IModelQuery;
         function ExecSql: IModelQuery; overload;
         function DataSet: TDataSet;
         function Params: TParams;

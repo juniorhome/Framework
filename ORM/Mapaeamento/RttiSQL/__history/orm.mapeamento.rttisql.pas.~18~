@@ -145,13 +145,7 @@ function TRttiSQL<T>.SelectData(var aSql: string): iRttiSQL<T>;
 var aNomeTabela, aCampos, aWhere: string;
 begin
    Result := Self;
-   TRttiUtils<T>.New(FInstance).NomeTabela(aNomeTabela).Fields(aCampos).Where(aWhere);
-   if FWhere <> '' then
-      aSql := aSql + ' WHERE ' + FWhere;
 
-   aSql := aSql + 'SELECT ' + aCampos;
-   aSql := aSql + ' FROM ' + aNomeTabela;
-   aSql := aSql + ' WHERE ' + aWhere;
 end;
 
 function TRttiSQL<T>.SelectId(var aSql: string): iRttiSQL<T>;
@@ -168,27 +162,14 @@ begin
 end;
 
 function TRttiSQL<T>.SelectNome(var aSql: string): iRttiSQL<T>;
-var aNomeTabela, aCampos, aWhere: string;
 begin
    Result := Self;
-   TRttiUtils<T>.New(FInstance).NomeTabela(aNomeTabela).Fields(aCampos).Where(aWhere);
-   if FWhere <> '' then
-      aSql := aSql + ' WHERE ' + FWhere;
-
-   aSql := aSql + 'SELECT ' + aCampos;
-   aSql := aSql + ' FROM ' + aNomeTabela;
-   aSql := aSql + ' WHERE ' + aWhere;
 end;
 
 function TRttiSQL<T>.Update(var aSql: string): iRttiSQL<T>;
 var aNomeTabela, aCampos, aWhere: string;
 begin
    Result := Self;
-   TRttiUtils<T>.New(FInstance).NomeTabela(aNomeTabela).Update(aCampos).Where(aWhere);
-
-   aSql := aSql + 'UPDATE ' + aNomeTabela;
-   aSql := aSql + ' SET ' + aCampos;
-   aSql := aSql + ' WHERE ' + aWhere;
 end;
 
 function TRttiSQL<T>.Where(aSql: string): iRttiSQL<T>;
