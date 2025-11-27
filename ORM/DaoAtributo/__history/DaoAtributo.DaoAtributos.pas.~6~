@@ -1,0 +1,58 @@
+unit DaoAtributo.DaoAtributos;
+
+interface
+
+uses
+  orm.conexao.interfaces.Interfaces, System.SysUtils;
+
+ type
+    TDaoAtribute<T: class> = class(TInterfacedObject, iDaoAtribute<T>)
+      private
+        FParent: iDaoAtribute<T>;
+        FFields: string;
+        FWhere: string;
+        FOrderBy: string;
+        FGroupBy: string;
+        FJoin: string;
+      public
+        constructor Create(Parent: iDaoAtribute<T>);
+        destructor Destroy; override;
+        class function New(Parent: iDaoAtribute<T>): iDaoAtribute<T>;
+        function Fields(aSql: string): iDaoAtribute<T>;
+        function Where(aSql: string): iDaoAtribute<T>;
+    end;
+
+implementation
+
+{ TDaoAtribute<T> }
+
+constructor TDaoAtribute<T>.Create(Parent: iDaoAtribute<T>);
+begin
+   FParent := Parent;
+end;
+
+destructor TDaoAtribute<T>.Destroy;
+begin
+  inherited;
+end;
+
+function TDaoAtribute<T>.Fields(aSql: string): iDaoAtribute<T>;
+begin
+  Result := Self;
+  if Trim(aSql) <> '' then
+     FFields := FFields + '' + aSql;
+end;
+
+class function TDaoAtribute<T>.New(Parent: iDaoAtribute<T>): iDaoAtribute<T>;
+begin
+   Result := Self.Create(Parent);
+end;
+
+function TDaoAtribute<T>.Where(aSql: string): iDaoAtribute<T>;
+begin
+  Result := Self;
+  if Trim(aSql) <> '' then
+    FWhere := FWhere + '' + aSql;
+end;
+
+end.

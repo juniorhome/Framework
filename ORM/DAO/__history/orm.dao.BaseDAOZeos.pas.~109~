@@ -160,7 +160,6 @@ end;
 
 destructor TBaseDAOZeos<T>.Destroy;
 begin
-  FreeAndNil(FLista);
   inherited;
 end;
 

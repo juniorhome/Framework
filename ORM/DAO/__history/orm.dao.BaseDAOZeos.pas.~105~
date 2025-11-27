@@ -31,8 +31,7 @@ uses Db,Rtti,orm.conexao.ModelConexaoFactory,orm.IBaseVO,orm.Atributos,
         function Listagem(var aId: integer): T;overload;//consulta usando ID.
         function Listagem(aKey: string; aValue: Variant): IDAO<T>; overload;
         function DataSource(aDataSource: TDataSource): IDAO<T>;
-        function LastID: IDAO<T>;
-        function LastRecord: IDAO<T>;
+        function LastID: iRttiUtil<T>;
 
         //Transações com banco de dados.
         procedure ComecarTransacao();
@@ -160,7 +159,6 @@ end;
 
 destructor TBaseDAOZeos<T>.Destroy;
 begin
-  FreeAndNil(FLista);
   inherited;
 end;
 
@@ -429,20 +427,9 @@ begin
   FQuery.Open;
 end;
 
-function TBaseDAOZeos<T>.LastID: IDAO<T>;
-var aSql: string;
+function TBaseDAOZeos<T>.LastID: iRttiUtil<T>;
 begin
-   Result := Self;
-   TRttiSQL<T>.New(nil).LastId(aSql);
-   FQuery.Open(aSql);
-end;
-
-function TBaseDAOZeos<T>.LastRecord: IDAO<T>;
-var aSql: string;
-begin
-    Result := Self;
-    TRttiSQL<T>.New(nil).LastRecord(aSql);
-    FQuery.Open(aSql);
+//
 end;
 
 function TBaseDAOZeos<T>.Listagem(aKey: string; aValue: Variant): IDAO<T>;

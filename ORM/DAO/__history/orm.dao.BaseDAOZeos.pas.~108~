@@ -160,7 +160,6 @@ end;
 
 destructor TBaseDAOZeos<T>.Destroy;
 begin
-  FreeAndNil(FLista);
   inherited;
 end;
 
@@ -441,8 +440,6 @@ function TBaseDAOZeos<T>.LastRecord: IDAO<T>;
 var aSql: string;
 begin
     Result := Self;
-    TRttiSQL<T>.New(nil).LastRecord(aSql);
-    FQuery.Open(aSql);
 end;
 
 function TBaseDAOZeos<T>.Listagem(aKey: string; aValue: Variant): IDAO<T>;

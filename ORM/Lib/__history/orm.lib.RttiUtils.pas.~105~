@@ -28,21 +28,21 @@ type
        function Where(var aWhere: string): iRttiUtil<T>;
        function FieldsUpdate(var aFields: string): iRttiUtil<T>;
        function NomeTabela(var aNomeTabela: string): iRttiUtil<T>;
+       function ChavePrimaria(var aPk: string): iRttiUtil<T>;
        function DictionaryFields(var aDictionary: TDictionary<string, variant>): iRttiUtil<T>;
+       function DictionaryFieldType(var aDictionaryFiledType: TDictionary<string, TFieldType>): iRttiUtil<T>;
        function BindClassToForm(aForm: TForm; const aEntidade: T): iRttiUtil<T>;
        function BindFormToClass(aForm: TForm; var aEntidade: T): iRttiUtil<T>;
        function ListarCampos(var aLista: TList<string>): iRttiUtil<T>;
        function DataSetToEntityList(aDataSet: TDataSet; var aLista: TObjectList<T>): iRttiUtil<T>;
        function DataSetToEntity(aDataSet: TDataSet; var aEntity: T): iRttiUtil<T>;
+       function Update(var aSql: string): iRttiUtil<T>;
 
 end;
 
 implementation
 
 { TRttiUtils }
-
-
-
 class procedure TRttiUtils<T>.BindValueToProperty(aEntidade: T;
   aProp: TRttiProperty; aValue: TValue);
 begin
@@ -78,6 +78,28 @@ begin
    end;
 end;
 
+function TRttiUtils<T>.ChavePrimaria(var aPk: string): iRttiUtil<T>;
+var
+  contexto: TRttiContext;
+  tipo: TRttiType;
+  prop: TRttiProperty;
+  info: PTypeInfo;
+begin
+   Result := Self;
+   info := System.TypeInfo(T);
+   contexto := TRttiContext.Create;
+   try
+     tipo := contexto.GetType(info);
+     for prop in tipo.GetProperties do
+     begin
+       if prop.EhChavePrimaria then
+          aPk := prop.FieldName;
+     end;
+   finally
+     contexto.Free;
+   end;
+end;
+
 constructor TRttiUtils<T>.Create(aInstance: T);
 begin
   FInstance := aInstance;
@@ -85,8 +107,50 @@ end;
 
 function TRttiUtils<T>.DataSetToEntity(aDataSet: TDataSet;
   var aEntity: T): iRttiUtil<T>;
+var
+  contexto: TRttiContext;
+  tipo: TRttiType;
+  prop: TRttiProperty;
+  campo: TField;
+  info: PTypeInfo;
+  valor: TValue;
 begin
-
+  Result := Self;
+  aDataSet.First;
+  while  not aDataSet.Eof do
+  begin
+   info := System.TypeInfo(T);
+   contexto := TRttiContext.Create;
+   try
+     for campo in aDataSet.Fields do
+     begin
+       tipo := contexto.GetType(info);
+       for prop in tipo.GetProperties do
+       begin
+         if LowerCase(prop.FieldName) = LowerCase(campo.FieldName) then
+         begin
+           case prop.PropertyType.TypeKind of
+             tkInteger,
+             tkInt64:
+                  Valor := campo.AsInteger;
+             tkString,
+             tkChar,
+             tkWChar,
+             tkLString,
+             tkWString,
+             tkUString: Valor := campo.AsString;
+             tkFloat: Valor := campo.AsFloat;
+           end;
+           prop.SetValue(Pointer(aEntity), Valor);
+         end;
+       end;
+     end;
+   finally
+     contexto.Free;
+   end;
+   aDataSet.Next;
+  end;
+  aDataSet.First;
 end;
 
 function TRttiUtils<T>.DataSetToEntityList(aDataSet: TDataSet;
@@ -199,6 +263,51 @@ begin
            aDictionary.Add(prop.FieldName, prop.GetValue(Pointer(FInstance)).AsString);
        end;
      end;
+   finally
+     contexto.Free;
+   end;
+end;
+
+function TRttiUtils<T>.DictionaryFieldType(
+  var aDictionaryFiledType: TDictionary<string, TFieldType>): iRttiUtil<T>;
+var contexto: TRttiContext;
+    tipo: TRttiType;
+    prop: TRttiProperty;
+    info: PTypeInfo;
+begin
+   Result := Self;
+   info := System.TypeInfo(T);
+   contexto := TRttiContext.Create;
+   try
+      tipo := contexto.GetType(info);
+      for prop in tipo.GetProperties do
+      begin
+        case prop.PropertyType.TypeKind of
+          tkUnknown: ;
+          tkInteger: ;
+          tkChar: ;
+          tkEnumeration: ;
+          tkFloat: ;
+          tkString: ;
+          tkSet: ;
+          tkClass: ;
+          tkMethod: ;
+          tkWChar: ;
+          tkLString: ;
+          tkWString: ;
+          tkVariant: ;
+          tkArray: ;
+          tkRecord: ;
+          tkInterface: ;
+          tkInt64: ;
+          tkDynArray: ;
+          tkUString: ;
+          tkClassRef: ;
+          tkPointer: ;
+          tkProcedure: ;
+          tkMRecord: ;
+        end;
+      end;
    finally
      contexto.Free;
    end;
@@ -448,6 +557,30 @@ begin
     end;
   finally
     aParam := Copy(aParam, 0, Length(aParam) - 2) + '';
+    contexto.Free;
+  end;
+end;
+
+function TRttiUtils<T>.Update(var aSql: string): iRttiUtil<T>;
+var
+  contexto: TRttiContext;
+  tipo: TRttiType;
+  prop: TRttiProperty;
+  info: PTypeInfo;
+begin
+  Result := Self;
+  info := System.TypeInfo(T);
+  contexto := TRttiContext.Create;
+  try
+    tipo := contexto.GetType(info);
+    for prop in tipo.GetProperties do
+    begin
+       if prop.EhChavePrimaria then
+          continue;
+       aSql := aSql + prop.FieldName + '=' + ':' + prop.FieldName;
+    end;
+
+  finally
     contexto.Free;
   end;
 end;

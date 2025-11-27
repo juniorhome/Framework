@@ -18,7 +18,6 @@ uses Db,Rtti,orm.conexao.ModelConexaoFactory,orm.IBaseVO,orm.Atributos,
         FForm: TForm;
         function FillParameters(aInstance: T): IDAO<T>; overload;
         function FillParameters(aInstance: T; aId: integer): IDAO<T>; overload;
-        procedure OnDataChange(Sender: TObject; Field: TField);
       public
         constructor Create();
         destructor Destroy;override;
@@ -31,8 +30,6 @@ uses Db,Rtti,orm.conexao.ModelConexaoFactory,orm.IBaseVO,orm.Atributos,
         function Listagem(var aId: integer): T;overload;//consulta usando ID.
         function Listagem(aKey: string; aValue: Variant): IDAO<T>; overload;
         function DataSource(aDataSource: TDataSource): IDAO<T>;
-        function LastID: IDAO<T>;
-        function LastRecord: IDAO<T>;
 
         //Transações com banco de dados.
         procedure ComecarTransacao();
@@ -154,13 +151,10 @@ end;
 function TBaseDAOZeos<T>.DataSource(aDataSource: TDataSource): IDAO<T>;
 begin
   FDataSource := aDataSource;
-  FDataSource.DataSet := FQuery.DataSet;
-  FDataSource.OnDataChange := OnDataChange;
 end;
 
 destructor TBaseDAOZeos<T>.Destroy;
 begin
-  FreeAndNil(FLista);
   inherited;
 end;
 
@@ -429,22 +423,6 @@ begin
   FQuery.Open;
 end;
 
-function TBaseDAOZeos<T>.LastID: IDAO<T>;
-var aSql: string;
-begin
-   Result := Self;
-   TRttiSQL<T>.New(nil).LastId(aSql);
-   FQuery.Open(aSql);
-end;
-
-function TBaseDAOZeos<T>.LastRecord: IDAO<T>;
-var aSql: string;
-begin
-    Result := Self;
-    TRttiSQL<T>.New(nil).LastRecord(aSql);
-    FQuery.Open(aSql);
-end;
-
 function TBaseDAOZeos<T>.Listagem(aKey: string; aValue: Variant): IDAO<T>;
 var aSql: string;
 begin
@@ -459,15 +437,6 @@ end;
 class function TBaseDAOZeos<T>.New(): IDAO<T>;
 begin
    Result := Self.Create();
-end;
-
-procedure TBaseDAOZeos<T>.OnDataChange(Sender: TObject; Field: TField);
-begin
-  if (FLista.Count > 0) and (FDataSource.DataSet.RecNo - 1 <= FLista.Count) then
-  begin
-    if Assigned(FForm) then
-       TRttiUtils<T>.New(nil).BindClassToForm(FForm, FLista[FDataSource.DataSet.RecNo - 1]);
-  end;
 end;
 
 procedure TBaseDAOZeos<T>.Rollback;

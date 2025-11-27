@@ -30,6 +30,7 @@ type
        function NomeTabela(var aNomeTabela: string): iRttiUtil<T>;
        function ChavePrimaria(var aPk: string): iRttiUtil<T>;
        function DictionaryFields(var aDictionary: TDictionary<string, variant>): iRttiUtil<T>;
+       function DictionaryFieldType(var aDictionaryFiledType: TDictionary<string, TFieldType>): iRttiUtil<T>;
        function BindClassToForm(aForm: TForm; const aEntidade: T): iRttiUtil<T>;
        function BindFormToClass(aForm: TForm; var aEntidade: T): iRttiUtil<T>;
        function ListarCampos(var aLista: TList<string>): iRttiUtil<T>;
@@ -262,6 +263,59 @@ begin
            aDictionary.Add(prop.FieldName, prop.GetValue(Pointer(FInstance)).AsString);
        end;
      end;
+   finally
+     contexto.Free;
+   end;
+end;
+
+function TRttiUtils<T>.DictionaryFieldType(
+  var aDictionaryFiledType: TDictionary<string, TFieldType>): iRttiUtil<T>;
+var contexto: TRttiContext;
+    tipo: TRttiType;
+    prop: TRttiProperty;
+    info: PTypeInfo;
+begin
+   Result := Self;
+   info := System.TypeInfo(T);
+   contexto := TRttiContext.Create;
+   try
+      tipo := contexto.GetType(info);
+      for prop in tipo.GetProperties do
+      begin
+        case prop.PropertyType.TypeKind of
+          tkUnknown: ;
+          tkInteger: ;
+          tkChar: ;
+          tkEnumeration: ;
+          tkFloat:
+          begin
+            if prop.GetValue(Pointer(FInstance)).TypeInfo = TypeInfo(TDateTime) then
+               aDictionaryFiledType.Add(prop.FieldName, TFieldType.ftDateTime);
+            if prop.GetValue(Pointer(FInstance)).TypeInfo = TypeInfo(TDate) then
+              aDictionaryFiledType.Add(prop.FieldName, TFieldType.ftDate);
+            if prop.GetValue(Pointer(FInstance)).TypeInfo = TypeInfo(TTime) then
+              aDictionaryFiledType.Add(prop.FieldName, TFieldType.ftTime);
+          end;
+          tkString: ;
+          tkSet: ;
+          tkClass: ;
+          tkMethod: ;
+          tkWChar: ;
+          tkLString: ;
+          tkWString: ;
+          tkVariant: ;
+          tkArray: ;
+          tkRecord: ;
+          tkInterface: ;
+          tkInt64: ;
+          tkDynArray: ;
+          tkUString: ;
+          tkClassRef: ;
+          tkPointer: ;
+          tkProcedure: ;
+          tkMRecord: ;
+        end;
+      end;
    finally
      contexto.Free;
    end;

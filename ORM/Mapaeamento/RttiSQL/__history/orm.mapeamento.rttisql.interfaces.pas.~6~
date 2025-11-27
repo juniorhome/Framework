@@ -17,8 +17,6 @@ type
     function OrderBy(aSql: string): iRttiSQL<T>;
     function GroupBy(aSql: string): iRttiSQL<T>;
     function Join(aSql: string): iRttiSQL<T>;
-    function LastId(var aSql: string): iRttiSQL<T>;
-    function LastRecord(var aSql: string): iRttiSQL<T>;
   end;
 
 implementation

@@ -1,0 +1,129 @@
+unit DaoAtributo.DaoAtributos;
+
+interface
+
+uses
+  orm.conexao.interfaces.Interfaces, System.SysUtils;
+
+ type
+    TDaoAtribute<T: class> = class(TInterfacedObject, iDaoAtribute<T>)
+      private
+        FParent: iDaoAtribute<T>;
+        FFields: string;
+        FWhere: string;
+        FOrderBy: string;
+        FGroupBy: string;
+        FJoin: string;
+      public
+        constructor Create(Parent: iDaoAtribute<T>);
+        destructor Destroy; override;
+        class function New(Parent: iDaoAtribute<T>): iDaoAtribute<T>;
+        function Fields(aSql: string): iDaoAtribute<T>; overload;
+        function Where(aSql: string): iDaoAtribute<T>;  overload;
+        function OrderBy(aSql: string): iDaoAtribute<T>; overload;
+        function GroupBy(aSql: string): iDaoAtribute<T>; overload;
+        function Join(aSql: string): iDaoAtribute<T>; overload;
+        function Join: string; overload;
+        function Fields: string; overload;
+        function Where: string; overload;
+        function OrderBy: string; overload;
+        function GroupBy: string; overload;
+        function Clear: iDaoAtribute<T>;
+        function &End: iDaoAtribute<T>;
+    end;
+
+implementation
+
+{ TDaoAtribute<T> }
+
+function TDaoAtribute<T>.&End: iDaoAtribute<T>;
+begin
+   Result := FParent;
+end;
+
+function TDaoAtribute<T>.Fields: string;
+begin
+  Result := FFields;
+end;
+
+function TDaoAtribute<T>.GroupBy: string;
+begin
+  Result := FGroupBy;
+end;
+
+function TDaoAtribute<T>.Clear: iDaoAtribute<T>;
+begin
+  Result := Self;
+  FFields := EmptyStr;
+  FWhere := EmptyStr;
+  FJoin := EmptyStr;
+  FGroupBy := EmptyStr;
+  FOrderBy := EmptyStr;
+end;
+
+constructor TDaoAtribute<T>.Create(Parent: iDaoAtribute<T>);
+begin
+   FParent := Parent;
+end;
+
+destructor TDaoAtribute<T>.Destroy;
+begin
+  inherited;
+end;
+
+function TDaoAtribute<T>.Fields(aSql: string): iDaoAtribute<T>;
+begin
+  Result := Self;
+  if Trim(aSql) <> '' then
+     FFields := FFields + '' + aSql;
+end;
+
+function TDaoAtribute<T>.GroupBy(aSql: string): iDaoAtribute<T>;
+begin
+   Result := Self;
+   if Trim(aSql) <> '' then
+     FGroupBy := FGroupBy + '' + aSql;
+end;
+
+function TDaoAtribute<T>.Join: string;
+begin
+  Result := FJoin;
+end;
+
+function TDaoAtribute<T>.Join(aSql: string): iDaoAtribute<T>;
+begin
+  Result := Self;
+  if Trim(aSql) <> '' then
+    FJoin := FJoin + '' + aSql;
+end;
+
+class function TDaoAtribute<T>.New(Parent: iDaoAtribute<T>): iDaoAtribute<T>;
+begin
+   Result := Self.Create(Parent);
+end;
+
+function TDaoAtribute<T>.OrderBy: string;
+begin
+  Result := FOrderBy;
+end;
+
+function TDaoAtribute<T>.OrderBy(aSql: string): iDaoAtribute<T>;
+begin
+  Result := Self;
+  if Trim(aSql) <> '' then
+    FOrderBy := FOrderBy + '' + aSql;
+end;
+
+function TDaoAtribute<T>.Where: string;
+begin
+  Result := FWhere;
+end;
+
+function TDaoAtribute<T>.Where(aSql: string): iDaoAtribute<T>;
+begin
+  Result := Self;
+  if Trim(aSql) <> '' then
+    FWhere := FWhere + '' + aSql;
+end;
+
+end.
