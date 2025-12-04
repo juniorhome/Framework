@@ -20,6 +20,8 @@ type
   type
     TTabelaEstrangeira = class(TTabela)
       private
+        FNome:            string;
+        FAlias:           string;
         FId:              string;
         FIdEstrangeiro:   string;
         FTipoJoin:        string;
@@ -27,7 +29,7 @@ type
         property Id: string read FId write FId;
         property IdEstrangeiro: string read FIdEstrangeiro write FIdEstrangeiro;
         property TipoJoin: string read FTipoJoin write FTipoJoin;
-        constructor Create(PId,PidEstrangeiro,PTipoJoin: string);
+        constructor Create(PNome,PAlias,PId,PidEstrangeiro,PTipoJoin: string);
     end;
 
     type
@@ -133,6 +135,7 @@ type
                       property CaptionPlural: string read FCaptionPlural write FCaptionPlural;
                       property Mascara: string read FMascara write FMascara;
                       constructor Create(PNome,PCaptionSingular,PCaptionPlural,PMascara: string; PTamanho,PCasaDecimal: integer);
+                      procedure Atribuir(aNome, aCaptionSingular, aCaptionPlural, aMascara: string; aTamanho, aCasaDeciaml: integer); virtual;
                   end;
 
                   type
@@ -262,6 +265,15 @@ type
              constructor Create(PNome,PAlias: string; PAtivo: boolean);
          end;
 
+         type
+           TBind = class(TCustomAttribute)
+             private
+                FNome: string;
+             public
+                property Nome: string read FNome write FNome;
+                constructor Create(aNome: string);
+           end;
+
        type
          TTipoJoin = (ttInnerJoin, ttLeftJoin, ttRigthJoin);
 
@@ -280,8 +292,10 @@ end;
 
 { TTabelaEstrangeira }
 
-constructor TTabelaEstrangeira.Create(PId, PidEstrangeiro, PTipoJoin: string);
+constructor TTabelaEstrangeira.Create(PNome,PAlias,PId, PidEstrangeiro, PTipoJoin: string);
 begin
+    FNome             := PNome;
+    FAlias            := PAlias;
     FId               := PId;
     FIdEstrangeiro    := PIdEstrangeiro;
     FTipoJoin         := PTipoJoin;
@@ -351,6 +365,17 @@ begin
 end;
 
 { TCampoExtended }
+
+procedure TCampoExtended.Atribuir(aNome, aCaptionSingular, aCaptionPlural,
+  aMascara: string; aTamanho, aCasaDeciaml: integer);
+begin
+   FNome := aNome;
+   FCaptionSingular := aCaptionSingular;
+   FCaptionPlural := aCaptionPlural;
+   FMascara := aMascara;
+   FTamanho := aTamanho;
+   FCasaDecimal := aCasaDeciaml;
+end;
 
 constructor TCampoExtended.Create(PNome, PCaptionSingular, PCaptionPlural,
   PMascara: string; PTamanho, PCasaDecimal: integer);
@@ -454,6 +479,13 @@ begin
   FNome := PNome;
   FAlias := PAlias;
   FAtivo := PAtivo;
+end;
+
+{ TBind }
+
+constructor TBind.Create(aNome: string);
+begin
+   FNome := aNome;
 end;
 
 end.

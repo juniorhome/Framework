@@ -112,6 +112,8 @@ type
        function EhMedia: Boolean;
        function EhMinimo: Boolean;
        function EhMaximo: Boolean;
+       function EhCampoBlob: Boolean;
+       function EhCampoHora: Boolean;
        function FieldName: string;
    end;
 
@@ -151,6 +153,11 @@ end;
 
 { TRttiPropertyHelper }
 
+function TRttiPropertyHelper.EhCampoBlob: Boolean;
+begin
+  Result := Tem<TCampoBlob>;
+end;
+
 function TRttiPropertyHelper.EhCampoBooleano: Boolean;
 begin
   Result := Tem<TCampoBooleano>;
@@ -179,6 +186,11 @@ end;
 function TRttiPropertyHelper.EhCampoFiltro: Boolean;
 begin
    Result := Tem<TCampoFiltro>;
+end;
+
+function TRttiPropertyHelper.EhCampoHora: Boolean;
+begin
+  Result := Tem<TCampoHora>;
 end;
 
 function TRttiPropertyHelper.EhCampoInteiro: Boolean;
@@ -243,6 +255,10 @@ begin
     Result := GetAtribute<TCampoMonetario>.Nome;
   if EhCampoBooleano then
     Result := GetAtribute<TCampoBooleano>.Nome;
+  if EhCampoHora then
+    Result := GetAtribute<TCampoHora>.Nome;
+  if EhCampoBlob then
+    Result := GetAtribute<TCampoBlob>.Nome;
   if EhCampoEstrangeiro then
     Result := GetAtribute<TCampoEstrangeiro>.Nome;
   if EhCampoFiltro then
@@ -322,6 +338,10 @@ begin
      if prop.GetAtribute<TCampoMonetario>.Nome = aPropName then
        Exit(prop);
      if prop.GetAtribute<TCampoBooleano>.Nome = aPropName then
+        Exit(prop);
+     if prop.GetAtribute<TCampoHora>.Nome = aPropName then
+        Exit(prop);
+     if prop.GetAtribute<TCampoBlob>.Nome = aPropName then
         Exit(prop);
      if prop.GetAtribute<TCampoEstrangeiro>.Nome = aPropName then
         Exit(prop);

@@ -97,6 +97,8 @@ type
      public
        function GetAtribute<T: TCustomAttribute>: T;
        function Tem<T: TCustomAttribute>: Boolean;
+       function EhChavePrimaria: Boolean;
+       function EhChaveEstrangeira: Boolean;
        function EhCampoTexto: Boolean;
        function EhCampoInteiro: Boolean;
        function EhCampoData: Boolean;
@@ -110,6 +112,9 @@ type
        function EhMedia: Boolean;
        function EhMinimo: Boolean;
        function EhMaximo: Boolean;
+       function EhCampoBlob: Boolean;
+       function EhCampoHora: Boolean;
+       function FieldName: string;
    end;
 
    type
@@ -148,6 +153,11 @@ end;
 
 { TRttiPropertyHelper }
 
+function TRttiPropertyHelper.EhCampoBlob: Boolean;
+begin
+  Result := Tem<TCampoBlob>;
+end;
+
 function TRttiPropertyHelper.EhCampoBooleano: Boolean;
 begin
   Result := Tem<TCampoBooleano>;
@@ -178,6 +188,11 @@ begin
    Result := Tem<TCampoFiltro>;
 end;
 
+function TRttiPropertyHelper.EhCampoHora: Boolean;
+begin
+  Result := Tem<TCampoHora>;
+end;
+
 function TRttiPropertyHelper.EhCampoInteiro: Boolean;
 begin
   Result := Tem<TCampoInteiro>;
@@ -191,6 +206,16 @@ end;
 function TRttiPropertyHelper.EhCampoTexto: Boolean;
 begin
   Result := Tem<TCampoTexto>;
+end;
+
+function TRttiPropertyHelper.EhChaveEstrangeira: Boolean;
+begin
+  Result := Tem<TChavePrimaria>;
+end;
+
+function TRttiPropertyHelper.EhChavePrimaria: Boolean;
+begin
+  Result := Tem<TChaveEstrangeira>;
 end;
 
 function TRttiPropertyHelper.EhMaximo: Boolean;
@@ -211,6 +236,38 @@ end;
 function TRttiPropertyHelper.EhSomatorio: Boolean;
 begin
   Result := Tem<TSomatorio>;
+end;
+
+function TRttiPropertyHelper.FieldName: string;
+begin
+  Result := Name;
+  if EhCampoTexto then
+    Result := GetAtribute<TCampoTexto>.Nome;
+  if EhCampoInteiro then
+    Result := GetAtribute<TCampoInteiro>.Nome;
+  if EhCampoData then
+    Result := GetAtribute<TCampoData>.Nome;
+  if EhCampoDataHora then
+    Result := GetAtribute<TCampoDataHora>.Nome;
+  if EhCampoExtended then
+    Result := GetAtribute<TCampoExtended>.Nome;
+  if EhCampoMonetario then
+    Result := GetAtribute<TCampoMonetario>.Nome;
+  if EhCampoBooleano then
+    Result := GetAtribute<TCampoBooleano>.Nome;
+  if EhCampoEstrangeiro then
+    Result := GetAtribute<TCampoEstrangeiro>.Nome;
+  if EhCampoFiltro then
+    Result := GetAtribute<TCampoFiltro>.Nome;
+  if EhSomatorio then
+    Result := GetAtribute<TSomatorio>.Nome;
+  if EhMedia then
+    Result := GetAtribute<TMedia>.Nome;
+  if EhMinimo then
+    Result := GetAtribute<TMinimo>.Nome;
+  if EhMaximo then
+    Result := GetAtribute<TMaximo>.Nome;
+
 end;
 
 function TRttiPropertyHelper.GetAtribute<T>: T;

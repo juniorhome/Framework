@@ -353,6 +353,10 @@ begin
           aFields := aFields + prop.FieldName + ',';
        if prop.EhChaveEstrangeira then
           aFields := aFields + prop.FieldName + ',';
+       if prop.EhCampoBlob then
+          aFields := aFields + prop.FieldName + ',';
+       if prop.EhCampoHora then
+          aFields := aFields + prop.FieldName + ',';
      end;
    finally
      //Retira a última virgula da string.
@@ -391,6 +395,10 @@ begin
           aFields := aFields + prop.FieldName + ',';
         if prop.EhChaveEstrangeira then
           aFields := aFields + prop.FieldName + ',';
+        if prop.EhCampoBlob then
+          aFields := aFields + prop.FieldName + ',';
+        if prop.EhCampoHora then
+          aFields := aFields + prop.FieldName + ',';
       end;
    finally
      //Retira a última virgula da string.
@@ -428,6 +436,10 @@ begin
       if prop.EhCampoBooleano then
         aFields := aFields + prop.FieldName + ' = ' + ':' + prop.FieldName + ',';
       if prop.EhChaveEstrangeira then
+        aFields := aFields + prop.FieldName + ' = ' + ':' + prop.FieldName + ',';
+      if prop.EhCampoBlob then
+        aFields := aFields + prop.FieldName + ' = ' + ':' + prop.FieldName + ',';
+      if prop.EhCampoHora then
         aFields := aFields + prop.FieldName + ' = ' + ':' + prop.FieldName + ',';
     end;
   finally
@@ -561,6 +573,10 @@ begin
       if prop.EhCampoBooleano then
         aParam := aParam + ':' + prop.FieldName + ',';
       if prop.EhChaveEstrangeira then
+        aParam := aParam + ':' + prop.FieldName + ',';
+      if prop.EhCampoBlob then
+        aParam := aParam + ':' + prop.FieldName + ',';
+      if prop.EhCampoHora then
         aParam := aParam + ':' + prop.FieldName + ',';
     end;
   finally

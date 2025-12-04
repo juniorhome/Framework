@@ -143,7 +143,7 @@ type
                         FEhDinheiro: boolean;
                       public
                         property EhDinheiro: boolean read FEhDinheiro write FEhdinheiro;
-                        constructor Create(PEhDinheiro: boolean);
+                        constructor Create(PNome,PCaptionSingular,PCaptionPlural,PMascara: string; PTamanho,PCasaDecimal: integer; PEhDinheiro: boolean);
                     end;
 
                     type
@@ -158,6 +158,35 @@ type
                           property CaptionPlural: string read FCaptionPlural write FCaptionPlural;
                           constructor Create(PNome,PCaptionSingular,PCaptionPlural: string);
                       end;
+
+                      type
+                        TCampoHora = class(TCustomAttribute)
+                          private
+                             FNome: string;
+                             FCaptionSingular: string;
+                             FCaptionPlural: string;
+                             FMascara: string;
+                          public
+                             property Nome: string read FNome write FNome;
+                             property CaptionSingula: string read FCaptionSingular write FCaptionSingular;
+                             property CaptionPlural: string read FCaptionPlural write FCaptionPlural;
+                             property Mascara: string read FMascara write FMascara;
+                             constructor Create(PNome, PCaptionSing, PCaptionPl, PMascara: string);
+                        end;
+
+                        type
+                          TipoBlob = (tbTexto, tbBinario);
+
+                        type
+                          TCampoBlob = class(TCustomAttribute)
+                            private
+                              FNome: string;
+                              FTipo: TipoBlob;
+                            public
+                              property Nome: string read FNome write FNome;
+                              property Tipo: TipoBlob read FTipo write FTipo;
+                              constructor Create(pNome: string; pTipo: TipoBlob);
+                          end;
 
                       type
                         TCampoEstrangeiro = class(TCustomAttribute)
@@ -378,9 +407,10 @@ end;
 
 { TCampoMonetario }
 
-constructor TCampoMonetario.Create(PEhDinheiro: boolean);
+constructor TCampoMonetario.Create(PNome,PCaptionSingular,PCaptionPlural,PMascara: string; PTamanho,PCasaDecimal: integer; PEhDinheiro: boolean);
 begin
    //chamada do construtor da classe pai.
+   inherited Create(PNome,PCaptionSingular,PCaptionPlural,PMascara, PTamanho,PCasaDecimal);
    FEhDinheiro := PEhDinheiro;
 end;
 
@@ -474,6 +504,25 @@ end;
 constructor TBind.Create(aNome: string);
 begin
    FNome := aNome;
+end;
+
+{ TCampoHora }
+
+constructor TCampoHora.Create(PNome, PCaptionSing, PCaptionPl,
+  PMascara: string);
+begin
+   FNome := PNome;
+   FCaptionSingular := PCaptionSing;
+   FCaptionPlural := PCaptionPl;
+   FMascara := PMascara;
+end;
+
+{ TCampoBlob }
+
+constructor TCampoBlob.Create(pNome: string; pTipo: TipoBlob);
+begin
+   FNome := pNome;
+   FTipo := pTipo;
 end;
 
 end.
