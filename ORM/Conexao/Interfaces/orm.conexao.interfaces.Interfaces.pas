@@ -44,6 +44,7 @@ type
      function Listagem(const aListaLigada: boolean = True): IDAO<T>;overload; //Consulta completa.
      function Listagem(var aLista: TObjectList<T>): IDAO<T>;overload;
      function Listagem(var aId: integer): T;overload;//consulta usando ID.
+     function Listagem(var aLogin,aSenha: string): T; overload;
      function Listagem(aKey: string; aValue: Variant): IDAO<T>; overload;
      function DataSource(aDataSource: TDataSource): IDAO<T>;
    end;

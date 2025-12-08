@@ -41,12 +41,11 @@ type
      function Inserir(obj: T): IDAO<T>;
      function Atualizar(obj: T): IDAO<T>;
      function Excluir(obj: T): IDAO<T>;
-     function Listagem(obj: T; const TipoJuncao:TTipoJoin = ttLeftJoin; aTemLista: boolean = True): IDAO<T>;overload; //Consulta completa
-     function Listagem(obj: T; dataInicio,dataFim: string; const TipoJuncao: TTipoJoin = ttLeftJoin): IDAO<T>;overload;//consulta usando data
-     function Listagem(obj: T; aId: integer; const TipoJuncao: TTipoJoin = ttLeftJoin): IDAO<T>;overload;//consulta usando ID.
-     function Listagem(obj: T; aNome: string; const TipoJuncao:TTipoJoin = ttLeftJoin): IDAO<T>; overload;//consulta por nome,descrição ou qualquer campo string.
+     function Listagem(const aListaLigada: boolean = True): IDAO<T>;overload; //Consulta completa.
+     function Listagem(var aLista: TObjectList<T>): IDAO<T>;overload;
+     function Listagem(var aId: integer): T;overload;//consulta usando ID.
+     function Listagem(aKey: string; aValue: Variant): IDAO<T>; overload;
      function DataSource(aDataSource: TDataSource): IDAO<T>;
-     function ConsultaSql(sql: string): TDataSet;
    end;
 
    IController<T: class> = interface
@@ -64,10 +63,37 @@ type
 
    iRttiUtil<T: class> = interface
      ['{5FA15D95-8776-4C43-B1DE-C1F64D7505FF}']
+       function Fields(var aFields: string): iRttiUtil<T>;
+       function FieldsInsert(var aFields: string): iRttiUtil<T>;
+       function Param(var aParam: string): iRttiUtil<T>;
+       function Where(var aWhere: string): iRttiUtil<T>;
+       function FieldsUpdate(var aFields: string): iRttiUtil<T>;
+       function NomeTabela(var aNomeTabela: string): iRttiUtil<T>;
+       function ChavePrimaria(var aPk: string): iRttiUtil<T>;
+       function DictionaryFields(var aDictionary: TDictionary<string, variant>): iRttiUtil<T>;
+       function DictionaryFieldType(var aDictionaryFiledType: TDictionary<string, TFieldType>): iRttiUtil<T>;
        function BindClassToForm(aForm: TForm; const aEntidade: T): iRttiUtil<T>;
        function BindFormToClass(aForm: TForm; var aEntidade: T): iRttiUtil<T>;
        function ListarCampos(var aLista: TList<string>): iRttiUtil<T>;
        function DataSetToEntityList(aDataSet: TDataSet; var aLista: TObjectList<T>): iRttiUtil<T>;
+       function DataSetToEntity(aDataSet: TDataSet; var aEntity: T): iRttiUtil<T>;
+       function Update(var aSql: string): iRttiUtil<T>;
+   end;
+
+   iDaoAtribute<T: class> = interface
+     ['{2F382064-BEEE-465B-9381-76D4C254E4D1}']
+      function Fields (aSQL : String) : iDaoAtribute<T>; overload;
+      function Where (aSQL : String) : iDaoAtribute<T>; overload;
+      function OrderBy (aSQL : String) : iDaoAtribute<T>; overload;
+      function GroupBy (aSQL : String) : iDaoAtribute<T>; overload;
+      function Join (aSQL : String) : iDaoAtribute<T>; overload;
+      function Join : String; overload;
+      function Fields : String; overload;
+      function Where : String; overload;
+      function OrderBy : String; overload;
+      function GroupBy : String; overload;
+      function Clear : iDaoAtribute<T>;
+      function &End : iDaoAtribute<T>;
    end;
 
  implementation

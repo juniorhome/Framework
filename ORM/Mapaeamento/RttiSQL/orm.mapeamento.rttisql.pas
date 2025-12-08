@@ -25,6 +25,7 @@ type
       function SelectId(var aSql: string): iRttiSQL<T>;
       function SelectNome(var aSql: string): iRttiSQL<T>;
       function SelectData(var aSql: string): iRttiSQL<T>;
+      function SelectLogin(var aSql: string): iRttiSQL<T>;
       function LastId(var aSql: string): iRttiSQL<T>;
       function LastRecord(var aSql: string): iRttiSQL<T>;
       function Fields(aSql: string): iRttiSQL<T>;
@@ -165,6 +166,19 @@ begin
   aSql := aSql + 'SELECT ' + aCampos;
   aSql := aSql + ' FROM ' + aNomeTabela;
   aSql := aSql + ' WHERE ' + aWhere;
+end;
+
+function TRttiSQL<T>.SelectLogin(var aSql: string): iRttiSQL<T>;
+var aNomeTabela, aCampos, aWhere: string;
+begin
+   Result := Self;
+   TRttiUtils<T>.New(FInstance).NomeTabela(aNomeTabela).Fields(aCampos).Where(aWhere);
+   if FWhere <> '' then
+      aSql := aSql + ' WHERE ' + FWhere;
+
+   aSql := aSql + 'SELECT ' + aCampos;
+   aSql := aSql + ' FROM ' + aNomeTabela;
+   aSql := aSql + ' WHERE ' + aWhere;
 end;
 
 function TRttiSQL<T>.SelectNome(var aSql: string): iRttiSQL<T>;

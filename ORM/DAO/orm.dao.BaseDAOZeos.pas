@@ -18,6 +18,7 @@ uses Db,Rtti,orm.conexao.ModelConexaoFactory,orm.IBaseVO,orm.Atributos,
         FForm: TForm;
         function FillParameters(aInstance: T): IDAO<T>; overload;
         function FillParameters(aInstance: T; aId: integer): IDAO<T>; overload;
+        function FillParameters(aInstance: T; aLogin,aSenha: string): IDAO<T>; overload;
         procedure OnDataChange(Sender: TObject; Field: TField);
       public
         constructor Create();
@@ -29,6 +30,7 @@ uses Db,Rtti,orm.conexao.ModelConexaoFactory,orm.IBaseVO,orm.Atributos,
         function Listagem(const aListaLigada: boolean = True): IDAO<T>;overload; //Consulta completa.
         function Listagem(var aLista: TObjectList<T>): IDAO<T>;overload;
         function Listagem(var aId: integer): T;overload;//consulta usando ID.
+        function Listagem(var aLogin, aSenha: string): T; overload;
         function Listagem(aKey: string; aValue: Variant): IDAO<T>; overload;
         function DataSource(aDataSource: TDataSource): IDAO<T>;
         function LastID: IDAO<T>;
@@ -220,6 +222,32 @@ begin
    finally
      contexto.Free;
    end;}
+end;
+
+function TBaseDAOZeos<T>.FillParameters(aInstance: T; aLogin,
+  aSenha: string): IDAO<T>;
+var i: integer;
+    ListaCampos: TList<string>;
+begin
+   ListaCampos := TList<string>.Create;
+   TRttiUtils<T>.New(aInstance).ListarCampos(ListaCampos);
+   try
+     for i := 0 to Pred(ListaCampos.Count) do
+     begin
+       if ListaCampos[i] = 'LOGIN' then
+       begin
+          if FQuery.Params.FindParam(ListaCampos[i]) <> nil then
+             FQuery.Params.ParamByName(ListaCampos[i]).Value := aLogin;
+       end;
+       if ListaCampos[i] = 'SENHA' then
+       begin
+         if FQuery.Params.FindParam(ListaCampos[i]) <> nil then
+            FQuery.Params.ParamByName(ListaCampos[i]).Value := aSenha;
+       end;
+     end;
+   finally
+     ListaCampos.Free;
+   end;
 end;
 
 function TBaseDAOZeos<T>.FillParameters(aInstance: T; aId: integer): IDAO<T>;
@@ -453,6 +481,17 @@ begin
     FQuery.SQL.Clear;
     FQuery.SQL.Add(aSql);
     FQuery.Params.ParamByName(aKey).Value := aValue;
+    FQuery.Open;
+end;
+
+function TBaseDAOZeos<T>.Listagem(var aLogin, aSenha: string): T;
+var aSql: string;
+begin
+    Result := T.Create;
+    TRttiSQL<T>.New(nil).SelectLogin(aSql);
+    FQuery.SQL.Clear;
+    FQuery.SQL.Add(aSql);
+    Self.FillParameters(Result, aLogin, aSenha);
     FQuery.Open;
 end;
 

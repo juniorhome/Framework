@@ -25,6 +25,8 @@ type
       function SelectId(var aSql: string): iRttiSQL<T>;
       function SelectNome(var aSql: string): iRttiSQL<T>;
       function SelectData(var aSql: string): iRttiSQL<T>;
+      function LastId(var aSql: string): iRttiSQL<T>;
+      function LastRecord(var aSql: string): iRttiSQL<T>;
       function Fields(aSql: string): iRttiSQL<T>;
       function Where(aSql: string): iRttiSQL<T>;
       function OrderBy(aSql: string): iRttiSQL<T>;
@@ -83,6 +85,26 @@ begin
    FJoin := aSql;
 end;
 
+function TRttiSQL<T>.LastId(var aSql: string): iRttiSQL<T>;
+var aNomeClasse, aPK: string;
+begin
+   Result := Self;
+   TRttiUtils<T>.New(FInstance).NomeTabela(aNomeClasse).ChavePrimaria(aPK);
+   aSql := aSql + 'SELECT FIRST(1) ' + aPK;
+   aSql := aSql + ' FROM ' + aNomeClasse;
+   aSql := aSql + ' ORDER BY ' + aPK + ' DESC';
+end;
+
+function TRttiSQL<T>.LastRecord(var aSql: string): iRttiSQL<T>;
+var aPK, aNomeClasse, aCampos: string;
+begin
+   Result := Self;
+   TRttiUtils<T>.New(FInstance).NomeTabela(aNomeClasse).Fields(aCampos).ChavePrimaria(aPK);
+   aSql := aSql + 'SELECT FIRST(1) ' + aCampos;
+   aSql := aSql + ' FROM ' + aNomeClasse;
+   aSql := aSql + ' ORDER BY ' + aPK + ' DESC';
+end;
+
 class function TRttiSQL<T>.New(aInstance: T): iRttiSQL<T>;
 begin
    Result := Self.Create(aInstance);
@@ -123,7 +145,13 @@ function TRttiSQL<T>.SelectData(var aSql: string): iRttiSQL<T>;
 var aNomeTabela, aCampos, aWhere: string;
 begin
    Result := Self;
+   TRttiUtils<T>.New(FInstance).NomeTabela(aNomeTabela).Fields(aCampos).Where(aWhere);
+   if FWhere <> '' then
+      aSql := aSql + ' WHERE ' + FWhere;
 
+   aSql := aSql + 'SELECT ' + aCampos;
+   aSql := aSql + ' FROM ' + aNomeTabela;
+   aSql := aSql + ' WHERE ' + aWhere;
 end;
 
 function TRttiSQL<T>.SelectId(var aSql: string): iRttiSQL<T>;
@@ -140,13 +168,27 @@ begin
 end;
 
 function TRttiSQL<T>.SelectNome(var aSql: string): iRttiSQL<T>;
+var aNomeTabela, aCampos, aWhere: string;
 begin
+   Result := Self;
+   TRttiUtils<T>.New(FInstance).NomeTabela(aNomeTabela).Fields(aCampos).Where(aWhere);
+   if FWhere <> '' then
+      aSql := aSql + ' WHERE ' + FWhere;
 
+   aSql := aSql + 'SELECT ' + aCampos;
+   aSql := aSql + ' FROM ' + aNomeTabela;
+   aSql := aSql + ' WHERE ' + aWhere;
 end;
 
 function TRttiSQL<T>.Update(var aSql: string): iRttiSQL<T>;
+var aNomeTabela, aCampos, aWhere: string;
 begin
+   Result := Self;
+   TRttiUtils<T>.New(FInstance).NomeTabela(aNomeTabela).Update(aCampos).Where(aWhere);
 
+   aSql := aSql + 'UPDATE ' + aNomeTabela;
+   aSql := aSql + ' SET ' + aCampos;
+   aSql := aSql + ' WHERE ' + aWhere;
 end;
 
 function TRttiSQL<T>.Where(aSql: string): iRttiSQL<T>;
