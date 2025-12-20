@@ -6,7 +6,7 @@ uses SysUtils, IniFiles, Datasnap.DBClient, ZDataset, Data.DB,
   orm.IBaseVO, System.Rtti, orm.Atributos, Vcl.DBGrids, Winapi.Windows, Vcl.Grids, Vcl.Graphics,
   orm.conexao.interfaces.Interfaces, FireDAC.Comp.Client, System.JSON,
   System.Generics.Collections, uRESTDWConsts, uRESTDWBasicDB, System.Classes,
-  Vcl.Forms;
+  Vcl.Forms, Vcl.ExtCtrls, System.NetEncoding;
 
   type
     TTipoQuery = (tqFiredac, tqZeos, tqRDW, tqDbExpress);
@@ -30,6 +30,8 @@ uses SysUtils, IniFiles, Datasnap.DBClient, ZDataset, Data.DB,
          function QueryParaArrayJson(aQuery: IModelQuery; aTipoQuery: TTipoQuery): TJSONArray;
          function QueryParaListaObjeto(aQuery: IModelQuery; aTipoQuery: TTipoQuery): TObjectList<T>;
          procedure CriarCds(aObj: T; aCds: TClientDataSet);
+         class function EncodeBase64(aImagem: TImage): string;
+         class procedure Decode(aBase64: string; var aImagem: TImage);
          class procedure BindForm(aObj: T; aForm: TForm);
          //procedure DimensionarGrid(AObj: TObject; AGrid: TDBGrid);
     end;
@@ -205,10 +207,43 @@ begin
      end;
 end;
 
+class procedure TLib<T>.Decode(aBase64: string; var aImagem: TImage);
+var entrada, saida: TStringStream;
+begin
+   entrada := TStringStream.Create(aBase64);
+   saida := TStringStream.Create;
+   try
+     entrada.Position := 0;
+     TNetEncoding.Base64.Decode(entrada, saida);
+     saida.Position := 0;
+     aImagem.Picture.LoadFromStream(saida);
+   finally
+     entrada.Free;
+     saida.Free;
+   end;
+end;
+
 destructor TLib<T>.Destroy;
 begin
   FArqIni.Free;
   inherited;
+end;
+
+class function TLib<T>.EncodeBase64(aImagem: TImage): string;
+var entrada, saida: TStringStream;
+begin
+   entrada := TStringStream.Create;
+   saida := TStringStream.Create;
+   try
+     aImagem.Picture.SaveToStream(entrada);
+     entrada.Position := 0;
+     TNetEncoding.Base64.Encode(entrada, saida);
+     saida.Position := 0;
+     Result := saida.DataString;
+   finally
+     entrada.Free;
+     saida.Free;
+   end;
 end;
 
 procedure TLib<T>.EscreverIni(aDriver,aBanco,aHost,aDll,aUsuario,aSenha: string; aPorta:integer);
