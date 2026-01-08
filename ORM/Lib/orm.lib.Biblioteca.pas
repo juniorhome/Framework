@@ -2,11 +2,46 @@ unit orm.lib.Biblioteca;
 
 interface
 
-uses SysUtils, IniFiles, Datasnap.DBClient, ZDataset, Data.DB,
-  orm.IBaseVO, System.Rtti, orm.Atributos, Vcl.DBGrids, Winapi.Windows, Vcl.Grids, Vcl.Graphics,
-  orm.conexao.interfaces.Interfaces, FireDAC.Comp.Client, System.JSON,
-  System.Generics.Collections, uRESTDWConsts, uRESTDWBasicDB, System.Classes,
-  Vcl.Forms, Vcl.ExtCtrls, System.NetEncoding;
+uses
+     SysUtils,
+     IniFiles,
+     System.Rtti,
+     System.Classes,
+     System.Generics.Collections,
+     System.NetEncoding,
+     System.JSON,
+
+     Datasnap.DBClient,
+     ZDataset,
+     Data.DB,
+     FireDAC.Comp.Client,
+
+     orm.IBaseVO,
+     orm.Atributos,
+     orm.conexao.interfaces.Interfaces,
+
+     {$IF VCL}
+       Vcl.DBGrids,
+       Winapi.Windows,
+       Vcl.Grids,
+       Vcl.Graphics,
+       Vcl.Forms,
+       Vcl.ExtCtrls,
+       FMX.Objects,
+       FMX.Types,
+       FMX.Controls,
+     {$ENDIF}
+
+     {$DEFINE FMX}
+     {$IFDEF FMX}
+       FMX.Objects,
+       FMX.Controls,
+       FMX.Types,
+       FMX.Forms,
+     {$ENDIF}
+
+     uRESTDWConsts,
+     uRESTDWBasicDB;
 
   type
     TTipoQuery = (tqFiredac, tqZeos, tqRDW, tqDbExpress);
@@ -19,20 +54,30 @@ uses SysUtils, IniFiles, Datasnap.DBClient, ZDataset, Data.DB,
          function LocalizarSubstituir(texto,busca,troca: string): string;
          //function VerificaCaminho: boolean;
          procedure EscreverIni(aDriver,aBanco,aHost,aDll,aUsuario,aSenha: string; aPorta:integer);
-         procedure CopiarParaDataSet(aQuery: IModelQuery; aTipoQuery: TTipoQuery; aCds: TClientDataSet);
          function PegarNomeTabela(aObj: T): string;
+
+         {$IF VCL}
+         procedure CopiarParaDataSet(aQuery: IModelQuery; aTipoQuery: TTipoQuery; aCds: TClientDataSet);
          procedure GridZebrado(grid: TDBGrid; aRect: TRect; aDataCol: integer; aColumn: TColumn; aState: TGridDrawState);
          procedure OrdenarColunaGrid(aGrid: TDBGrid; aCds: TClientDataSet);
+         procedure CriarCds(aObj: T; aCds: TClientDataSet);
+         class function EncodeBase64(aImagem: TImage): string;
+         class procedure Decode(aBase64: string; var aImagem: TImage);
+         class procedure BindForm(aObj: T; aForm: TForm);
+         {$ENDIF}
+
+         {$IFDEF FMX}
+         class function EncodeBase64(aImagem: TImage): string;
+         class procedure Decode(aBase64: string; var aImagem: TImage);
+         class procedure BindForm(aObj: T; aForm: TForm);
+         {$ENDIF}
+
          constructor Create();
          destructor Destroy; override;
          function QueryParaObjeto(aQuery: IModelQuery; aTipoQuery: TTipoQuery): T;
          function QueryParaJson(aQuery: IModelQuery; aTipoQuery: TTipoQuery): TJSONObject;
          function QueryParaArrayJson(aQuery: IModelQuery; aTipoQuery: TTipoQuery): TJSONArray;
          function QueryParaListaObjeto(aQuery: IModelQuery; aTipoQuery: TTipoQuery): TObjectList<T>;
-         procedure CriarCds(aObj: T; aCds: TClientDataSet);
-         class function EncodeBase64(aImagem: TImage): string;
-         class procedure Decode(aBase64: string; var aImagem: TImage);
-         class procedure BindForm(aObj: T; aForm: TForm);
          //procedure DimensionarGrid(AObj: TObject; AGrid: TDBGrid);
     end;
 
@@ -41,8 +86,11 @@ implementation
 var  caminhoIni: string;
 
 { TLib }
-
-class procedure TLib<T>.BindForm(aObj: T; aForm: TForm);
+{$IF VCL}
+ class procedure TLib<T>.BindForm(aObj: T; aForm: TForm);
+{$ELSE}
+ class procedure TLib<T>.BindForm(aObj: T; aForm: TForm);
+{$ENDIF}
 var
    contexto: TRttiContext;
    tipo: TRttiType;
@@ -68,6 +116,7 @@ begin
    end;
 end;
 
+{$IFDEF VCL}
 procedure TLib<T>.CopiarParaDataSet(aQuery: IModelQuery; aTipoQuery: TTipoQuery; aCds: TClientDataSet);
 var field: TField;
 begin
@@ -113,6 +162,7 @@ begin
          raise Exception.Create('Implementar mais tarde!!!!!!!');
   end;
 end;
+{$ENDIF}
 
 {procedure TLib<T>.DimensionarGrid(AObj: TObject; AGrid: TDBGrid);
 type
@@ -170,6 +220,7 @@ begin
   //
 end;
 
+{$IFDEF VCL}
 procedure TLib<T>.CriarCds(aObj: T; aCds: TClientDataSet);
 var contexto: TRttiContext;
     tipo: TRttiType;
@@ -206,6 +257,7 @@ begin
        contexto.Free;
      end;
 end;
+{$ENDIF}
 
 class procedure TLib<T>.Decode(aBase64: string; var aImagem: TImage);
 var entrada, saida: TStringStream;
@@ -216,7 +268,11 @@ begin
      entrada.Position := 0;
      TNetEncoding.Base64.Decode(entrada, saida);
      saida.Position := 0;
+     {$IFDEF VCL}
      aImagem.Picture.LoadFromStream(saida);
+     {$ELSE}
+     aImagem.Bitmap.LoadFromStream(saida);
+     {$ENDIF}
    finally
      entrada.Free;
      saida.Free;
@@ -235,7 +291,11 @@ begin
    entrada := TStringStream.Create;
    saida := TStringStream.Create;
    try
+     {$IFDEF VCL}
      aImagem.Picture.SaveToStream(entrada);
+     {$ELSE}
+     aImagem.Bitmap.SaveToStream(entrada);
+     {$ENDIF}
      entrada.Position := 0;
      TNetEncoding.Base64.Encode(entrada, saida);
      saida.Position := 0;
@@ -261,6 +321,7 @@ begin
    //end;
 
 end;
+{$IFDEF VCL}
 {Colocar no evento OnDrawColumnCell no DBGrid.}
 procedure TLib<T>.GridZebrado(grid: TDBGrid; aRect: TRect; aDataCol: integer;
   aColumn: TColumn; aState: TGridDrawState);
@@ -275,6 +336,7 @@ begin
 
   grid.DefaultDrawColumnCell(aRect, aDataCol, aColumn, aState);
 end;
+{$ENDIF}
 
 function TLib<T>.LocalizarSubstituir(texto, busca, troca: string): string;
 var
@@ -291,6 +353,7 @@ begin
    end;
    Result := texto;
 end;
+{$IFDEF VCL}
 {Colocar no evento OnTitleClick do DBGrid.}
 procedure TLib<T>.OrdenarColunaGrid(aGrid: TDBGrid; aCds: TClientDataSet);
 var sNomeIndice,sNomeColuna: string;
@@ -318,6 +381,7 @@ begin
      aCds.First;
    end;
 end;
+{$ENDIF}
 
 function TLib<T>.PegarNomeTabela(aObj: T): string;
 var contexto: TRttiContext;
