@@ -380,8 +380,8 @@ begin
          aFields := aFields + prop.FieldName + ',';
        if prop.EhCampoDataHora then
          aFields := aFields + prop.FieldName + ',';
-       //if prop.EhCampoExtended then
-         //aFields := aFields + prop.FieldName + ',';
+       if prop.EhCampoExtended then
+         aFields := aFields + prop.FieldName + ',';
        if prop.EhCampoMonetario then
          aFields := aFields + prop.FieldName + ',';
        if prop.EhCampoBooleano then

@@ -35,6 +35,7 @@ begin
   FConexao := aValue;
   FQuery := TZQuery.Create(nil);
   FQuery.Connection := TZConnection(FConexao.Connection);
+  FQuery.Active := True;
 end;
 
 function TModelZeosQuery.DataSet: TDataSet;

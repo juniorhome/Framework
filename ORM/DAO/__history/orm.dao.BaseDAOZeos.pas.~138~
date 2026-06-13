@@ -6,7 +6,7 @@ uses Db,Rtti,orm.conexao.ModelConexaoFactory,orm.IBaseVO,orm.Atributos,
      orm.Lib.Biblioteca, orm.conexao.interfaces.Interfaces, ZDataset,
      System.SysUtils, System.JSON, System.Generics.Collections, ZConnection,
      orm.mapeamento.rttisql.interfaces, orm.mapeamento.rttisql, FMX.Forms, //{$ELSE} Vcl.Forms,
-     orm.lib.RttiUtils, DaoAtributo.DaoAtributos;
+     orm.lib.RttiUtils;
   type
     TBaseDAOZeos<T : class, constructor> = class(TInterfacedObject, IDAO<T>)
       private
@@ -47,6 +47,8 @@ uses Db,Rtti,orm.conexao.ModelConexaoFactory,orm.IBaseVO,orm.Atributos,
 implementation
 
 { TBaseDAOZeos }
+
+uses DaoAtributo.DaoAtributos;
 
 function TBaseDAOZeos<T>.Atualizar(obj: T): IDAO<T>;
 var
@@ -151,7 +153,7 @@ constructor TBaseDAOZeos<T>.Create(aQuery: IModelQuery);
 begin
    FQuery := aQuery;
    FSqlAtributo := TDaoAtribute<T>.New(Self);
-   FLista := TObjectList<T>.Create;
+   Flista := TObjectList<T>.Create;
 end;
 
 function TBaseDAOZeos<T>.DataSource(aDataSource: TDataSource): IDAO<T>;
@@ -412,6 +414,8 @@ begin
    end;}
 end;
 
+
+
 function TBaseDAOZeos<T>.Listagem(const aListaLigada: boolean): IDAO<T>;
 var aSql: string;
 begin
@@ -441,7 +445,8 @@ begin
                        .OrderBy(FSqlAtributo.OrderBy)
                        .Select(aSql);
    FQuery.Open(aSql);
-
+   if not assigned(aLista) then
+      aLista := TObjectList<T>.Create;
    TRttiUtils<T>.New(nil).DataSetToEntityList(FQuery.DataSet, aLista);
    FSqlAtributo.Clear;
 end;

@@ -3,7 +3,7 @@ unit orm.mapeamento.rttisql;
 interface
 
 uses
-  orm.mapeamento.rttisql.interfaces, orm.lib.RttiUtils, System.SysUtils;
+  orm.mapeamento.rttisql.interfaces, orm.lib.RttiUtils;
 
 type
   TRttiSQL<T: class, constructor> = class(TInterfacedObject, iRttiSQL<T>)
@@ -61,15 +61,13 @@ end;
 function TRttiSQL<T>.Fields(aSql: string): iRttiSQL<T>;
 begin
   Result := Self;
-  if Trim(aSql) <> '' then
-     FFields := aSql;
+  FFields := aSql;
 end;
 
 function TRttiSQL<T>.GroupBy(aSql: string): iRttiSQL<T>;
 begin
   Result := Self;
-  if Trim(aSql) <> '' then
-     FGroupBy := aSql;
+  FGroupBy := aSql;
 end;
 
 function TRttiSQL<T>.Insert(var aSql: string): iRttiSQL<T>;

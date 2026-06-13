@@ -36,7 +36,7 @@ type
          function SQL: TStrings;
    end;
 
-   iDaoAtribute<T: class> = interface;
+   iDaoAtribute = interface;
 
    IDAO <T: class> = interface
      ['{7FBAC46D-3355-414C-9B35-CB20D000BB27}']

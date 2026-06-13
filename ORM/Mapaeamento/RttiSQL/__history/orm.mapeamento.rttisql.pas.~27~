@@ -54,7 +54,7 @@ end;
 
 destructor TRttiSQL<T>.Destroy;
 begin
-
+  FInstance := nil;
   inherited;
 end;
 

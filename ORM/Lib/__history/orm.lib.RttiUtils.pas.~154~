@@ -221,7 +221,7 @@ begin
          end;
         end;
     finally
-      contexto.Free;
+      //contexto.Free;
     end;
     aDataSet.Next;
   end;

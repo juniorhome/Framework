@@ -4,7 +4,7 @@ interface
 
 uses
   Data.DB, orm.IBaseVO, orm.Atributos, System.JSON, System.Contnrs,
-  System.Generics.Collections, Datasnap.DBClient, System.Classes, Vcl.Forms, FMX.Forms;
+  System.Generics.Collections, Datasnap.DBClient, System.Classes, Vcl.Forms;
 
 type
     TTipoController = (tcCliente, tcFuncionario, tcFornecedor, tcTransportadora, tcProduto, tcVenda, tcNfe, tcNfce);
@@ -36,8 +36,6 @@ type
          function SQL: TStrings;
    end;
 
-   iDaoAtribute<T: class> = interface;
-
    IDAO <T: class> = interface
      ['{7FBAC46D-3355-414C-9B35-CB20D000BB27}']
      function Inserir(obj: T): IDAO<T>;
@@ -49,7 +47,6 @@ type
      function Listagem(var aLogin,aSenha: string): T; overload;
      function Listagem(aKey: string; aValue: Variant): IDAO<T>; overload;
      function DataSource(aDataSource: TDataSource): IDAO<T>;
-     function SQL: iDaoAtribute<T>;
    end;
 
    IController<T: class> = interface
@@ -78,8 +75,6 @@ type
        function DictionaryFieldType(var aDictionaryFiledType: TDictionary<string, TFieldType>): iRttiUtil<T>;
        function BindClassToForm(aForm: TForm; const aEntidade: T): iRttiUtil<T>;
        function BindFormToClass(aForm: TForm; var aEntidade: T): iRttiUtil<T>;
-       function BindClassToFormFMX(aForm: TForm; const aEntidade: T): iRttiUtil<T>;
-       function BindFormToClassFMX(aForm: TForm; var aEntidade: T): iRttiUtil<T>;
        function ListarCampos(var aLista: TList<string>): iRttiUtil<T>;
        function DataSetToEntityList(aDataSet: TDataSet; var aLista: TObjectList<T>): iRttiUtil<T>;
        function DataSetToEntity(aDataSet: TDataSet; var aEntity: T): iRttiUtil<T>;
@@ -99,7 +94,7 @@ type
       function OrderBy : String; overload;
       function GroupBy : String; overload;
       function Clear : iDaoAtribute<T>;
-      function &End : IDAO<T>;
+      function &End : iDaoAtribute<T>;
    end;
 
  implementation

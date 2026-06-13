@@ -15,9 +15,9 @@ uses
         FGroupBy: string;
         FJoin: string;
       public
-        constructor Create(Parent: IDAO<T>);
+        constructor Create(Parent: iDaoAtribute<T>);
         destructor Destroy; override;
-        class function New(Parent: IDAO<T>): iDaoAtribute<T>;
+        class function New(Parent: iDaoAtribute<T>): iDaoAtribute<T>;
         function Fields(aSql: string): iDaoAtribute<T>; overload;
         function Where(aSql: string): iDaoAtribute<T>;  overload;
         function OrderBy(aSql: string): iDaoAtribute<T>; overload;
@@ -61,7 +61,7 @@ begin
   FOrderBy := EmptyStr;
 end;
 
-constructor TDaoAtribute<T>.Create(Parent: IDAO<T>);
+constructor TDaoAtribute<T>.Create(Parent: iDaoAtribute<T>);
 begin
    FParent := Parent;
 end;
@@ -97,7 +97,7 @@ begin
     FJoin := FJoin + '' + aSql;
 end;
 
-class function TDaoAtribute<T>.New(Parent: IDAO<T>): iDaoAtribute<T>;
+class function TDaoAtribute<T>.New(Parent: iDaoAtribute<T>): iDaoAtribute<T>;
 begin
    Result := Self.Create(Parent);
 end;

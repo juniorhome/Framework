@@ -76,7 +76,6 @@ uses
          destructor Destroy; override;
          //class function ListaparaJsonArray(aLista: TObjectList<T>): TJSONArray;
          class function StreamParaString(aStream: TStream): string;
-         class procedure StringParaStream(const aValor: string; aStream: TStream);
          function QueryParaObjeto(aQuery: IModelQuery; aTipoQuery: TTipoQuery): T;
          function QueryParaJson(aQuery: IModelQuery; aTipoQuery: TTipoQuery): TJSONObject;
          function QueryParaArrayJson(aQuery: IModelQuery; aTipoQuery: TTipoQuery): TJSONArray;
@@ -1194,24 +1193,9 @@ begin
       StringStream := TStringStream.Create('', TEncoding.UTF8);
       try
         StringStream.CopyFrom(aStream, aStream.Size);
-        Result := StringStream.DataString;
       finally
         StringStream.Free;
       end;
-   end;
-end;
-
-class procedure TLib<T>.StringParaStream(const aValor: string;
-  aStream: TStream);
-var StringStream: TStringStream;
-begin
-   aStream.Size := 0;
-   StringStream := TStringStream.Create(aValor, TEncoding.UTF8);
-   try
-     StringStream.Position := 0;
-     aStream.CopyFrom(StringStream, StringStream.Size);
-   finally
-     StringStream.Free;
    end;
 end;
 
@@ -1224,4 +1208,3 @@ begin
 end;}
 
 end.
-

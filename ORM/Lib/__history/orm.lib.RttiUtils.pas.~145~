@@ -214,8 +214,6 @@ begin
                  Stream.Free;
                end;
             end;
-            if prop.EhCampoHora then
-               valor := StrToTime(campo.AsString);
             prop.SetValue(Pointer(aLista[Pred(aLista.Count)]), valor);
           end;
          end;
@@ -352,7 +350,7 @@ begin
            aDictionaryFiledType.Add(prop.FieldName, TFieldType.ftBoolean);
         if prop.EhCampoBlob then
            aDictionaryFiledType.Add(prop.FieldName, TFieldType.ftBlob);
-       end;
+      end;
    finally
      contexto.Free;
    end;
@@ -380,8 +378,8 @@ begin
          aFields := aFields + prop.FieldName + ',';
        if prop.EhCampoDataHora then
          aFields := aFields + prop.FieldName + ',';
-       //if prop.EhCampoExtended then
-         //aFields := aFields + prop.FieldName + ',';
+       if prop.EhCampoExtended then
+         aFields := aFields + prop.FieldName + ',';
        if prop.EhCampoMonetario then
          aFields := aFields + prop.FieldName + ',';
        if prop.EhCampoBooleano then
@@ -480,7 +478,7 @@ begin
         aFields := aFields + prop.FieldName + ' = ' + ':' + prop.FieldName + ',';
     end;
   finally
-    aFields := Copy(aFields, 0, Length(aFields) - 1) + '';
+    aFields := Copy(aFields, 0, Length(aFields) - 2) + '';
     contexto.Free;
   end;
 end;

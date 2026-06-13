@@ -210,12 +210,12 @@ end;
 
 function TRttiPropertyHelper.EhChaveEstrangeira: Boolean;
 begin
-  Result := Tem<TChaveEstrangeira>;
+  Result := Tem<TChavePrimaria>;
 end;
 
 function TRttiPropertyHelper.EhChavePrimaria: Boolean;
 begin
-  Result := Tem<TChavePrimaria>;
+  Result := Tem<TChaveEstrangeira>;
 end;
 
 function TRttiPropertyHelper.EhMaximo: Boolean;

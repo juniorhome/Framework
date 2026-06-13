@@ -42,7 +42,7 @@ begin
     FConexao.Port := StrToInt(FArqIni.ReadString('Banco', 'Porta', 'Erro ao ler o valor Porta'));
     FConexao.LoginPrompt := False;
     FConexao.Connected := True;
-    FConexao.AutoCommit := True;
+    FConexao.AutoCommit := False;
   end;
 end;
 

@@ -352,7 +352,9 @@ begin
            aDictionaryFiledType.Add(prop.FieldName, TFieldType.ftBoolean);
         if prop.EhCampoBlob then
            aDictionaryFiledType.Add(prop.FieldName, TFieldType.ftBlob);
-       end;
+        if prop.EhCampoHora then
+           aDictionaryFiledType.Add(prop.FieldName, TFieldType.ftTime);
+      end;
    finally
      contexto.Free;
    end;
@@ -380,8 +382,8 @@ begin
          aFields := aFields + prop.FieldName + ',';
        if prop.EhCampoDataHora then
          aFields := aFields + prop.FieldName + ',';
-       //if prop.EhCampoExtended then
-         //aFields := aFields + prop.FieldName + ',';
+       if prop.EhCampoExtended then
+         aFields := aFields + prop.FieldName + ',';
        if prop.EhCampoMonetario then
          aFields := aFields + prop.FieldName + ',';
        if prop.EhCampoBooleano then

@@ -8,13 +8,11 @@ type
   TSessaoUsuario = class
     private
       class var FId: integer;
-      class var FNome: string;
       class var FApelido: string;
       class var FLembrar: boolean;
       class var FCaminhoFoto: string;
     public
       class property Id: integer read FId write FId;
-      class property Nome: string read FNome write FNome;
       class property Apelido: string read FApelido write FApelido;
       class property Lembrar: boolean read FLembrar write FLembrar;
       class property CaminhoFoto: string read FCaminhoFoto write FCaminhoFoto;

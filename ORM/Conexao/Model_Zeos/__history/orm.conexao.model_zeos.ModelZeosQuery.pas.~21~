@@ -45,8 +45,6 @@ end;
 destructor TModelZeosQuery.Destroy;
 begin
   FreeAndNil(FQuery);
-  if Assigned(FParams) then
-     FreeAndNil(FParams);
   inherited;
 end;
 
