@@ -68,13 +68,16 @@ uses
 
          {$IFDEF FMX}
          class function EncodeBase64(aImagem: TImage): string;
-         class procedure Decode(aBase64: string; var aImagem: TImage);
+         class procedure Decode(aBase64: string; var aImagem: TImage); overload;
+         class procedure Decode(aBase: string; var aImagem: TCircle); overload;
          class procedure BindForm(aObj: T; aForm: TForm);
          {$ENDIF}
 
          constructor Create();
          destructor Destroy; override;
-         class function ListaparaJsonArray(aLista: TObjectList<T>): TJSONArray;
+         //class function ListaparaJsonArray(aLista: TObjectList<T>): TJSONArray;
+         class function StreamParaString(aStream: TStream): string;
+         class procedure StringParaStream(const aValor: string; aStream: TStream);
          function QueryParaObjeto(aQuery: IModelQuery; aTipoQuery: TTipoQuery): T;
          function QueryParaJson(aQuery: IModelQuery; aTipoQuery: TTipoQuery): TJSONObject;
          function QueryParaArrayJson(aQuery: IModelQuery; aTipoQuery: TTipoQuery): TJSONArray;
@@ -280,6 +283,12 @@ begin
    end;
 end;
 
+class procedure TLib<T>.Decode(aBase: string; var aImagem: TCircle);
+var entrada, saida: TStringStream;
+begin
+  //
+end;
+
 destructor TLib<T>.Destroy;
 begin
   FArqIni.Free;
@@ -339,7 +348,7 @@ begin
 end;
 {$ENDIF}
 
-class function TLib<T>.ListaparaJsonArray(aLista: TObjectList<T>): TJSONArray;
+{class function TLib<T>.ListaparaJsonArray(aLista: TObjectList<T>): TJSONArray;
 var json: TJSONObject;
     json_array: TJSONArray;
     i: integer;
@@ -357,7 +366,7 @@ begin
      json_array.Free;
    end;
    Result := json_array;
-end;
+end;}
 
 function TLib<T>.LocalizarSubstituir(texto, busca, troca: string): string;
 var
@@ -1182,6 +1191,37 @@ begin
   end;
 end;
 
+class function TLib<T>.StreamParaString(aStream: TStream): string;
+var StringStream: TStringStream;
+begin
+   Result := '';
+   if (Assigned(aStream)) And (aStream.Size > 0) then
+   begin
+      aStream.Position := 0;
+      StringStream := TStringStream.Create('', TEncoding.UTF8);
+      try
+        StringStream.CopyFrom(aStream, aStream.Size);
+        Result := StringStream.DataString;
+      finally
+        StringStream.Free;
+      end;
+   end;
+end;
+
+class procedure TLib<T>.StringParaStream(const aValor: string;
+  aStream: TStream);
+var StringStream: TStringStream;
+begin
+   aStream.Size := 0;
+   StringStream := TStringStream.Create(aValor, TEncoding.UTF8);
+   try
+     StringStream.Position := 0;
+     aStream.CopyFrom(StringStream, StringStream.Size);
+   finally
+     StringStream.Free;
+   end;
+end;
+
 {function TLib<T>.VerificaCaminho: boolean;
 begin
    caminhoIni := ExtractFilePath(Application.ExeName) + '\config.ini';
@@ -1191,3 +1231,4 @@ begin
 end;}
 
 end.
+

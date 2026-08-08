@@ -68,7 +68,8 @@ uses
 
          {$IFDEF FMX}
          class function EncodeBase64(aImagem: TImage): string;
-         class procedure Decode(aBase64: string; var aImagem: TImage);
+         class procedure Decode(aBase64: string; var aImagem: TImage); overload;
+         class procedure Decode(aBase64: string; var aImagem: TCircle); overload;
          class procedure BindForm(aObj: T; aForm: TForm);
          {$ENDIF}
 
@@ -276,6 +277,22 @@ begin
      {$ELSE}
      aImagem.Bitmap.LoadFromStream(saida);
      {$ENDIF}
+   finally
+     entrada.Free;
+     saida.Free;
+   end;
+end;
+
+class procedure TLib<T>.Decode(aBase64: string; var aImagem: TCircle);
+var entrada, saida: TStringStream;
+begin
+  entrada := TStringStream.Create(aBase64);
+   saida := TStringStream.Create;
+   try
+     entrada.Position := 0;
+     TNetEncoding.Base64.Decode(entrada, saida);
+     saida.Position := 0;
+     aImagem.Fill.Bitmap.Bitmap.LoadFromStream(saida);
    finally
      entrada.Free;
      saida.Free;
