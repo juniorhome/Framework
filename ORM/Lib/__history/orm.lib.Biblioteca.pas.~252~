@@ -40,8 +40,8 @@ uses
        FMX.Forms,
      {$ENDIF}
 
-     uRESTDWConsts,
-     uRESTDWBasicDB;
+     //uRESTDWConsts,
+     //uRESTDWBasicDB;
 
   type
     TTipoQuery = (tqFiredac, tqZeos, tqRDW, tqDbExpress);
@@ -68,13 +68,16 @@ uses
 
          {$IFDEF FMX}
          class function EncodeBase64(aImagem: TImage): string;
-         class procedure Decode(aBase64: string; var aImagem: TImage);
+         class procedure Decode(aBase64: string; var aImagem: TImage); overload;
+         class procedure Decode(aBase64: string; var aImagem: TCircle); overload;
          class procedure BindForm(aObj: T; aForm: TForm);
          {$ENDIF}
 
          constructor Create();
          destructor Destroy; override;
-         class function ListaparaJsonArray(aLista: TObjectList<T>): TJSONArray;
+         //class function ListaparaJsonArray(aLista: TObjectList<T>): TJSONArray;
+         class function StreamParaString(aStream: TStream): string;
+         class procedure StringParaStream(const aValor: string; aStream: TStream);
          function QueryParaObjeto(aQuery: IModelQuery; aTipoQuery: TTipoQuery): T;
          function QueryParaJson(aQuery: IModelQuery; aTipoQuery: TTipoQuery): TJSONObject;
          function QueryParaArrayJson(aQuery: IModelQuery; aTipoQuery: TTipoQuery): TJSONArray;
@@ -274,6 +277,22 @@ begin
      {$ELSE}
      aImagem.Bitmap.LoadFromStream(saida);
      {$ENDIF}
+   finally
+     entrada.Free;
+     saida.Free;
+   end;
+end;
+
+class procedure TLib<T>.Decode(aBase64: string; var aImagem: TCircle);
+var entrada, saida: TStringStream;
+begin
+  entrada := TStringStream.Create(aBase64);
+   saida := TStringStream.Create;
+   try
+     entrada.Position := 0;
+     TNetEncoding.Base64.Decode(entrada, saida);
+     saida.Position := 0;
+     aImagem.Fill.Bitmap.Bitmap.LoadFromStream(saida);
    finally
      entrada.Free;
      saida.Free;
@@ -1090,96 +1109,127 @@ begin
                end;
            end;
          end;
-         tqRDW:
-           begin
-           for i := 0 to (aQuery as TRESTDWClientSQL).FieldDefs.Count - 1 do
-           begin
-             NomeColuna := (aQuery as TRESTDWClientSQL).FieldDefs[i].Name;
-             case (aQuery as TRESTDWClientSQL).FieldDefs[i].DataType of
-               ftString, ftWideString: valor := (aQuery as TRESTDWClientSQL).FieldByName(NomeColuna).AsString;
-               ftInteger, ftLargeint, ftSmallint: valor := (aQuery as TRESTDWClientSQL).FieldByName(NomeColuna).AsInteger;
-               ftBoolean: valor := (aQuery as TRESTDWClientSQL).FieldByName(NomeColuna).AsBoolean;
-               ftFloat: valor := (aQuery as TRESTDWClientSQL).FieldByName(NomeColuna).AsFloat;
-               ftCurrency: valor := (aQuery as TRESTDWClientSQL).FieldByName(NomeColuna).AsCurrency;
-               ftExtended: valor := (aQuery as TRESTDWClientSQL).FieldByName(NomeColuna).AsExtended;
-               ftDate, ftDateTime: valor := (aQuery as TRESTDWClientSQL).FieldByName(NomeColuna).AsDateTime;
-             end;
-
-             for propriedade in tipo.GetProperties do
-               for atributo in propriedade.GetAttributes do
-               begin
-                 if atributo is TChavePrimaria then
-                 begin
-                   if TChavePrimaria(atributo).Nome = NomeColuna then
-                   begin
-                     if not valor.IsEmpty then
-                       propriedade.SetValue(TObject(Obj), valor);
-                   end;
-                 end;
-                 if atributo is TCampoTexto then
-                 begin
-                   if TCampoTexto(atributo).Nome = NomeColuna then
-                   begin
-                     if not valor.IsEmpty then
-                       propriedade.SetValue(TObject(Obj), valor);
-                   end;
-                 end;
-                 if atributo is TCampoInteiro then
-                 begin
-                   if TCampoInteiro(atributo).Nome = NomeColuna then
-                   begin
-                     if not valor.IsEmpty then
-                       propriedade.SetValue(TObject(Obj), valor);
-                   end;
-                 end;
-                 if atributo is TCampoData then
-                 begin
-                   if TCampoData(atributo).Nome = NomeColuna then
-                   begin
-                     if not valor.IsEmpty then
-                       propriedade.SetValue(TObject(Obj), valor);
-                   end;
-                 end;
-                 if atributo is TCampoDataHora then
-                 begin
-                   if TCampoDataHora(atributo).Nome = NomeColuna then
-                   begin
-                     if not valor.IsEmpty then
-                       propriedade.SetValue(TObject(Obj), valor);
-                   end;
-                 end;
-                 if atributo is TCampoExtended then
-                 begin
-                   if TCampoExtended(atributo).Nome = NomeColuna then
-                   begin
-                     if not valor.IsEmpty then
-                       propriedade.SetValue(TObject(Obj), valor);
-                   end;
-                 end;
-                 if atributo is TCampoMonetario then
-                 begin
-                   if TCampoMonetario(atributo).Nome = NomeColuna then
-                   begin
-                     if not valor.IsEmpty then
-                       propriedade.SetValue(TObject(Obj), valor);
-                   end;
-                 end;
-                 if atributo is TCampoBooleano then
-                 begin
-                   if TCampoBooleano(atributo).Nome = NomeColuna then
-                   begin
-                     if not valor.IsEmpty then
-                       propriedade.SetValue(TObject(Obj), valor);
-                   end;
-                 end;
-               end;
-           end;
-         end;
+//         tqRDW:
+//          begin
+//           for i := 0 to (aQuery as TRESTDWClientSQL).FieldDefs.Count - 1 do
+//           begin
+//             NomeColuna := (aQuery as TRESTDWClientSQL).FieldDefs[i].Name;
+//             case (aQuery as TRESTDWClientSQL).FieldDefs[i].DataType of
+//               ftString, ftWideString: valor := (aQuery as TRESTDWClientSQL).FieldByName(NomeColuna).AsString;
+//               ftInteger, ftLargeint, ftSmallint: valor := (aQuery as TRESTDWClientSQL).FieldByName(NomeColuna).AsInteger;
+//               ftBoolean: valor := (aQuery as TRESTDWClientSQL).FieldByName(NomeColuna).AsBoolean;
+//               ftFloat: valor := (aQuery as TRESTDWClientSQL).FieldByName(NomeColuna).AsFloat;
+//               ftCurrency: valor := (aQuery as TRESTDWClientSQL).FieldByName(NomeColuna).AsCurrency;
+//               ftExtended: valor := (aQuery as TRESTDWClientSQL).FieldByName(NomeColuna).AsExtended;
+//               ftDate, ftDateTime: valor := (aQuery as TRESTDWClientSQL).FieldByName(NomeColuna).AsDateTime;
+//             end;
+//
+//             for propriedade in tipo.GetProperties do
+//               for atributo in propriedade.GetAttributes do
+//               begin
+//                 if atributo is TChavePrimaria then
+//                 begin
+//                   if TChavePrimaria(atributo).Nome = NomeColuna then
+//                   begin
+//                     if not valor.IsEmpty then
+//                       propriedade.SetValue(TObject(Obj), valor);
+//                   end;
+//                 end;
+//                 if atributo is TCampoTexto then
+//                 begin
+//                   if TCampoTexto(atributo).Nome = NomeColuna then
+//                   begin
+//                     if not valor.IsEmpty then
+//                       propriedade.SetValue(TObject(Obj), valor);
+//                   end;
+//                 end;
+//                 if atributo is TCampoInteiro then
+//                 begin
+//                   if TCampoInteiro(atributo).Nome = NomeColuna then
+//                   begin
+//                     if not valor.IsEmpty then
+//                       propriedade.SetValue(TObject(Obj), valor);
+//                   end;
+//                 end;
+//                 if atributo is TCampoData then
+//                 begin
+//                   if TCampoData(atributo).Nome = NomeColuna then
+//                   begin
+//                     if not valor.IsEmpty then
+//                       propriedade.SetValue(TObject(Obj), valor);
+//                   end;
+//                 end;
+//                 if atributo is TCampoDataHora then
+//                 begin
+//                   if TCampoDataHora(atributo).Nome = NomeColuna then
+//                   begin
+//                     if not valor.IsEmpty then
+//                       propriedade.SetValue(TObject(Obj), valor);
+//                   end;
+//                 end;
+//                 if atributo is TCampoExtended then
+//                 begin
+//                   if TCampoExtended(atributo).Nome = NomeColuna then
+//                   begin
+//                     if not valor.IsEmpty then
+//                       propriedade.SetValue(TObject(Obj), valor);
+//                   end;
+//                 end;
+//                 if atributo is TCampoMonetario then
+//                 begin
+//                   if TCampoMonetario(atributo).Nome = NomeColuna then
+//                   begin
+//                     if not valor.IsEmpty then
+//                       propriedade.SetValue(TObject(Obj), valor);
+//                   end;
+//                 end;
+//                 if atributo is TCampoBooleano then
+//                 begin
+//                   if TCampoBooleano(atributo).Nome = NomeColuna then
+//                   begin
+//                     if not valor.IsEmpty then
+//                       propriedade.SetValue(TObject(Obj), valor);
+//                   end;
+//                 end;
+//               end;
+//          end;
+//         end;
     end;
     Result := Obj;
   finally
     contexto.Free;
   end;
+end;
+
+class function TLib<T>.StreamParaString(aStream: TStream): string;
+var StringStream: TStringStream;
+begin
+   Result := '';
+   if (Assigned(aStream)) And (aStream.Size > 0) then
+   begin
+      aStream.Position := 0;
+      StringStream := TStringStream.Create('', TEncoding.UTF8);
+      try
+        StringStream.CopyFrom(aStream, aStream.Size);
+        Result := StringStream.DataString;
+      finally
+        StringStream.Free;
+      end;
+   end;
+end;
+
+class procedure TLib<T>.StringParaStream(const aValor: string;
+  aStream: TStream);
+var StringStream: TStringStream;
+begin
+   aStream.Size := 0;
+   StringStream := TStringStream.Create(aValor, TEncoding.UTF8);
+   try
+     StringStream.Position := 0;
+     aStream.CopyFrom(StringStream, StringStream.Size);
+   finally
+     StringStream.Free;
+   end;
 end;
 
 {function TLib<T>.VerificaCaminho: boolean;
@@ -1191,3 +1241,4 @@ begin
 end;}
 
 end.
+
